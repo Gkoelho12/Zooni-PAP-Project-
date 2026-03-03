@@ -1,0 +1,1391 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zooni — Dashboard Dono</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #3D8B3D;
+            --primary-dark: #1E4D1E;
+            --primary-light: #5CB85C;
+            --bg-color: #F2F8F2;
+            --text-main: #1a2e1a;
+            --text-sec: #5a7a5a;
+            --lavender: #81C784;
+            --mint: #00B894;
+            --orange: #FF7675;
+            --danger: #d63031;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            font-family: 'Outfit', sans-serif;
+            color: var(--text-main);
+            overflow-x: hidden;
+        }
+
+        /* Layout */
+        .app-container {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            min-height: 100vh;
+        }
+
+        /* Sidebar (Left - Green) */
+        .sidebar {
+            background-color: var(--primary);
+            color: white;
+            padding: 2rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 3rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-links {
+            list-style: none;
+            padding: 0;
+            flex-grow: 1;
+        }
+
+        .nav-item {
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 15px;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            border-radius: 12px;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        .nav-link i {
+            width: 24px;
+            text-align: center;
+        }
+
+        .btn-sidebar-cta {
+            background-color: white;
+            color: var(--primary);
+            border: none;
+            border-radius: 12px;
+            padding: 12px;
+            font-weight: 700;
+            width: 100%;
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            transition: transform 0.2s;
+            cursor: pointer;
+        }
+
+        .btn-sidebar-cta:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 2.5rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* Header */
+        .header-area {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .btn-icon-circle {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: white;
+            border: 1px solid #f1f2f6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-sec);
+            cursor: pointer;
+            position: relative;
+        }
+
+        .btn-icon-circle .badge-dot {
+            position: absolute;
+            top: 10px;
+            right: 12px;
+            width: 8px;
+            height: 8px;
+            background: var(--orange);
+            border-radius: 50%;
+        }
+
+        .profile-pic {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        /* Section Titles */
+        .section-header {
+            margin-bottom: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        /* WIDE PET CARDS (Top Section) */
+        .pets-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+            margin-bottom: 3rem;
+        }
+
+        .pet-card-wide {
+            background: white;
+            border-radius: 20px;
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+            border: 1px solid #f5f6fa;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pet-photo {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--lavender);
+        }
+
+        .pet-emoji {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            background: #f1f2f6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+        }
+
+        .pet-info {
+            flex-grow: 1;
+        }
+
+        .pet-name {
+            margin: 0;
+            font-size: 1.4rem;
+            font-weight: 700;
+        }
+
+        .pet-breed {
+            color: var(--text-sec);
+            font-size: 0.95rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .pet-status-box {
+            text-align: right;
+            min-width: 140px;
+        }
+
+        .status-indicator {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+
+        .status-icon-large {
+            font-size: 2rem;
+            margin-bottom: 5px;
+        }
+
+        .text-status-green {
+            color: var(--mint);
+        }
+
+        .text-status-orange {
+            color: var(--orange);
+        }
+
+        .status-text {
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .status-sub {
+            font-size: 0.75rem;
+            color: var(--text-sec);
+        }
+
+        .btn-status-action {
+            margin-top: 8px;
+            font-size: 0.75rem;
+            padding: 4px 12px;
+            border-radius: 15px;
+            background: var(--orange);
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        .pet-actions-absolute {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            opacity: 0.3;
+            transition: opacity 0.2s;
+        }
+
+        .pet-card-wide:hover .pet-actions-absolute {
+            opacity: 1;
+        }
+
+        /* MIDDLE SECTION (2 Cols) */
+        .middle-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-bottom: 3rem;
+        }
+
+        .card-panel {
+            background: white;
+            border-radius: 20px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+            height: 100%;
+        }
+
+        .event-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px 0;
+            border-bottom: 1px solid #f5f6fa;
+        }
+
+        .event-item:last-child {
+            border-bottom: none;
+        }
+
+        .event-date-box {
+            background: rgba(108, 92, 231, 0.1);
+            color: var(--primary);
+            border-radius: 12px;
+            padding: 8px 12px;
+            text-align: center;
+            min-width: 60px;
+        }
+
+        .date-day {
+            font-size: 1.1rem;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .date-time {
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .ticket-item {
+            background: #FAFAFB;
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .ticket-status-waiting {
+            color: var(--orange);
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* FOOTER (Checklist) */
+        .checklist-panel {
+            background: white;
+            border-radius: 20px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+        }
+
+        .checklist-grid {
+            display: flex;
+            gap: 30px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+        }
+
+        .checklist-item {
+            flex: 1;
+            min-width: 200px;
+            border: 1px solid #f1f2f6;
+            border-radius: 16px;
+            padding: 15px;
+        }
+
+        .form-check-input {
+            width: 1.5em;
+            height: 1.5em;
+            margin-right: 10px;
+            cursor: pointer;
+        }
+
+        .form-check-input:checked {
+            background-color: var(--mint);
+            border-color: var(--mint);
+        }
+
+        /* MODAL (Preserved) */
+        .modal-content {
+            border-radius: 20px;
+            border: none;
+        }
+
+        .form-control,
+        .form-select {
+            border-radius: 10px;
+            padding: 10px;
+        }
+
+        .btn-primary-modal {
+            background: var(--primary);
+            color: white;
+            border: none;
+            width: 100%;
+            border-radius: 10px;
+            padding: 10px;
+            font-weight: 600;
+        }
+
+        #previewContainer {
+            height: 150px;
+            border: 2px dashed #dfe6e9;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+
+        .logo-img-sidebar {
+            max-width: 180px;
+            margin-bottom: 3rem;
+            filter: brightness(0) invert(1);
+            /* Make it white for the purple sidebar */
+        }
+
+        /* Ticket Evidence Upload Styling */
+        .evidence-upload-container {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .evidence-btn {
+            flex: 1;
+            padding: 15px;
+            border-radius: 12px;
+            border: 2px dashed #dfe6e9;
+            background: #FAFAFB;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: var(--text-sec);
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .evidence-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: rgba(108, 92, 231, 0.05);
+        }
+
+        .pet-select-item {
+            cursor: pointer;
+            border: 2px solid transparent;
+            border-radius: 12px;
+            padding: 10px;
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+        .pet-select-item:hover {
+            background: rgba(108, 92, 231, 0.05);
+        }
+
+        .pet-select-item.selected {
+            border-color: var(--primary);
+            background: rgba(61, 139, 61, 0.1);
+        }
+
+        .pet-select-img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 5px;
+        }
+
+        .pet-select-emoji {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #f1f2f6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 5px auto;
+            font-size: 1.5rem;
+        }
+
+        /* Ticket Status Colors */
+        .status-badge {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        .status-pendente {
+            color: var(--orange);
+        }
+
+        .status-marcado {
+            color: var(--mint);
+        }
+
+        .status-recusado {
+            color: var(--danger);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <img src="assets/logo.png" alt="Zooni Logo" class="logo-img-sidebar">
+            <ul class="nav-links">
+                <li class="nav-item">
+                    <a href="#" class="nav-link active"><i class="fa-solid fa-house"></i> Início</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link"><i class="fa-solid fa-dog"></i> Meus Animais</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link"><i class="fa-regular fa-calendar"></i> Agenda</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link"><i class="fa-solid fa-bone"></i> Rotina</a>
+                </li>
+            </ul>
+
+            <div style="margin-top: auto;">
+                <a href="#" class="nav-link"><i class="fa-regular fa-user"></i> Meu Perfil</a>
+                <a href="index.html" class="nav-link text-white-50"><i class="fa-solid fa-arrow-right-from-bracket"></i>
+                    Sair</a>
+
+                <button class="btn-sidebar-cta" data-bs-toggle="modal" data-bs-target="#addTicketModal">
+                    <i class="fa-solid fa-plus"></i> Novo Ticket
+                </button>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="main-content">
+            <!-- Header -->
+            <div class="header-area">
+                <div>
+                    <h2 class="fw-bold mb-1">Olá, João Silva! 👋</h2>
+                    <p class="text-secondary m-0">Aqui está o resumo da saúde dos seus amigos hoje.</p>
+                </div>
+                <div class="user-profile">
+                    <button class="btn-icon-circle">
+                        <i class="fa-regular fa-bell"></i>
+                        <span class="badge-dot"></span>
+                    </button>
+                    <img src="https://ui-avatars.com/api/?name=Joao+Silva&background=6C5CE7&color=fff" alt="Profile"
+                        class="profile-pic">
+                </div>
+            </div>
+
+            <!-- SECTION: MEUS PETS (WIDE) -->
+            <div class="section-header">
+                <div class="section-title">Meus Animais</div>
+                <button class="btn btn-sm btn-outline-primary rounded-pill border-0" data-bs-toggle="modal"
+                    data-bs-target="#addPetModal">+ Adicionar Pet</button>
+            </div>
+
+            <div id="animaisList" class="pets-grid">
+                <p class="text-muted">A carregar...</p>
+            </div>
+
+            <!-- MIDDLE GRID (Tickets) -->
+            <div class="middle-grid" style="grid-template-columns: 1fr;">
+                <!-- Tickets -->
+                <div class="card-panel">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div class="section-title" style="font-size: 1.1rem;">Estado dos Meus Tickets</div>
+                        <button class="btn btn-sm btn-outline-primary rounded-circle" onclick="loadTickets()"
+                            title="Atualizar tickets">
+                            <i class="fa-solid fa-rotate-right"></i>
+                        </button>
+                    </div>
+                    <div id="ticketsList">
+                        <p class="text-muted small">Nenhum ticket em aberto.</p>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Modal Nova Consulta (Phase 1) -->
+    <div class="modal fade" id="addTicketModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold">Nova Consulta</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="ticketForm">
+                        <div class="mb-4">
+                            <label class="small text-muted fw-bold mb-3 d-block">Qual pet precisa de ajuda hoje?</label>
+                            <div id="petSelectorList" class="d-flex gap-3 overflow-x-auto pb-2">
+                                <!-- Pets will be loaded here -->
+                            </div>
+                            <input type="hidden" id="ticketPetId" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="small text-muted fw-bold">Motivo Principal</label>
+                            <select class="form-select" id="ticketMotivo" required>
+                                <option value="">Selecione um motivo...</option>
+                                <option value="Vómitos">Vómitos</option>
+                                <option value="Problema de Pele">Problema de Pele</option>
+                                <option value="Vacinação">Vacinação</option>
+                                <option value="Rotina">Rotina</option>
+                                <option value="Outro">Outro</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="small text-muted fw-bold">Descreva o que se passa com o máximo de
+                                detalhes.</label>
+                            <textarea class="form-control" id="ticketDescricao" rows="4"
+                                placeholder="Ex: Quando começou? Mudou a alimentação? Está apático?..."
+                                required></textarea>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="small text-muted fw-bold">Mostre-nos o problema (Fotos/Vídeos)</label>
+                            <div class="evidence-upload-container">
+                                <div class="evidence-btn"
+                                    onclick="document.getElementById('ticketEvidenceInput').click()">
+                                    <i class="fa-solid fa-camera fa-2x mb-2"></i>
+                                    <span>Anexar Média</span>
+                                </div>
+                            </div>
+                            <input type="file" id="ticketEvidenceInput" class="d-none" accept="image/*,video/*"
+                                multiple>
+                            <div id="evidencePreview" class="mt-2 d-flex gap-2 flex-wrap"></div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="small text-muted fw-bold">Quando preferia ser atendido? (Sugestão)</label>
+                            <input type="datetime-local" class="form-control" id="ticketDataSugerida" required>
+                            <small class="text-secondary mt-1 d-block"><i class="fa-solid fa-circle-info"></i> Este
+                                horário é uma sugestão e necessita de confirmação da clínica.</small>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="small text-muted fw-bold">Escolha o Veterinário</label>
+                            <select class="form-select mt-1" id="ticketVeterinario" required>
+                                <option value="">A carregar veterinários...</option>
+                            </select>
+                            <input type="hidden" id="ticketVetId">
+                        </div>
+
+                        <button type="submit" class="btn-primary-modal py-3" id="btnEnviarTicket">Enviar Pedido de
+                            Consulta</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Adicionar Pet (Legacy Logic Preserved) -->
+    <div class="modal fade" id="addPetModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold" id="addPetModalLabel">Gerir Animal</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="animalForm">
+                        <input type="hidden" id="petId">
+
+                        <div class="mb-3">
+                            <label class="small text-muted fw-bold">Nome</label>
+                            <input type="text" class="form-control" id="nome" required>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-6">
+                                <label class="small text-muted fw-bold">Tipo</label>
+                                <select class="form-select" id="tipo" required>
+                                    <option value="">...</option>
+                                </select>
+                            </div>
+                            <div class="col-6">
+                                <label class="small text-muted fw-bold">Raça</label>
+                                <select class="form-select" id="raca" required>
+                                    <option value="">...</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="small text-muted fw-bold">Nascimento</label>
+                            <input type="date" class="form-control" id="nascimento" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="small text-muted fw-bold">Foto</label>
+                            <div id="previewContainer" onclick="document.getElementById('foto').click()">
+                                <span class="text-muted small"><i class="fa-solid fa-camera"></i> Escolher</span>
+                            </div>
+                            <input type="file" class="d-none" id="foto" accept="image/*">
+                            <div class="text-end mt-2">
+                                <button type="button" class="btn btn-sm btn-outline-danger d-none"
+                                    id="btnRemoverFoto">Remover</button>
+                                <input type="hidden" id="removeFotoFlag" value="false">
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn-primary-modal" id="btnSalvar">Salvar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <script>
+        const SUPABASE_URL = 'https://xqtbtggmwejnkhckduti.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhxdGJ0Z2dtd2VqbmtoY2tkdXRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc2OTU5NjEsImV4cCI6MjA4MzI3MTk2MX0.G1wG0UC6sF7r6tMxGdqLGvsHa_dxlVD1-j6QNEw32IM';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        // ── AUTH GUARD ──────────────────────────────────────────────────
+        let ID_DONO = null;
+
+        async function initAuth() {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (!session) {
+                window.location.href = 'login.html?role=dono';
+                return;
+            }
+            // Fetch profile from clientes table
+            const { data: cliente, error } = await supabaseClient
+                .from('clientes')
+                .select('id, nome')
+                .eq('user_id', session.user.id)
+                .single();
+
+            if (error || !cliente) {
+                // User exists in auth but not in clientes table yet
+                await supabaseClient.auth.signOut();
+                window.location.href = 'login.html?role=dono';
+                return;
+            }
+
+            ID_DONO = cliente.id;
+
+            // Update greeting
+            const primeiroNome = cliente.nome.split(' ')[0];
+            document.querySelector('.header-area h2').textContent = `Olá, ${primeiroNome}! 👋`;
+
+            // Load data now that we have the ID
+            loadTipos();
+            loadAnimais();
+            loadTickets();
+        }
+
+        const BUCKET_NAME = 'Animais';
+
+        function getPetImageUrl(urlOrPath) {
+            if (!urlOrPath) return null;
+            if (urlOrPath.startsWith('http')) return urlOrPath;
+            const { data } = supabaseClient.storage.from(BUCKET_NAME).getPublicUrl(urlOrPath);
+            return data.publicUrl;
+        }
+
+        async function loadTipos() {
+            const { data, error } = await supabaseClient.from('tipos_animais').select('id, nome');
+            if (error) { console.error('[loadTipos] Erro:', error.message, error.code); return; }
+            if (!data || data.length === 0) { console.warn('[loadTipos] Sem dados em tipos_animais'); return; }
+            const s = document.getElementById('tipo');
+            s.innerHTML = '<option value="">Selecione o tipo...</option>';
+            data.forEach(t => { const opt = document.createElement('option'); opt.value = t.id; opt.textContent = t.nome; s.appendChild(opt); });
+        }
+
+        async function loadRacas(tipoId) {
+            if (!tipoId) return;
+            const { data, error } = await supabaseClient.from('racas').select('id, nome_raca').eq('id_tipo_animal', tipoId);
+            if (error) { console.error('[loadRacas] Erro:', error.message, error.code); return; }
+            const s = document.getElementById('raca');
+            s.innerHTML = '<option value="">Selecione a raça...</option>';
+            data?.forEach(r => { const opt = document.createElement('option'); opt.value = r.id; opt.textContent = r.nome_raca; s.appendChild(opt); });
+        }
+
+        /* Logic to Calculate Age */
+        function getAge(dateString) {
+            const today = new Date();
+            const birthDate = new Date(dateString);
+            let age = today.getFullYear() - birthDate.getFullYear();
+            const m = today.getMonth() - birthDate.getMonth();
+            if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) { age--; }
+            return age + " Anos";
+        }
+
+        async function loadAnimais() {
+            try {
+                const { data, error } = await supabaseClient.from('animais').select('*').eq('id_dono', ID_DONO).order('criado_em', { ascending: false });
+                const listDiv = document.getElementById('animaisList');
+                if (error || !data || data.length === 0) {
+                    listDiv.innerHTML = '<p class="text-muted ms-3">Nenhum animal registado.</p>';
+                    return;
+                }
+                listDiv.innerHTML = '';
+
+                data.forEach(pet => {
+                    let emoji = '🐾';
+                    if (pet.tipo_animal && pet.tipo_animal.toLowerCase().includes('cão')) emoji = '🐶';
+                    if (pet.tipo_animal && pet.tipo_animal.toLowerCase().includes('gato')) emoji = '🐱';
+
+                    let imgHtml = `<div class="pet-emoji">${emoji}</div>`;
+                    const fullUrl = getPetImageUrl(pet.foto_url);
+                    if (fullUrl) {
+                        const noCacheUrl = `${fullUrl}?t=${Date.now()}`;
+                        imgHtml = `<img src="${noCacheUrl}" class="pet-photo text-center" alt="${emoji}" onerror="this.replaceWith(document.createRange().createContextualFragment('<div class=\\'pet-emoji\\'>${emoji}</div>'))">`;
+                    }
+
+                    const card = document.createElement('div');
+                    card.className = 'pet-card-wide';
+                    card.innerHTML = `
+                        <div class="pet-actions-absolute">
+                            <button class="btn btn-sm btn-icon border-0" onclick="openEditModal(${pet.id})"><i class="fa-solid fa-pen"></i></button>
+                             <button class="btn btn-sm btn-icon border-0 text-danger" onclick="deletePet(${pet.id})"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                        ${imgHtml}
+                        <div class="pet-info">
+                            <h3 class="pet-name">${pet.nome}</h3>
+                            <div class="pet-breed">${pet.raca || 'Raça não definida'} • ${getAge(pet['Data de nascimento'])}</div>
+                        </div>
+                    `;
+                    listDiv.appendChild(card);
+                });
+
+            } catch (err) { console.error(err); }
+        }
+
+        /* Standard CRUD Logic (Preserved) */
+        async function deletePet(id) {
+            if (!confirm('Eliminar registo?')) return;
+            try {
+                const { data: pet } = await supabaseClient.from('animais').select('foto_url').eq('id', id).single();
+                if (pet?.foto_url) {
+                    let path = pet.foto_url.split('/Animais/')[1];
+                    if (pet.foto_url.includes('/storage/v1/object/public/Animais/')) path = pet.foto_url.split('/storage/v1/object/public/Animais/')[1];
+                    if (path) await supabaseClient.storage.from('Animais').remove([decodeURIComponent(path)]);
+                }
+                await supabaseClient.from('animais').delete().eq('id', id);
+                loadAnimais();
+            } catch (e) { alert('Erro ao eliminar.'); }
+        }
+
+        async function openEditModal(id) {
+            try {
+                const { data } = await supabaseClient.from('animais').select('*').eq('id', id).single();
+                document.getElementById('addPetModalLabel').textContent = 'Editar ' + data.nome;
+                document.getElementById('petId').value = data.id;
+                document.getElementById('nome').value = data.nome;
+
+                const t = document.getElementById('tipo'); t.value = data.id_tipo_animal;
+                await loadRacas(data.id_tipo_animal);
+                document.getElementById('raca').value = data.id_raca;
+                document.getElementById('nascimento').value = data['Data de nascimento'];
+                document.getElementById('nascimento').max = new Date().toISOString().split('T')[0];
+
+                const pc = document.getElementById('previewContainer');
+                const fullUrl = getPetImageUrl(data.foto_url);
+                const btnRemover = document.getElementById('btnRemoverFoto');
+                document.getElementById('removeFotoFlag').value = 'false';
+
+                if (fullUrl) {
+                    pc.innerHTML = `<img src="${fullUrl}?t=${Date.now()}" style="width:100%; height:100%; object-fit:contain;">`;
+                    btnRemover.classList.remove('d-none');
+                } else {
+                    pc.innerHTML = `<span class="text-muted small"><i class="fa-solid fa-camera"></i> Escolher</span>`;
+                    btnRemover.classList.add('d-none');
+                }
+                new bootstrap.Modal(document.getElementById('addPetModal')).show();
+            } catch (e) { }
+        }
+
+        /* Modal Event Handlers */
+        document.querySelector('[data-bs-target="#addPetModal"]').addEventListener('click', () => {
+            document.getElementById('animalForm').reset();
+            document.getElementById('petId').value = '';
+            document.getElementById('addPetModalLabel').textContent = 'Novo Animal';
+            document.getElementById('previewContainer').innerHTML = `<span class="text-muted small"><i class="fa-solid fa-camera"></i> Escolher</span>`;
+            document.getElementById('btnRemoverFoto').classList.add('d-none');
+            // Birth date cannot be in the future
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('nascimento').max = today;
+        });
+
+        document.getElementById('tipo').addEventListener('change', (e) => loadRacas(e.target.value));
+
+        document.getElementById('foto').addEventListener('change', function (e) {
+            if (e.target.files && e.target.files[0]) {
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    document.getElementById('previewContainer').innerHTML = `<img src="${ev.target.result}" style="width:100%; height:100%; object-fit:contain;">`;
+                    document.getElementById('btnRemoverFoto').classList.remove('d-none');
+                    document.getElementById('removeFotoFlag').value = 'false';
+                };
+                reader.readAsDataURL(e.target.files[0]);
+            }
+        });
+
+        document.getElementById('btnRemoverFoto').addEventListener('click', function () {
+            if (!confirm('Remover foto?')) return;
+            document.getElementById('previewContainer').innerHTML = `<span class="text-muted small"><i class="fa-solid fa-camera"></i> Escolher</span>`;
+            this.classList.add('d-none');
+            document.getElementById('removeFotoFlag').value = 'true';
+            document.getElementById('foto').value = '';
+        });
+
+        document.getElementById('animalForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btnSalvar'); btn.disabled = true; btn.textContent = '...';
+
+            const id = document.getElementById('petId').value;
+            const nome = document.getElementById('nome').value;
+            const id_tipo = document.getElementById('tipo').value;
+            const id_raca = document.getElementById('raca').value;
+            const nasc = document.getElementById('nascimento').value;
+            const tipo_txt = document.getElementById('tipo').options[document.getElementById('tipo').selectedIndex].text;
+            const raca_txt = document.getElementById('raca').options[document.getElementById('raca').selectedIndex].text;
+
+            // Validate: birth date cannot be in the future
+            if (nasc && new Date(nasc) > new Date()) {
+                alert('A data de nascimento não pode ser no futuro.');
+                btn.disabled = false; btn.textContent = 'Salvar';
+                return;
+            }
+
+            const fotoInput = document.getElementById('foto');
+            let foto_url = null;
+
+            if (id) {
+                const { data } = await supabaseClient.from('animais').select('foto_url').eq('id', id).single();
+                if (data) foto_url = data.foto_url;
+            }
+
+            if (document.getElementById('removeFotoFlag').value === 'true' && foto_url) {
+                let path = foto_url.split('/Animais/')[1];
+                if (foto_url.includes('/storage/v1/object/public/Animais/')) path = foto_url.split('/storage/v1/object/public/Animais/')[1];
+                if (path) await supabaseClient.storage.from('Animais').remove([path]);
+                foto_url = null;
+            }
+
+            if (fotoInput.files.length > 0) {
+                // 1. Apagar foto antiga se existir (Overwrite Logic)
+                if (foto_url) {
+                    let oldPath = foto_url.split('/Animais/')[1];
+                    if (foto_url.includes('/storage/v1/object/public/Animais/')) oldPath = foto_url.split('/storage/v1/object/public/Animais/')[1];
+                    // Also handle lowercase bucket fallback just in case
+                    if (!oldPath && foto_url.includes('/animais/')) oldPath = foto_url.split('/animais/')[1];
+
+                    if (oldPath) {
+                        const decodedPath = decodeURIComponent(oldPath);
+                        await supabaseClient.storage.from('Animais').remove([decodedPath]);
+                        // Try lowercase too for safety
+                        await supabaseClient.storage.from('animais').remove([decodedPath]);
+                    }
+                }
+
+                const file = fotoInput.files[0];
+                const fName = `${Math.random().toString(36).substr(2)}_${Date.now()}.${file.name.split('.').pop()}`;
+                const { error: upErr } = await supabaseClient.storage.from('Animais').upload(fName, file);
+                if (!upErr) {
+                    const { data: pubData } = supabaseClient.storage.from('Animais').getPublicUrl(fName);
+                    foto_url = pubData.publicUrl;
+                }
+            }
+
+            const payload = { nome, id_tipo_animal: parseInt(id_tipo), id_raca: parseInt(id_raca), "Data de nascimento": nasc, id_dono: ID_DONO, tipo_animal: tipo_txt.toLowerCase(), raca: raca_txt, foto_url };
+
+            let dbError = null;
+            if (id) {
+                const { error } = await supabaseClient.from('animais').update(payload).eq('id', id);
+                dbError = error;
+            } else {
+                const { error } = await supabaseClient.from('animais').insert([payload]);
+                dbError = error;
+            }
+
+            btn.disabled = false; btn.textContent = 'Salvar';
+
+            if (dbError) {
+                console.error('Erro ao guardar animal:', dbError);
+                alert('Erro ao guardar animal: ' + (dbError.message || JSON.stringify(dbError)));
+                return;
+            }
+
+            bootstrap.Modal.getInstance(document.getElementById('addPetModal')).hide();
+            loadAnimais();
+        });
+
+        /* TICKET SYSTEM LOGIC (Phase 1) */
+        async function loadTickets() {
+            try {
+                const { data, error } = await supabaseClient.from('tickets').select('*, animais(nome)').eq('id_dono', ID_DONO).order('criado_em', { ascending: false });
+                const listDiv = document.getElementById('ticketsList');
+                if (error || !data || data.length === 0) {
+                    listDiv.innerHTML = '<p class="text-muted small">Nenhum ticket em aberto.</p>';
+                    return;
+                }
+                listDiv.innerHTML = '';
+
+                data.forEach(t => {
+                    try {
+                        let statusHtml = '';
+                        let refusalReasonHtml = '';
+                        let actionBtnHtml = '';
+                        let showDeleteBtn = true; // Default to true
+
+                        // Status Logic
+                        if (t.estado === 'pendente') {
+                            statusHtml = '<div class="status-badge status-pendente"><i class="fa-regular fa-clock"></i> Pendente</div>';
+                        }
+                        else if (t.estado === 'marcado') {
+                            statusHtml = '<div class="status-badge status-marcado" style="background: #d1fae5; color: #065f46; border: 1px solid #10b981;"><i class="fa-solid fa-calendar-check"></i> Aceite</div>';
+                        }
+                        else if (t.estado === 'recusado') {
+                            statusHtml = '<div class="status-badge status-recusado"><i class="fa-solid fa-circle-xmark"></i> Recusado</div>';
+                            if (t.motivo_recusa) {
+                                refusalReasonHtml = `<div class="mt-2 p-2 bg-danger-subtle text-danger small rounded border border-danger-subtle"><strong>Motivo:</strong> ${t.motivo_recusa}</div>`;
+                            }
+                        }
+                        else if (t.estado === 'arquivado') {
+                            statusHtml = '<div class="status-badge text-dark"><i class="fa-solid fa-box-archive"></i> Finalizado</div>';
+                            showDeleteBtn = false; // Cannot delete archived
+
+                            const rawFeedback = t.feedback_publico ? String(t.feedback_publico) : 'Sem notas registadas.';
+                            // Safe escape for onclick attribute
+                            const safeFeedback = rawFeedback
+                                .replace(/\\/g, '\\\\') // Escape backslashes first
+                                .replace(/"/g, '&quot;')
+                                .replace(/'/g, "\\'")
+                                .replace(/\n/g, '\\n')
+                                .replace(/\r/g, '');
+
+                            actionBtnHtml = `
+                            <button class="btn btn-sm btn-primary rounded-pill px-3" 
+                                    onclick="openArchivedDetails('${t.id}', '${safeFeedback}', '${t.relatorio_urls || ''}')">
+                                <i class="fa-solid fa-eye me-1"></i> Ver Relatório
+                            </button>`;
+                        }
+
+                        // Date Formatting
+                        const date = new Date(t.data_sugerida);
+                        const formattedDate = t.data_sugerida ? (date.toLocaleDateString() + ' às ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })) : 'Sem data sugerida';
+
+                        const item = document.createElement('div');
+                        item.className = 'ticket-item mb-3 p-3 border rounded-4 bg-white shadow-sm';
+                        item.innerHTML = `
+                            <div class="d-flex justify-content-between align-items-start w-100">
+                                <div class="flex-grow-1">
+                                    <strong class="d-block small fw-bold">Ticket #${t.id} - ${t.motivo}</strong>
+                                    <span class="small text-muted">${t.animais?.nome || 'Animal'} • ${formattedDate}</span>
+                                    ${refusalReasonHtml}
+                                </div>
+                                <div class="d-flex flex-column align-items-end gap-2">
+                                    ${statusHtml}
+                                    ${actionBtnHtml}
+                                    ${showDeleteBtn ? `
+                                    <button class="btn btn-outline-danger btn-sm border-0" onclick="deleteTicket(${t.id})" title="Eliminar Ticket">
+                                        <i class="fa-solid fa-trash-can"></i>
+                                    </button>` : ''}
+                                </div>
+                            </div>
+                        `;
+                        listDiv.appendChild(item);
+                    } catch (renderError) {
+                        console.error('Erro ao renderizar ticket:', t, renderError);
+                    }
+                });
+            } catch (err) { console.error(err); }
+        }
+
+        async function preparePetSelector() {
+            try {
+                const { data } = await supabaseClient.from('animais').select('*').eq('id_dono', ID_DONO);
+                const selector = document.getElementById('petSelectorList');
+                selector.innerHTML = '';
+                data?.forEach(pet => {
+                    const div = document.createElement('div');
+                    div.className = 'pet-select-item';
+                    div.dataset.id = pet.id;
+
+                    let emoji = '🐾';
+                    if (pet.tipo_animal && pet.tipo_animal.toLowerCase().includes('cão')) emoji = '🐶';
+                    if (pet.tipo_animal && pet.tipo_animal.toLowerCase().includes('gato')) emoji = '🐱';
+
+                    let imgHtml = `<div class="pet-select-emoji">${emoji}</div>`;
+                    const fullUrl = getPetImageUrl(pet.foto_url);
+                    if (fullUrl) {
+                        imgHtml = `<img src="${fullUrl}" class="pet-select-img" alt="${emoji}">`;
+                    }
+
+                    div.innerHTML = `
+                        ${imgHtml}
+                        <div class="small fw-bold">${pet.nome}</div>
+                    `;
+                    div.onclick = () => {
+                        document.querySelectorAll('.pet-select-item').forEach(i => i.classList.remove('selected'));
+                        div.classList.add('selected');
+                        document.getElementById('ticketPetId').value = pet.id;
+                    };
+                    selector.appendChild(div);
+                });
+            } catch (e) { }
+        }
+
+        async function loadVeterinarios() {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('veterinarios')
+                    .select('user_id, nome, nome_clinica, especialidade, status')
+                    .eq('status', 'pendente') // includes active vets (status=pendente means registered)
+                    .order('nome');
+
+                const sel = document.getElementById('ticketVeterinario');
+                sel.innerHTML = '<option value="">Selecione um veterinário...</option>';
+
+                if (error || !data || data.length === 0) {
+                    sel.innerHTML = '<option value="">Nenhum veterinário disponível</option>';
+                    return;
+                }
+
+                data.forEach(vet => {
+                    const opt = document.createElement('option');
+                    opt.value = vet.user_id;
+                    const clinica = vet.nome_clinica ? ` — ${vet.nome_clinica}` : '';
+                    const esp = vet.especialidade ? ` • ${vet.especialidade}` : '';
+                    opt.textContent = `${vet.nome}${clinica}${esp}`;
+                    sel.appendChild(opt);
+                });
+            } catch (e) { console.error('Erro ao carregar veterinários:', e); }
+        }
+
+        document.querySelector('[data-bs-target="#addTicketModal"]').addEventListener('click', () => {
+            document.getElementById('ticketForm').reset();
+            document.getElementById('evidencePreview').innerHTML = '';
+            // Consultation date must be in the future
+            const now = new Date();
+            now.setSeconds(0, 0);
+            document.getElementById('ticketDataSugerida').min = now.toISOString().slice(0, 16);
+            preparePetSelector();
+            loadVeterinarios();
+        });
+
+        document.getElementById('ticketEvidenceInput').addEventListener('change', function (e) {
+            const preview = document.getElementById('evidencePreview');
+            preview.innerHTML = '';
+            Array.from(e.target.files).forEach(file => {
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    const img = document.createElement('img');
+                    img.src = ev.target.result;
+                    img.style.width = '60px'; img.style.height = '60px'; img.style.objectFit = 'cover';
+                    img.style.borderRadius = '8px';
+                    preview.appendChild(img);
+                };
+                reader.readAsDataURL(file);
+            });
+        });
+
+        document.getElementById('ticketForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btnEnviarTicket'); btn.disabled = true; btn.textContent = 'Enviando...';
+
+            const id_animal = document.getElementById('ticketPetId').value;
+            const motivo = document.getElementById('ticketMotivo').value;
+            const descricao = document.getElementById('ticketDescricao').value;
+            const data_sugerida = document.getElementById('ticketDataSugerida').value;
+            const files = document.getElementById('ticketEvidenceInput').files;
+            const vetSelect = document.getElementById('ticketVeterinario');
+            const id_veterinario_user = vetSelect.value;
+            const vet_nome = vetSelect.options[vetSelect.selectedIndex]?.text || '';
+
+            if (!id_animal) { alert('Por favor, selecione um pet.'); btn.disabled = false; btn.textContent = 'Enviar Pedido de Consulta'; return; }
+            if (!id_veterinario_user) { alert('Por favor, selecione um veterinário.'); btn.disabled = false; btn.textContent = 'Enviar Pedido de Consulta'; return; }
+
+            let uploadedUrls = [];
+            if (files.length > 0) {
+                for (let i = 0; i < files.length; i++) {
+                    const file = files[i];
+                    // Clean filename: timestamp_index.ext
+                    const ext = file.name.split('.').pop();
+                    const fName = `ticket_${Date.now()}_${i}.${ext}`;
+
+                    let targetBucket = 'tickets'; // Changed to 'tickets' bucket
+                    let { error: upErr } = await supabaseClient.storage.from(targetBucket).upload(fName, file);
+
+                    // Fallback to lowercase bucket
+                    if (upErr) {
+                        const { error: upErrLower } = await supabaseClient.storage.from('tickets').upload(fName, file); // Ensure lowercase 'tickets'
+                        if (!upErrLower) {
+                            upErr = null;
+                            targetBucket = 'tickets';
+                        }
+                    }
+
+                    if (!upErr) {
+                        const { data: pubData } = supabaseClient.storage.from(targetBucket).getPublicUrl(fName);
+                        uploadedUrls.push(pubData.publicUrl);
+                    } else {
+                        console.error('Upload Error:', upErr);
+                        alert(`Erro no upload da imagem ${i + 1}: ${upErr.message || 'Erro desconhecido'}\nBucket tentado: ${targetBucket}\nFicheiro: ${file.name}`);
+                    }
+                }
+            }
+            const evidencia_url = uploadedUrls.join(',');
+
+            const { error } = await supabaseClient.from('tickets').insert([{
+                id_dono: ID_DONO,
+                id_animal,
+                motivo,
+                descricao,
+                evidencias_url: evidencia_url,
+                data_sugerida: data_sugerida || null,
+                estado: 'pendente',
+                id_veterinario: id_veterinario_user || null
+            }]);
+
+            if (error) {
+                console.error(error);
+                alert('Erro ao enviar ticket.');
+            } else {
+                bootstrap.Modal.getInstance(document.getElementById('addTicketModal')).hide();
+                loadTickets();
+            }
+            btn.disabled = false; btn.textContent = 'Enviar Pedido de Consulta';
+        });
+
+        async function deleteTicket(id) {
+            if (!confirm('Deseja eliminar este ticket?')) return;
+            try {
+                // 1. Fetch ticket to get images
+                const { data: ticket, error: fetchError } = await supabaseClient
+                    .from('tickets')
+                    .select('evidencias_url')
+                    .eq('id', id)
+                    .single();
+
+                if (fetchError) throw fetchError;
+
+                // 2. Delete images from Storage if they exist
+                if (ticket && ticket.evidencias_url) {
+                    const urls = ticket.evidencias_url.split(',');
+                    const pathsToRemove = urls.map(url => {
+                        // Extract path from URL. Assuming standard Supabase Storage URL format.
+                        // Format: .../storage/v1/object/public/tickets/folder/filename.ext
+                        // or just finding the part after /tickets/
+                        // Robust way: Split by bucket name 'tickets/'
+                        const parts = url.split('/tickets/');
+                        return parts.length > 1 ? parts[1] : null;
+                    }).filter(p => p !== null);
+
+                    if (pathsToRemove.length > 0) {
+                        const { error: storageError } = await supabaseClient
+                            .storage
+                            .from('tickets')
+                            .remove(pathsToRemove);
+
+                        if (storageError) console.error('Erro ao eliminar imagens:', storageError);
+                    }
+                }
+
+                // 3. Delete DB Row
+                const { error } = await supabaseClient.from('tickets').delete().eq('id', id);
+                if (error) throw error;
+
+                loadTickets();
+                alert('Ticket eliminado com sucesso.');
+            } catch (err) {
+                console.error(err);
+                alert('Erro ao eliminar ticket: ' + err.message);
+            }
+        }
+
+        // ── LOGOUT ──────────────────────────────────────────────────────
+        document.querySelector('a[href="index.html"]').addEventListener('click', async (e) => {
+            e.preventDefault();
+            await supabaseClient.auth.signOut();
+            window.location.href = 'index.html';
+        });
+
+        // ── INIT ────────────────────────────────────────────────────────
+        initAuth();
+        // Auto-refresh tickets every 3 seconds to catch status updates
+        setInterval(() => {
+            loadTickets();
+        }, 3000); // Check every 3 seconds
+
+
+        function openArchivedDetails(id, feedback, urlsString) {
+            const content = document.getElementById('archivedFeedbackContent');
+            if (content) {
+                // Decode if needed or just set text
+                content.textContent = feedback || 'Sem notas registadas.';
+            }
+
+            // Handle Images
+            const imagesContainer = document.getElementById('archivedImagesContainer');
+            if (imagesContainer) {
+                imagesContainer.innerHTML = '<h6 class="fw-bold mb-2 mt-3 text-dark">Imagens / Raio-X:</h6>';
+                if (urlsString && urlsString.trim() !== '') {
+                    const urls = urlsString.split(',');
+                    const grid = document.createElement('div');
+                    grid.className = 'd-flex flex-wrap gap-2';
+
+                    urls.forEach(url => {
+                        const img = document.createElement('img');
+                        img.src = url.trim();
+                        img.className = 'img-thumbnail border shadow-sm rounded-3';
+                        img.style.width = '100px';
+                        img.style.height = '100px';
+                        img.style.objectFit = 'cover';
+                        img.style.cursor = 'zoom-in';
+                        img.onclick = () => window.open(url.trim(), '_blank');
+                        grid.appendChild(img);
+                    });
+                    imagesContainer.appendChild(grid);
+                    imagesContainer.style.display = 'block';
+                } else {
+                    imagesContainer.style.display = 'none';
+                }
+            }
+
+            const modalElement = document.getElementById('archivedDetailsModal');
+            const modal = new bootstrap.Modal(modalElement);
+            modal.show();
+        }
+    </script>
+
+    <!-- Modal Detalhes Arquivados -->
+    <div class="modal fade" id="archivedDetailsModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-4">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold text-primary">Relatório da Consulta</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <h6 class="fw-bold mb-2">Notas do Veterinário:</h6>
+                    <div class="p-3 bg-light rounded-3 text-muted" id="archivedFeedbackContent"
+                        style="white-space: pre-wrap;">
+                        <!-- Content will be injected here -->
+                    </div>
+
+                    <!-- New Container for Images -->
+                    <div id="archivedImagesContainer" class="mt-2" style="display:none;">
+                        <!-- Images injected here -->
+                    </div>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-secondary rounded-pill px-4"
+                        data-bs-dismiss="modal">Fechar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

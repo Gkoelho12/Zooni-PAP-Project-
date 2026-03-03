@@ -1,0 +1,1258 @@
+<!DOCTYPE html>
+<html lang="pt">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zooni — Administração</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #3D8B3D;
+            --primary-dark: #1E4D1E;
+            --primary-light: #5CB85C;
+            --bg: #F2F8F2;
+            --text-main: #1a2e1a;
+            --text-sec: #5a7a5a;
+            --sidebar-w: 260px;
+            --danger: #dc3545;
+            --warning: #f59e0b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: var(--bg);
+            color: var(--text-main);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* ─── SIDEBAR ─── */
+        .sidebar {
+            width: var(--sidebar-w);
+            background: var(--primary-dark);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 100;
+        }
+
+        .sidebar-logo {
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-logo img {
+            max-width: 130px;
+            filter: brightness(0) invert(1);
+        }
+
+        .sidebar-logo .admin-badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 6px;
+            padding: 2px 8px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin-top: 6px;
+            text-transform: uppercase;
+        }
+
+        .sidebar-nav {
+            padding: 1rem 0;
+            flex: 1;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 1.5rem;
+            color: rgba(255, 255, 255, 0.75);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+        }
+
+        .nav-item:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: white;
+        }
+
+        .nav-item.active {
+            background: rgba(255, 255, 255, 0.12);
+            color: white;
+            border-left-color: var(--primary-light);
+        }
+
+        .nav-item i {
+            width: 18px;
+            text-align: center;
+        }
+
+        .sidebar-footer {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-logout {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: rgba(255, 255, 255, 0.6);
+            text-decoration: none;
+            font-size: 0.85rem;
+            cursor: pointer;
+            background: none;
+            border: none;
+            transition: color 0.2s;
+            padding: 0;
+        }
+
+        .btn-logout:hover {
+            color: #ff6b6b;
+        }
+
+        /* ─── MAIN ─── */
+        .main {
+            margin-left: var(--sidebar-w);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .topbar {
+            background: white;
+            padding: 1rem 2rem;
+            border-bottom: 1px solid #e0ede0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .topbar h1 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .admin-avatar {
+            width: 36px;
+            height: 36px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 0.85rem;
+        }
+
+        .content {
+            padding: 2rem;
+        }
+
+        /* ─── SECTIONS ─── */
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        /* ─── STAT CARDS ─── */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.2rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 12px rgba(61, 139, 61, 0.08);
+            border-left: 4px solid var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .stat-card .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            background: rgba(61, 139, 61, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            color: var(--primary);
+        }
+
+        .stat-card .stat-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--text-main);
+            line-height: 1;
+        }
+
+        .stat-card .stat-label {
+            font-size: 0.8rem;
+            color: var(--text-sec);
+            font-weight: 500;
+            margin-top: 2px;
+        }
+
+        /* ─── PANELS ─── */
+        .panel {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 2px 12px rgba(61, 139, 61, 0.07);
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+        }
+
+        .panel-header {
+            padding: 1.2rem 1.5rem;
+            border-bottom: 1px solid #e9f5e9;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .panel-title {
+            font-weight: 700;
+            font-size: 1rem;
+            color: var(--text-main);
+        }
+
+        .panel-body {
+            padding: 1.5rem;
+        }
+
+        /* ─── TABLE ─── */
+        .zooni-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .zooni-table th {
+            background: #f0f9f0;
+            padding: 10px 14px;
+            text-align: left;
+            font-size: 0.78rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-sec);
+            border-bottom: 1px solid #e0ede0;
+        }
+
+        .zooni-table td {
+            padding: 12px 14px;
+            font-size: 0.88rem;
+            border-bottom: 1px solid #f0f5f0;
+            vertical-align: middle;
+        }
+
+        .zooni-table tr:hover td {
+            background: #fafff9;
+        }
+
+        .zooni-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* ─── BADGES ─── */
+        .badge-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge-ativo {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .badge-pendente {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .badge-suspenso {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .badge-bloqueado {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .badge-pendente-ticket {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .badge-marcado {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .badge-recusado {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .badge-arquivado {
+            background: #f1f5f9;
+            color: #475569;
+        }
+
+        /* ─── BUTTONS ─── */
+        .btn-primary-zooni {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 9px 18px;
+            border-radius: 10px;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 600;
+            font-size: 0.88rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-primary-zooni:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-action {
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-edit {
+            background: #e0f2fe;
+            color: #0369a1;
+        }
+
+        .btn-edit:hover {
+            background: #bae6fd;
+        }
+
+        .btn-suspend {
+            background: #fef3c7;
+            color: #b45309;
+        }
+
+        .btn-suspend:hover {
+            background: #fde68a;
+        }
+
+        .btn-danger-action {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .btn-danger-action:hover {
+            background: #fca5a5;
+        }
+
+        .btn-view {
+            background: #f0fdf4;
+            color: #15803d;
+        }
+
+        .btn-view:hover {
+            background: #dcfce7;
+        }
+
+        /* ─── FORM ─── */
+        .form-label-zooni {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--text-sec);
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            margin-bottom: 4px;
+            display: block;
+        }
+
+        .form-control-zooni {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1.5px solid #c8e6c8;
+            border-radius: 10px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.9rem;
+            outline: none;
+            transition: border-color 0.2s;
+            background: white;
+        }
+
+        .form-control-zooni:focus {
+            border-color: var(--primary);
+        }
+
+        /* ─── MODAL OVERRIDES ─── */
+        .modal-content {
+            border: none;
+            border-radius: 16px;
+        }
+
+        .modal-header {
+            border-bottom: 1px solid #e9f5e9;
+        }
+
+        .modal-footer {
+            border-top: 1px solid #e9f5e9;
+        }
+
+        /* ─── EMPTY STATE ─── */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--text-sec);
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            opacity: 0.3;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        /* ─── SETTINGS ITEM ─── */
+        .settings-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #f0f5f0;
+        }
+
+        .settings-item:last-child {
+            border-bottom: none;
+        }
+
+        .settings-item-name {
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <img src="assets/logo.png" alt="Zooni">
+            <div class="admin-badge">Admin</div>
+        </div>
+        <nav class="sidebar-nav">
+            <a class="nav-item active" onclick="showSection('overview')">
+                <i class="fa-solid fa-chart-pie"></i> Visão Geral
+            </a>
+            <a class="nav-item" onclick="showSection('vets')">
+                <i class="fa-solid fa-user-doctor"></i> Veterinários
+            </a>
+            <a class="nav-item" onclick="showSection('owners')">
+                <i class="fa-solid fa-users"></i> Donos
+            </a>
+            <a class="nav-item" onclick="showSection('tickets')">
+                <i class="fa-solid fa-ticket"></i> Tickets
+            </a>
+            <a class="nav-item" onclick="showSection('settings')">
+                <i class="fa-solid fa-gear"></i> Configurações
+            </a>
+        </nav>
+        <div class="sidebar-footer">
+            <button class="btn-logout" onclick="doLogout()">
+                <i class="fa-solid fa-right-from-bracket"></i> Sair
+            </button>
+        </div>
+    </aside>
+
+    <!-- MAIN -->
+    <div class="main">
+        <div class="topbar">
+            <h1 id="pageTitle">Visão Geral</h1>
+            <div class="d-flex align-items-center gap-3">
+                <span class="text-muted small" id="adminEmail"></span>
+                <div class="admin-avatar" id="adminAvatar">A</div>
+            </div>
+        </div>
+
+        <div class="content">
+
+            <!-- ═══ SECTION: OVERVIEW ═══ -->
+            <div class="section active" id="section-overview">
+                <div class="stats-grid" id="statsGrid">
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fa-solid fa-user-doctor"></i></div>
+                        <div>
+                            <div class="stat-value" id="statVets">—</div>
+                            <div class="stat-label">Veterinários Ativos</div>
+                        </div>
+                    </div>
+                    <div class="stat-card" style="border-color:#3b82f6;">
+                        <div class="stat-icon" style="background:rgba(59,130,246,0.1);color:#3b82f6;"><i
+                                class="fa-solid fa-users"></i></div>
+                        <div>
+                            <div class="stat-value" id="statOwners">—</div>
+                            <div class="stat-label">Donos Registados</div>
+                        </div>
+                    </div>
+                    <div class="stat-card" style="border-color:#f59e0b;">
+                        <div class="stat-icon" style="background:rgba(245,158,11,0.1);color:#f59e0b;"><i
+                                class="fa-solid fa-paw"></i></div>
+                        <div>
+                            <div class="stat-value" id="statPets">—</div>
+                            <div class="stat-label">Animais na Plataforma</div>
+                        </div>
+                    </div>
+                    <div class="stat-card" style="border-color:#8b5cf6;">
+                        <div class="stat-icon" style="background:rgba(139,92,246,0.1);color:#8b5cf6;"><i
+                                class="fa-solid fa-ticket"></i></div>
+                        <div>
+                            <div class="stat-value" id="statTickets">—</div>
+                            <div class="stat-label">Total de Tickets</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="panel">
+                    <div class="panel-header">
+                        <span class="panel-title"><i class="fa-solid fa-clock-rotate-left me-2 text-muted"></i>Tickets
+                            Recentes</span>
+                    </div>
+                    <div class="panel-body p-0">
+                        <table class="zooni-table">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Motivo</th>
+                                    <th>Animal</th>
+                                    <th>Estado</th>
+                                    <th>Data</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recentTicketsTbody">
+                                <tr>
+                                    <td colspan="5" class="text-center text-muted py-4">A carregar...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══ SECTION: VETS ═══ -->
+            <div class="section" id="section-vets">
+                <div class="panel">
+                    <div class="panel-header">
+                        <span class="panel-title"><i
+                                class="fa-solid fa-user-doctor me-2 text-muted"></i>Veterinários</span>
+                        <button class="btn-primary-zooni" onclick="openAddVetModal()">
+                            <i class="fa-solid fa-plus"></i> Adicionar Veterinário
+                        </button>
+                    </div>
+                    <div class="panel-body p-0">
+                        <table class="zooni-table">
+                            <thead>
+                                <tr>
+                                    <th>Nome</th>
+                                    <th>Email</th>
+                                    <th>Especialidade</th>
+                                    <th>Clínica</th>
+                                    <th>Estado</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="vetsTbody">
+                                <tr>
+                                    <td colspan="6" class="text-center text-muted py-4">A carregar...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══ SECTION: OWNERS ═══ -->
+            <div class="section" id="section-owners">
+                <div class="panel">
+                    <div class="panel-header">
+                        <span class="panel-title"><i class="fa-solid fa-users me-2 text-muted"></i>Donos /
+                            Tutores</span>
+                    </div>
+                    <div class="panel-body p-0">
+                        <table class="zooni-table">
+                            <thead>
+                                <tr>
+                                    <th>Nome</th>
+                                    <th>Email</th>
+                                    <th>Animais</th>
+                                    <th>Tickets</th>
+                                    <th>Estado</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ownersTbody">
+                                <tr>
+                                    <td colspan="6" class="text-center text-muted py-4">A carregar...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══ SECTION: TICKETS ═══ -->
+            <div class="section" id="section-tickets">
+                <!-- Filter pills -->
+                <div class="mb-3 d-flex gap-2 flex-wrap">
+                    <button class="btn btn-sm btn-outline-secondary rounded-pill active"
+                        onclick="filterTickets('all', this)">Todos</button>
+                    <button class="btn btn-sm btn-outline-warning rounded-pill"
+                        onclick="filterTickets('pendente', this)">Pendentes</button>
+                    <button class="btn btn-sm btn-outline-success rounded-pill"
+                        onclick="filterTickets('marcado', this)">Marcados</button>
+                    <button class="btn btn-sm btn-outline-danger rounded-pill"
+                        onclick="filterTickets('recusado', this)">Recusados</button>
+                    <button class="btn btn-sm btn-outline-secondary rounded-pill"
+                        onclick="filterTickets('arquivado', this)">Finalizados</button>
+                </div>
+                <div class="panel">
+                    <div class="panel-header">
+                        <span class="panel-title"><i class="fa-solid fa-ticket me-2 text-muted"></i>Monitorização de
+                            Tickets</span>
+                        <span class="text-muted small" id="ticketsCount"></span>
+                    </div>
+                    <div class="panel-body p-0">
+                        <table class="zooni-table">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Motivo</th>
+                                    <th>Dono</th>
+                                    <th>Animal</th>
+                                    <th>Veterinário</th>
+                                    <th>Estado</th>
+                                    <th>Data</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ticketsTbody">
+                                <tr>
+                                    <td colspan="7" class="text-center text-muted py-4">A carregar...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══ SECTION: SETTINGS ═══ -->
+            <div class="section" id="section-settings">
+                <div class="row g-4">
+                    <!-- Especialidades -->
+                    <div class="col-md-6">
+                        <div class="panel">
+                            <div class="panel-header">
+                                <span class="panel-title"><i
+                                        class="fa-solid fa-stethoscope me-2 text-muted"></i>Especialidades</span>
+                                <button class="btn-primary-zooni" onclick="openAddModal('especialidade')">
+                                    <i class="fa-solid fa-plus"></i> Adicionar
+                                </button>
+                            </div>
+                            <div class="panel-body">
+                                <div id="especialidadesList">A carregar...</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tipos de Animal -->
+                    <div class="col-md-6">
+                        <div class="panel">
+                            <div class="panel-header">
+                                <span class="panel-title"><i class="fa-solid fa-paw me-2 text-muted"></i>Tipos de
+                                    Animal</span>
+                                <button class="btn-primary-zooni" onclick="openAddModal('tipo')">
+                                    <i class="fa-solid fa-plus"></i> Adicionar
+                                </button>
+                            </div>
+                            <div class="panel-body">
+                                <div id="tiposList">A carregar...</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Raças -->
+                    <div class="col-12">
+                        <div class="panel">
+                            <div class="panel-header">
+                                <span class="panel-title"><i class="fa-solid fa-dog me-2 text-muted"></i>Raças</span>
+                                <button class="btn-primary-zooni" onclick="openAddModal('raca')">
+                                    <i class="fa-solid fa-plus"></i> Adicionar Raça
+                                </button>
+                            </div>
+                            <div class="panel-body p-0">
+                                <table class="zooni-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Raça</th>
+                                            <th>Tipo de Animal</th>
+                                            <th>Ação</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="racasTbody">
+                                        <tr>
+                                            <td colspan="3" class="text-center text-muted py-3">A carregar...</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div><!-- /content -->
+    </div><!-- /main -->
+
+    <!-- ═══ MODAL: Adicionar/Editar Veterinário ═══ -->
+    <div class="modal fade" id="vetModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold" id="vetModalTitle">Adicionar Veterinário</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="vetForm">
+                        <input type="hidden" id="vetId">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label-zooni">Nome Completo *</label>
+                                <input type="text" class="form-control-zooni" id="vetNome" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label-zooni">Email *</label>
+                                <input type="email" class="form-control-zooni" id="vetEmail" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label-zooni">Especialidade</label>
+                                <input type="text" class="form-control-zooni" id="vetEspecialidade"
+                                    placeholder="Ex: Cirurgia, Dermatologia">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label-zooni">Clínica</label>
+                                <input type="text" class="form-control-zooni" id="vetClinica"
+                                    placeholder="Nome da clínica">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label-zooni">Cédula OMV</label>
+                                <input type="text" class="form-control-zooni" id="vetCedula" placeholder="Nº de cédula">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label-zooni">Telefone</label>
+                                <input type="tel" class="form-control-zooni" id="vetTelefone">
+                            </div>
+                            <div id="vetPasswordGroup" class="col-12">
+                                <label class="form-label-zooni">Password Temporária *</label>
+                                <div class="d-flex gap-2">
+                                    <input type="text" class="form-control-zooni" id="vetPassword"
+                                        placeholder="Mínimo 6 caracteres">
+                                    <button type="button" class="btn-primary-zooni" onclick="generatePassword()"
+                                        style="white-space:nowrap;">
+                                        <i class="fa-solid fa-dice"></i> Gerar
+                                    </button>
+                                </div>
+                                <small class="text-muted mt-1 d-block">O veterinário deve alterar a password no primeiro
+                                    acesso.</small>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light rounded-pill" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn-primary-zooni rounded-pill" onclick="saveVet()" id="btnSaveVet">
+                        <i class="fa-solid fa-floppy-disk"></i> Guardar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══ MODAL: Adicionar item (Especialidade / Tipo / Raça) ═══ -->
+    <div class="modal fade" id="addItemModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold" id="addItemTitle">Adicionar</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="addItemFields"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light rounded-pill" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn-primary-zooni rounded-pill" onclick="saveItem()" id="btnSaveItem">
+                        <i class="fa-solid fa-plus"></i> Guardar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <script>
+        const SUPABASE_URL = 'https://xqtbtggmwejnkhckduti.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhxdGJ0Z2dtd2VqbmtoY2tkdXRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc2OTU5NjEsImV4cCI6MjA4MzI3MTk2MX0.G1wG0UC6sF7r6tMxGdqLGvsHa_dxlVD1-j6QNEw32IM';
+        const SERVICE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhxdGJ0Z2dtd2VqbmtoY2tkdXRpIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2NzY5NTk2MSwiZXhwIjoyMDgzMjcxOTYxfQ._cZwHqalRfh9ZDavB_z7M6q8ZhgRmtYRceeW_6SRjGM';
+
+        // Regular client (admin session)
+        const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        // Admin client (service role — bypasses RLS, can manage auth users)
+        const sbAdmin = supabase.createClient(SUPABASE_URL, SERVICE_KEY, {
+            auth: { autoRefreshToken: false, persistSession: false }
+        });
+
+        let allTickets = [];
+        let currentItemType = '';
+
+        // ─── AUTH GUARD ───
+        async function initAdmin() {
+            const { data: { session } } = await sb.auth.getSession();
+            if (!session) { window.location.href = 'login.html?role=admin'; return; }
+
+            const { data: admin } = await sb.from('admins').select('id').eq('id', session.user.id).single();
+            if (!admin) {
+                await sb.auth.signOut();
+                window.location.href = 'login.html?role=admin';
+                return;
+            }
+
+            const email = session.user.email;
+            document.getElementById('adminEmail').textContent = email;
+            document.getElementById('adminAvatar').textContent = email[0].toUpperCase();
+
+            // Load all data
+            loadStats();
+            loadRecentTickets();
+        }
+
+        async function doLogout() {
+            await sb.auth.signOut();
+            window.location.href = 'index.html';
+        }
+
+        // ─── NAVIGATION ───
+        function showSection(name) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.getElementById('section-' + name).classList.add('active');
+            event.currentTarget.classList.add('active');
+
+            const titles = { overview: 'Visão Geral', vets: 'Veterinários', owners: 'Donos / Tutores', tickets: 'Tickets', settings: 'Configurações' };
+            document.getElementById('pageTitle').textContent = titles[name] || name;
+
+            if (name === 'vets') loadVets();
+            if (name === 'owners') loadOwners();
+            if (name === 'tickets') loadTickets();
+            if (name === 'settings') loadSettings();
+        }
+
+        // ─── STATS ───
+        async function loadStats() {
+            const [{ count: vets }, { count: owners }, { count: pets }, { count: tickets }] = await Promise.all([
+                sb.from('veterinarios').select('*', { count: 'exact', head: true }).eq('status', 'ativo'),
+                sb.from('clientes').select('*', { count: 'exact', head: true }),
+                sb.from('animais').select('*', { count: 'exact', head: true }),
+                sb.from('tickets').select('*', { count: 'exact', head: true }),
+            ]);
+            document.getElementById('statVets').textContent = vets ?? '—';
+            document.getElementById('statOwners').textContent = owners ?? '—';
+            document.getElementById('statPets').textContent = pets ?? '—';
+            document.getElementById('statTickets').textContent = tickets ?? '—';
+        }
+
+        async function loadRecentTickets() {
+            const { data } = await sb.from('tickets')
+                .select('id, motivo, estado, criado_em, animais(nome)')
+                .order('criado_em', { ascending: false })
+                .limit(8);
+            const tbody = document.getElementById('recentTicketsTbody');
+            if (!data || data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-4">Sem tickets.</td></tr>';
+                return;
+            }
+            tbody.innerHTML = data.map(t => `
+                <tr>
+                    <td><strong>#${t.id}</strong></td>
+                    <td>${t.motivo}</td>
+                    <td>${t.animais?.nome || '—'}</td>
+                    <td>${badgeEstado(t.estado)}</td>
+                    <td class="text-muted small">${new Date(t.criado_em).toLocaleDateString('pt-PT')}</td>
+                </tr>`).join('');
+        }
+
+        // ─── VETS ───
+        async function loadVets() {
+            const { data } = await sb.from('veterinarios').select('*').order('nome');
+            const tbody = document.getElementById('vetsTbody');
+            if (!data || data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted py-4">Nenhum veterinário registado.</td></tr>';
+                return;
+            }
+            tbody.innerHTML = data.map(v => `
+                <tr>
+                    <td><strong>${v.nome}</strong></td>
+                    <td class="text-muted small">${v.email || '—'}</td>
+                    <td>${v.especialidade || '—'}</td>
+                    <td>${v.clinica || '—'}</td>
+                    <td>${badgeVetStatus(v.status)}</td>
+                    <td>
+                        <div class="d-flex gap-1 flex-wrap">
+                            <button class="btn-action btn-edit" onclick="editVet(${v.id})"><i class="fa-solid fa-pen-to-square"></i> Editar</button>
+                            ${v.status === 'suspenso'
+                    ? `<button class="btn-action btn-view" onclick="changeVetStatus(${v.id},'ativo')"><i class="fa-solid fa-circle-check"></i> Ativar</button>`
+                    : `<button class="btn-action btn-suspend" onclick="changeVetStatus(${v.id},'suspenso')"><i class="fa-solid fa-ban"></i> Suspender</button>`
+                }
+                        </div>
+                    </td>
+                </tr>`).join('');
+        }
+
+        function openAddVetModal() {
+            document.getElementById('vetId').value = '';
+            document.getElementById('vetForm').reset();
+            document.getElementById('vetModalTitle').textContent = 'Adicionar Veterinário';
+            document.getElementById('vetPasswordGroup').style.display = 'block';
+            new bootstrap.Modal(document.getElementById('vetModal')).show();
+        }
+
+        async function editVet(id) {
+            const { data: v } = await sb.from('veterinarios').select('*').eq('id', id).single();
+            if (!v) return;
+            document.getElementById('vetId').value = v.id;
+            document.getElementById('vetNome').value = v.nome || '';
+            document.getElementById('vetEmail').value = v.email || '';
+            document.getElementById('vetEspecialidade').value = v.especialidade || '';
+            document.getElementById('vetClinica').value = v.clinica || '';
+            document.getElementById('vetCedula').value = v.cedula_omv || '';
+            document.getElementById('vetTelefone').value = v.telefone || '';
+            document.getElementById('vetPasswordGroup').style.display = 'none';
+            document.getElementById('vetModalTitle').textContent = 'Editar Veterinário';
+            new bootstrap.Modal(document.getElementById('vetModal')).show();
+        }
+
+        async function saveVet() {
+            const btn = document.getElementById('btnSaveVet');
+            btn.disabled = true; btn.textContent = 'A guardar...';
+
+            const id = document.getElementById('vetId').value;
+            const nome = document.getElementById('vetNome').value.trim();
+            const email = document.getElementById('vetEmail').value.trim();
+            const especialidade = document.getElementById('vetEspecialidade').value.trim();
+            const clinica = document.getElementById('vetClinica').value.trim();
+            const cedula_omv = document.getElementById('vetCedula').value.trim();
+            const telefone = document.getElementById('vetTelefone').value.trim();
+            const password = document.getElementById('vetPassword').value.trim();
+
+            if (!nome || !email) { alert('Nome e Email são obrigatórios.'); btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Guardar'; return; }
+
+            if (!id) {
+                // CREATE: register auth user + profile using admin API
+                if (!password || password.length < 6) { alert('A password deve ter pelo menos 6 caracteres.'); btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Guardar'; return; }
+
+                const { data: authData, error: authErr } = await sbAdmin.auth.admin.createUser({
+                    email,
+                    password,
+                    email_confirm: true  // auto-confirm email, no verification needed
+                });
+
+                if (authErr) {
+                    if (authErr.message.toLowerCase().includes('already been registered') || authErr.message.toLowerCase().includes('already registered')) {
+                        const { data: existingVet } = await sbAdmin.from('veterinarios').select('id, nome').eq('email', email).single();
+                        if (existingVet) {
+                            alert(`⚠️ Este email já tem um perfil de veterinário:\n"${existingVet.nome}"\n\nUsa o botão Editar para atualizar os dados.`);
+                        } else {
+                            alert(`⚠️ Este email já tem conta mas sem perfil de veterinário.\n\nPede ao veterinário para fazer login em login.html?role=veterinario.`);
+                        }
+                        btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Guardar'; return;
+                    }
+                    alert('Erro ao criar conta: ' + authErr.message);
+                    btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Guardar'; return;
+                }
+
+                const userId = authData.user?.id;
+                if (!userId) { alert('Erro: ID do utilizador não obtido.'); btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Guardar'; return; }
+
+                const { error: dbErr } = await sbAdmin.from('veterinarios').insert([{
+                    user_id: userId, nome, email, especialidade, clinica, cedula_omv, telefone, status: 'ativo'
+                }]);
+                if (dbErr) { alert('Erro ao criar perfil: ' + dbErr.message); btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Guardar'; return; }
+
+                alert(`✅ Veterinário criado!\n\nEmail: ${email}\nPassword: ${password}\n\nPartilha estas credenciais com o veterinário.`);
+            } else {
+                // UPDATE
+                const { error } = await sb.from('veterinarios').update({ nome, email, especialidade, clinica, cedula_omv, telefone }).eq('id', id);
+                if (error) { alert('Erro ao atualizar: ' + error.message); btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Guardar'; return; }
+            }
+
+            bootstrap.Modal.getInstance(document.getElementById('vetModal')).hide();
+            loadVets();
+            loadStats();
+            btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Guardar';
+        }
+
+        async function changeVetStatus(id, status) {
+            const msg = status === 'suspenso' ? 'Suspender este veterinário?' : 'Ativar este veterinário?';
+            if (!confirm(msg)) return;
+            await sb.from('veterinarios').update({ status }).eq('id', id);
+            loadVets();
+        }
+
+        function generatePassword() {
+            const chars = 'ABCDEFGHJKMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789@#!';
+            let pwd = '';
+            for (let i = 0; i < 10; i++) pwd += chars[Math.floor(Math.random() * chars.length)];
+            document.getElementById('vetPassword').value = pwd;
+        }
+
+        // ─── OWNERS ───
+        async function loadOwners() {
+            const { data: owners } = await sb.from('clientes').select('*').order('nome');
+            const tbody = document.getElementById('ownersTbody');
+            if (!owners || owners.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted py-4">Nenhum dono registado.</td></tr>';
+                return;
+            }
+
+            // Get animal and ticket counts per owner
+            const { data: animais } = await sb.from('animais').select('id_dono');
+            const { data: tickets } = await sb.from('tickets').select('id_dono');
+
+            const animaisCount = {};
+            animais?.forEach(a => { animaisCount[a.id_dono] = (animaisCount[a.id_dono] || 0) + 1; });
+            const ticketsCount = {};
+            tickets?.forEach(t => { ticketsCount[t.id_dono] = (ticketsCount[t.id_dono] || 0) + 1; });
+
+            tbody.innerHTML = owners.map(o => `
+                <tr>
+                    <td><strong>${o.nome}</strong></td>
+                    <td class="text-muted small">${o.email || '—'}</td>
+                    <td><span class="badge bg-light text-dark">${animaisCount[o.id] || 0} <i class="fa-solid fa-paw small"></i></span></td>
+                    <td><span class="badge bg-light text-dark">${ticketsCount[o.id] || 0} <i class="fa-solid fa-ticket small"></i></span></td>
+                    <td>${o.bloqueado ? '<span class="badge-status badge-bloqueado">Bloqueado</span>' : '<span class="badge-status badge-ativo">Ativo</span>'}</td>
+                    <td>
+                        ${o.bloqueado
+                    ? `<button class="btn-action btn-view" onclick="toggleOwnerBlock(${o.id}, false)"><i class="fa-solid fa-lock-open"></i> Desbloquear</button>`
+                    : `<button class="btn-action btn-danger-action" onclick="toggleOwnerBlock(${o.id}, true)"><i class="fa-solid fa-lock"></i> Bloquear</button>`
+                }
+                    </td>
+                </tr>`).join('');
+        }
+
+        async function toggleOwnerBlock(id, block) {
+            const msg = block ? 'Bloquear este utilizador?' : 'Desbloquear este utilizador?';
+            if (!confirm(msg)) return;
+            await sb.from('clientes').update({ bloqueado: block }).eq('id', id);
+            loadOwners();
+        }
+
+        // ─── TICKETS ───
+        async function loadTickets() {
+            const { data } = await sb.from('tickets')
+                .select('id, motivo, estado, criado_em, animais(nome), clientes(nome), veterinarios(nome)')
+                .order('criado_em', { ascending: false });
+            allTickets = data || [];
+            renderTickets(allTickets);
+        }
+
+        function renderTickets(tickets) {
+            const tbody = document.getElementById('ticketsTbody');
+            document.getElementById('ticketsCount').textContent = `${tickets.length} ticket(s)`;
+            if (!tickets.length) {
+                tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted py-4">Sem tickets.</td></tr>';
+                return;
+            }
+            tbody.innerHTML = tickets.map(t => `
+                <tr>
+                    <td><strong>#${t.id}</strong></td>
+                    <td>${t.motivo}</td>
+                    <td>${t.clientes?.nome || '—'}</td>
+                    <td>${t.animais?.nome || '—'}</td>
+                    <td>${t.veterinarios?.nome || '<span class="text-muted">—</span>'}</td>
+                    <td>${badgeEstado(t.estado)}</td>
+                    <td class="text-muted small">${new Date(t.criado_em).toLocaleDateString('pt-PT')}</td>
+                </tr>`).join('');
+        }
+
+        function filterTickets(estado, btn) {
+            document.querySelectorAll('#section-tickets .btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            if (estado === 'all') renderTickets(allTickets);
+            else renderTickets(allTickets.filter(t => t.estado === estado));
+        }
+
+        // ─── SETTINGS ───
+        async function loadSettings() {
+            // Especialidades (from vets table distinct)
+            const { data: vets } = await sb.from('veterinarios').select('especialidade').not('especialidade', 'is', null);
+            const especialidades = [...new Set(vets?.map(v => v.especialidade).filter(Boolean))];
+            const espList = document.getElementById('especialidadesList');
+            espList.innerHTML = especialidades.length
+                ? especialidades.map(e => `<div class="settings-item"><span class="settings-item-name">${e}</span></div>`).join('')
+                : '<p class="text-muted small">Sem especialidades ainda.</p>';
+
+            // Tipos de Animal
+            const { data: tipos } = await sb.from('tipos_animais').select('*').order('nome');
+            const tiposList = document.getElementById('tiposList');
+            tiposList.innerHTML = tipos?.length
+                ? tipos.map(t => `<div class="settings-item">
+                    <span class="settings-item-name">${t.nome}</span>
+                    <button class="btn-action btn-danger-action" onclick="deleteItem('tipos_animais',${t.id})"><i class="fa-solid fa-trash"></i></button>
+                  </div>`).join('')
+                : '<p class="text-muted small">Sem tipos ainda.</p>';
+
+            // Raças
+            const { data: racas } = await sb.from('racas').select('*, tipos_animais(nome)').order('nome_raca');
+            const racasTbody = document.getElementById('racasTbody');
+            racasTbody.innerHTML = racas?.length
+                ? racas.map(r => `<tr>
+                    <td>${r.nome_raca}</td>
+                    <td>${r.tipos_animais?.nome || '—'}</td>
+                    <td><button class="btn-action btn-danger-action" onclick="deleteItem('racas',${r.id})"><i class="fa-solid fa-trash"></i></button></td>
+                  </tr>`).join('')
+                : '<tr><td colspan="3" class="text-center text-muted py-3">Sem raças.</td></tr>';
+        }
+
+        function openAddModal(type) {
+            currentItemType = type;
+            const titles = { especialidade: 'Adicionar Especialidade', tipo: 'Adicionar Tipo de Animal', raca: 'Adicionar Raça' };
+            document.getElementById('addItemTitle').textContent = titles[type];
+
+            let fields = '';
+            if (type === 'especialidade') {
+                fields = `<label class="form-label-zooni">Nome da Especialidade</label>
+                          <input type="text" class="form-control-zooni" id="itemNome" placeholder="Ex: Dermatologia">`;
+            } else if (type === 'tipo') {
+                fields = `<label class="form-label-zooni">Nome do Tipo de Animal</label>
+                          <input type="text" class="form-control-zooni" id="itemNome" placeholder="Ex: Réptil">`;
+            } else if (type === 'raca') {
+                fields = `<div class="mb-3">
+                    <label class="form-label-zooni">Nome da Raça</label>
+                    <input type="text" class="form-control-zooni" id="itemNome" placeholder="Ex: Labrador">
+                  </div>
+                  <div>
+                    <label class="form-label-zooni">Tipo de Animal</label>
+                    <select class="form-control-zooni" id="itemTipoId"></select>
+                  </div>`;
+            }
+            document.getElementById('addItemFields').innerHTML = fields;
+
+            if (type === 'raca') {
+                sb.from('tipos_animais').select('id, nome').order('nome').then(({ data }) => {
+                    document.getElementById('itemTipoId').innerHTML = data?.map(t => `<option value="${t.id}">${t.nome}</option>`).join('') || '';
+                });
+            }
+            new bootstrap.Modal(document.getElementById('addItemModal')).show();
+        }
+
+        async function saveItem() {
+            const nome = document.getElementById('itemNome')?.value.trim();
+            if (!nome) { alert('Preenche o nome.'); return; }
+
+            if (currentItemType === 'tipo') {
+                const { error } = await sb.from('tipos_animais').insert([{ nome }]);
+                if (error) { alert('Erro: ' + error.message); return; }
+            } else if (currentItemType === 'raca') {
+                const tipoId = document.getElementById('itemTipoId')?.value;
+                const { error } = await sb.from('racas').insert([{ nome_raca: nome, id_tipo_animal: tipoId }]);
+                if (error) { alert('Erro: ' + error.message); return; }
+            } else if (currentItemType === 'especialidade') {
+                // Especialidade: stored in vet profiles; just show as reference
+                alert(`Especialidade "${nome}" registada.\n\nPara aparecer nos menus, atribui esta especialidade a um veterinário ao editá-lo.`);
+                bootstrap.Modal.getInstance(document.getElementById('addItemModal')).hide();
+                return;
+            }
+
+            bootstrap.Modal.getInstance(document.getElementById('addItemModal')).hide();
+            loadSettings();
+        }
+
+        async function deleteItem(table, id) {
+            if (!confirm('Eliminar este item?')) return;
+            await sb.from(table).delete().eq('id', id);
+            loadSettings();
+        }
+
+        // ─── HELPERS ───
+        function badgeEstado(estado) {
+            const map = {
+                pendente: '<span class="badge-status badge-pendente-ticket"><i class="fa-regular fa-clock"></i> Pendente</span>',
+                marcado: '<span class="badge-status badge-marcado"><i class="fa-solid fa-calendar-check"></i> Marcado</span>',
+                recusado: '<span class="badge-status badge-recusado"><i class="fa-solid fa-circle-xmark"></i> Recusado</span>',
+                arquivado: '<span class="badge-status badge-arquivado"><i class="fa-solid fa-box-archive"></i> Finalizado</span>',
+            };
+            return map[estado] || `<span class="badge-status">${estado}</span>`;
+        }
+
+        function badgeVetStatus(status) {
+            const map = {
+                ativo: '<span class="badge-status badge-ativo"><i class="fa-solid fa-circle-check"></i> Ativo</span>',
+                pendente: '<span class="badge-status badge-pendente"><i class="fa-regular fa-clock"></i> Pendente</span>',
+                suspenso: '<span class="badge-status badge-suspenso"><i class="fa-solid fa-ban"></i> Suspenso</span>',
+            };
+            return map[status] || `<span class="badge-status">${status || '—'}</span>`;
+        }
+
+        // INIT
+        initAdmin();
+    </script>
+</body>
+
+</html>

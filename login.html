@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="pt">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zooni — Entrar</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #3D8B3D;
+            --primary-dark: #1E4D1E;
+            --primary-light: #5CB85C;
+            --bg: #F2F8F2;
+            --text-sec: #5a7a5a;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: var(--bg);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .login-wrapper {
+            display: flex;
+            width: 100%;
+            max-width: 900px;
+            background: white;
+            border-radius: 28px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(61, 139, 61, 0.15);
+            min-height: 540px;
+        }
+
+        /* Left panel */
+        .login-side {
+            flex: 1;
+            background: linear-gradient(145deg, #3D8B3D, #1E4D1E);
+            padding: 3rem 2.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            color: white;
+        }
+
+        .login-side img {
+            max-width: 160px;
+            margin-bottom: 2.5rem;
+            filter: brightness(0) invert(1);
+        }
+
+        .login-side h2 {
+            font-size: 1.7rem;
+            font-weight: 800;
+            margin-bottom: 0.75rem;
+            line-height: 1.3;
+        }
+
+        .login-side p {
+            font-size: 0.95rem;
+            opacity: 0.8;
+            line-height: 1.6;
+        }
+
+        .role-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 20px;
+            padding: 6px 14px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            width: fit-content;
+        }
+
+        /* Right panel (form) */
+        .login-form-panel {
+            flex: 1.1;
+            padding: 3rem 2.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .form-title {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--primary-dark);
+            margin-bottom: 0.4rem;
+        }
+
+        .form-subtitle {
+            font-size: 0.9rem;
+            color: var(--text-sec);
+            margin-bottom: 2rem;
+        }
+
+        /* Tabs */
+        .tab-switcher {
+            display: flex;
+            background: #edf7ed;
+            border-radius: 12px;
+            padding: 4px;
+            margin-bottom: 1.8rem;
+        }
+
+        .tab-btn {
+            flex: 1;
+            border: none;
+            background: transparent;
+            padding: 9px;
+            border-radius: 9px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--text-sec);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .tab-btn.active {
+            background: white;
+            color: var(--primary);
+            box-shadow: 0 2px 8px rgba(108, 92, 231, 0.12);
+        }
+
+        /* Input */
+        .input-group-custom {
+            position: relative;
+            margin-bottom: 1rem;
+        }
+
+        .input-group-custom i {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #b2bec3;
+            font-size: 0.95rem;
+        }
+
+        .input-group-custom input {
+            width: 100%;
+            padding: 12px 14px 12px 40px;
+            border: 1.5px solid #c8e6c8;
+            border-radius: 12px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.95rem;
+            color: #2D3436;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .input-group-custom input:focus {
+            border-color: var(--primary);
+        }
+
+        .btn-login {
+            width: 100%;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 13px;
+            border-radius: 12px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-login:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        .btn-login:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .error-msg {
+            background: #ffeaea;
+            color: #d63031;
+            border-radius: 10px;
+            padding: 10px 14px;
+            font-size: 0.85rem;
+            margin-top: 0.8rem;
+            display: none;
+        }
+
+        .success-msg {
+            background: #e8fff5;
+            color: #00B894;
+            border-radius: 10px;
+            padding: 10px 14px;
+            font-size: 0.85rem;
+            margin-top: 0.8rem;
+            display: none;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--text-sec);
+            font-size: 0.85rem;
+            text-decoration: none;
+            margin-bottom: 1.5rem;
+            transition: color 0.2s;
+        }
+
+        .back-link:hover {
+            color: var(--primary);
+        }
+
+        @media (max-width: 700px) {
+            .login-side {
+                display: none;
+            }
+
+            .login-wrapper {
+                max-width: 440px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="login-wrapper">
+        <!-- Left Side -->
+        <div class="login-side">
+            <img src="assets/logo.png" alt="Zooni Logo">
+            <div class="role-badge" id="roleBadge">
+                <i class="fa-solid fa-house-user"></i> <span id="roleText">Dono de Pet</span>
+            </div>
+            <h2>Bem-vindo de volta!</h2>
+            <p>Acede à tua conta para gerir os teus animais, consultar tickets e manter os teus amigos saudáveis.</p>
+        </div>
+
+        <!-- Right Side: Form -->
+        <div class="login-form-panel">
+            <a href="index.html" class="back-link">
+                <i class="fa-solid fa-arrow-left"></i> Voltar ao início
+            </a>
+
+            <div class="form-title" id="formTitle">Entrar na tua conta</div>
+            <div class="form-subtitle" id="formSubtitle">Introduz o teu email e password</div>
+
+            <!-- Tab Switcher -->
+            <div class="tab-switcher">
+                <button class="tab-btn active" id="tabLogin" onclick="switchTab('login')">Entrar</button>
+                <button class="tab-btn" id="tabRegisto" onclick="switchTab('registo')">Criar Conta</button>
+            </div>
+
+            <!-- Login Form -->
+            <form id="loginForm">
+                <div class="input-group-custom">
+                    <i class="fa-regular fa-envelope"></i>
+                    <input type="email" id="loginEmail" placeholder="Email" required autocomplete="email">
+                </div>
+                <div class="input-group-custom">
+                    <i class="fa-solid fa-lock"></i>
+                    <input type="password" id="loginPassword" placeholder="Password" required
+                        autocomplete="current-password">
+                </div>
+                <button type="submit" class="btn-login" id="btnLogin">
+                    <i class="fa-solid fa-arrow-right-to-bracket"></i> Entrar
+                </button>
+            </form>
+
+            <!-- Register Form (hidden by default) -->
+            <form id="registoForm" style="display:none;">
+                <div class="input-group-custom">
+                    <i class="fa-regular fa-user"></i>
+                    <input type="text" id="registoNome" placeholder="Nome completo" required>
+                </div>
+                <div class="input-group-custom">
+                    <i class="fa-regular fa-envelope"></i>
+                    <input type="email" id="registoEmail" placeholder="Email" required autocomplete="email">
+                </div>
+                <div class="input-group-custom">
+                    <i class="fa-solid fa-lock"></i>
+                    <input type="password" id="registoPassword" placeholder="Password (mín. 6 caracteres)" required
+                        autocomplete="new-password">
+                </div>
+                <button type="submit" class="btn-login" id="btnRegisto">
+                    <i class="fa-solid fa-user-plus"></i> Criar Conta
+                </button>
+            </form>
+
+            <div class="error-msg" id="errorMsg"></div>
+            <div class="success-msg" id="successMsg"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <script>
+        const SUPABASE_URL = 'https://xqtbtggmwejnkhckduti.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhxdGJ0Z2dtd2VqbmtoY2tkdXRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc2OTU5NjEsImV4cCI6MjA4MzI3MTk2MX0.G1wG0UC6sF7r6tMxGdqLGvsHa_dxlVD1-j6QNEw32IM';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        // Detect role from URL
+        const params = new URLSearchParams(window.location.search);
+        const role = params.get('role') || 'dono';
+        const redirectUrl = role === 'veterinario' ? 'dashboard_veterinario.html'
+            : role === 'admin' ? 'dashboard_admin.html'
+                : 'dashboard_dono.html';
+
+        // Update UI based on role
+        if (role === 'veterinario') {
+            document.getElementById('roleText').textContent = 'Veterinário';
+            document.getElementById('roleBadge').querySelector('i').className = 'fa-solid fa-user-doctor';
+            document.getElementById('formTitle').textContent = 'Acesso Veterinário';
+        } else if (role === 'admin') {
+            document.getElementById('roleText').textContent = 'Administrador';
+            document.getElementById('roleBadge').querySelector('i').className = 'fa-solid fa-shield-halved';
+            document.getElementById('formTitle').textContent = 'Acesso Administrador';
+            // Hide register tab for admins
+            document.getElementById('tabRegisto').style.display = 'none';
+        }
+
+        // If already logged in, redirect
+        supabaseClient.auth.getSession().then(({ data: { session } }) => {
+            if (session) window.location.href = redirectUrl;
+        });
+
+        // Tab switching
+        function switchTab(tab) {
+            const isLogin = tab === 'login';
+            document.getElementById('loginForm').style.display = isLogin ? 'block' : 'none';
+            document.getElementById('registoForm').style.display = isLogin ? 'none' : 'block';
+            document.getElementById('tabLogin').classList.toggle('active', isLogin);
+            document.getElementById('tabRegisto').classList.toggle('active', !isLogin);
+            document.getElementById('formTitle').textContent = isLogin ? 'Entrar na tua conta' : 'Criar nova conta';
+            document.getElementById('formSubtitle').textContent = isLogin ? 'Introduz o teu email e password' : 'Preenche os dados para te registares';
+            hideMessages();
+        }
+
+        function showError(msg) {
+            const el = document.getElementById('errorMsg');
+            el.textContent = msg;
+            el.style.display = 'block';
+            document.getElementById('successMsg').style.display = 'none';
+        }
+
+        function showSuccess(msg) {
+            const el = document.getElementById('successMsg');
+            el.textContent = msg;
+            el.style.display = 'block';
+            document.getElementById('errorMsg').style.display = 'none';
+        }
+
+        function hideMessages() {
+            document.getElementById('errorMsg').style.display = 'none';
+            document.getElementById('successMsg').style.display = 'none';
+        }
+
+        // LOGIN
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btnLogin');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> A entrar...';
+            hideMessages();
+
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+
+            const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+
+            if (error) {
+                showError('Email ou password incorretos. Tenta novamente.');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa-solid fa-arrow-right-to-bracket"></i> Entrar';
+                return;
+            }
+
+            // Verify role
+            const userId = data.user.id;
+            if (role === 'admin') {
+                const { data: admin } = await supabaseClient.from('admins').select('id').eq('id', userId).single();
+                if (!admin) {
+                    await supabaseClient.auth.signOut();
+                    showError('Esta conta não tem permissões de administrador.');
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fa-solid fa-arrow-right-to-bracket"></i> Entrar';
+                    return;
+                }
+            } else if (role === 'veterinario') {
+                const { data: vet } = await supabaseClient.from('veterinarios').select('user_id').eq('user_id', userId).single();
+                if (!vet) {
+                    await supabaseClient.auth.signOut();
+                    showError('Esta conta não tem acesso de veterinário.');
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fa-solid fa-arrow-right-to-bracket"></i> Entrar';
+                    return;
+                }
+            } else {
+                const { data: cliente } = await supabaseClient.from('clientes').select('id').eq('user_id', userId).single();
+                if (!cliente) {
+                    await supabaseClient.auth.signOut();
+                    showError('Esta conta não tem acesso de dono. Tenta criar conta primeiro.');
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fa-solid fa-arrow-right-to-bracket"></i> Entrar';
+                    return;
+                }
+            }
+
+            window.location.href = redirectUrl;
+        });
+
+        // REGISTER
+        document.getElementById('registoForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btnRegisto');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> A criar conta...';
+            hideMessages();
+
+            const nome = document.getElementById('registoNome').value.trim();
+            const email = document.getElementById('registoEmail').value.trim();
+            const password = document.getElementById('registoPassword').value;
+
+            if (password.length < 6) {
+                showError('A password deve ter pelo menos 6 caracteres.');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa-solid fa-user-plus"></i> Criar Conta';
+                return;
+            }
+
+            // 1. Create auth user
+            const { data: authData, error: authError } = await supabaseClient.auth.signUp({ email, password });
+
+            if (authError) {
+                showError('Erro ao criar conta: ' + authError.message);
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa-solid fa-user-plus"></i> Criar Conta';
+                return;
+            }
+
+            const userId = authData.user.id;
+
+            // 2. Create profile in the correct table
+            if (role === 'veterinario') {
+                const { error: dbError } = await supabaseClient.from('veterinarios').insert([{
+                    user_id: userId,
+                    id: userId,
+                    nome,
+                    email,
+                    status: 'pendente'
+                }]);
+                if (dbError) console.error('Erro ao criar perfil de veterinário:', dbError);
+            } else {
+                const { error: dbError } = await supabaseClient.from('clientes').insert([{
+                    user_id: userId,
+                    nome,
+                    email
+                }]);
+                if (dbError) console.error('Erro ao criar perfil de cliente:', dbError);
+            }
+
+            showSuccess('Conta criada com sucesso! A redirecionar...');
+            setTimeout(() => { window.location.href = redirectUrl; }, 1500);
+        });
+    </script>
+</body>
+
+</html>

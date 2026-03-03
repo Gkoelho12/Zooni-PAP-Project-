@@ -1,0 +1,1247 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zooni — Dashboard Veterinário</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #3D8B3D;
+            --primary-dark: #1E4D1E;
+            --primary-light: #5CB85C;
+            --bg-color: #F2F8F2;
+            --text-main: #1a2e1a;
+            --text-sec: #5a7a5a;
+            --mint: #00B894;
+            --orange: #FF7675;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            font-family: 'Outfit', sans-serif;
+            color: var(--text-main);
+            overflow: hidden;
+            /* Desktop app feel */
+            height: 100vh;
+        }
+
+        .app-container {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            height: 100vh;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            background-color: var(--primary-dark);
+            color: white;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            color: #b2bec3;
+            text-decoration: none;
+            border-radius: 10px;
+            margin-bottom: 5px;
+            font-weight: 500;
+            transition: 0.2s;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .nav-link.active {
+            border-left: 4px solid var(--primary);
+            background: rgba(108, 92, 231, 0.2);
+        }
+
+        .nav-line-break {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin: 15px 0;
+        }
+
+        /* MAIN AREA */
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            background: #FDFDFF;
+        }
+
+        /* TOP NAVBAR */
+        .navbar-area {
+            padding: 1rem 2rem;
+            border-bottom: 1px solid #f1f2f6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            height: 70px;
+        }
+
+        .search-container {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+        }
+
+        .search-bar {
+            width: 500px;
+            background: #f1f2f6;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            padding: 0 15px;
+        }
+
+        .search-bar input {
+            border: none;
+            background: transparent;
+            padding: 10px;
+            width: 100%;
+            outline: none;
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .btn-purple {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+
+        .btn-purple:hover {
+            opacity: 0.9;
+            color: white;
+        }
+
+        /* SUMMARY CARDS (Top) */
+        .summary-row {
+            padding: 1.5rem 2rem;
+            display: flex;
+            gap: 20px;
+        }
+
+        .summary-card {
+            background: white;
+            border: 1px solid #f1f2f6;
+            border-radius: 12px;
+            padding: 1rem;
+            flex: 1;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .summary-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .summary-label {
+            color: var(--text-sec);
+            font-size: 0.9rem;
+        }
+
+        .alert-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        /* SPLIT VIEW (Content) */
+        .split-view {
+            display: flex;
+            flex-grow: 1;
+            padding: 0 2rem 2rem 2rem;
+            gap: 20px;
+            overflow: hidden;
+        }
+
+        /* LEFT: CALENDAR (70%) */
+        .calendar-panel {
+            flex: 7;
+            background: white;
+            border-radius: 16px;
+            border: 1px solid #f1f2f6;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .calendar-header {
+            padding: 1rem;
+            border-bottom: 1px solid #f1f2f6;
+            font-weight: 700;
+        }
+
+        .time-grid {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .time-row {
+            display: flex;
+            height: 100px;
+        }
+
+        .time-label {
+            width: 80px;
+            text-align: right;
+            padding-right: 15px;
+            color: var(--text-sec);
+            font-size: 0.85rem;
+            padding-top: 10px;
+            border-right: 1px solid #f1f2f6;
+        }
+
+        .time-slot {
+            flex-grow: 1;
+            padding: 5px 15px;
+        }
+
+        .appt-block {
+            background-color: rgba(108, 92, 231, 0.1);
+            border-left: 4px solid var(--primary);
+            height: 100%;
+            border-radius: 6px;
+            padding: 10px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .appt-block:hover {
+            background-color: rgba(108, 92, 231, 0.2);
+        }
+
+        .appt-title {
+            font-weight: 700;
+            font-size: 0.95rem;
+        }
+
+        .appt-sub {
+            font-size: 0.85rem;
+            color: var(--text-main);
+        }
+
+        .appt-reason {
+            font-size: 0.8rem;
+            color: var(--text-sec);
+            font-style: italic;
+            margin-top: 5px;
+        }
+
+        /* RIGHT: TICKETS (30%) */
+        .inbox-panel {
+            flex: 3;
+            background: white;
+            border-radius: 16px;
+            border: 1px solid #f1f2f6;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .inbox-header {
+            padding: 1rem;
+            border-bottom: 1px solid #f1f2f6;
+            font-weight: 700;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .ticket-list {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            background: #FAFAFB;
+        }
+
+        .ticket-card {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.03);
+            border: 1px solid #f1f2f6;
+        }
+
+        .ticket-head {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .ticket-badge {
+            background: var(--orange);
+            color: white;
+            font-size: 0.7rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .ticket-body {
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+
+        .attach-icon {
+            color: var(--text-sec);
+            font-size: 0.8rem;
+        }
+
+        .ticket-time {
+            font-size: 0.8rem;
+            color: var(--text-sec);
+            background: #f1f2f6;
+            padding: 4px 8px;
+            border-radius: 4px;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+
+        .ticket-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-ticket-green {
+            flex: 1;
+            background: var(--mint);
+            color: white;
+            border: none;
+            padding: 6px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .btn-ticket-blue {
+            flex: 1;
+            background: #74b9ff;
+            color: white;
+            border: none;
+            padding: 6px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .logo-container {
+            margin-bottom: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .logo-img-sidebar {
+            max-width: 160px;
+            filter: brightness(0) invert(1);
+        }
+
+        .logo-subtext {
+            font-size: 0.8rem;
+            font-weight: 300;
+            opacity: 0.7;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            padding-left: 5px;
+        }
+
+        /* TICKET DETAIL MODAL STYLING */
+        .modal-header-ticket {
+            background: #FAFAFB;
+            border-bottom: 1px solid #f1f2f6;
+            padding: 1.5rem;
+        }
+
+        .vet-private-area {
+            background: linear-gradient(145deg, #2d3436, #1e2526);
+            color: white;
+            border-radius: 20px;
+            padding: 2rem;
+            margin-top: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .vet-private-area .form-label {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .vet-private-area .form-control {
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .clinic-evidence-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .clinic-evidence-item {
+            width: 100px;
+            height: 100px;
+            border-radius: 8px;
+            object-fit: cover;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+
+        .clinic-evidence-item:hover {
+            border-color: var(--primary);
+        }
+
+        .status-pill {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .status-pill-pendente {
+            background: rgba(255, 118, 117, 0.1);
+            color: var(--orange);
+        }
+
+        .status-pill-marcado {
+            background: rgba(0, 184, 148, 0.1);
+            color: var(--mint);
+        }
+
+        .status-pill-concluido {
+            background: rgba(108, 92, 231, 0.1);
+            color: var(--primary);
+        }
+
+        .btn-action-round {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            transition: transform 0.2s;
+        }
+
+        .btn-action-round:hover {
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="logo-container">
+                <img src="assets/logo.png" alt="Zooni Logo" class="logo-img-sidebar">
+                <div class="logo-subtext">Veterinário</div>
+            </div>
+
+            <a href="#" class="nav-link"><i class="fa-solid fa-chart-pie"></i> Visão Geral</a>
+            <a href="#" class="nav-link active"><i class="fa-regular fa-calendar"></i> Calendário</a>
+            <a href="tickets_veterinario.html" class="nav-link"><i class="fa-solid fa-ticket"></i> Tickets</a>
+            <a href="#" class="nav-link"><i class="fa-solid fa-users"></i> Pacientes</a>
+
+            <div class="nav-line-break"></div>
+            <a href="#" class="nav-link"><i class="fa-solid fa-gear"></i> Configurações</a>
+            <a href="index.html" class="nav-link text-danger"><i class="fa-solid fa-arrow-right-from-bracket"></i>
+                Sair</a>
+        </aside>
+
+        <!-- MAIN -->
+        <main class="main-content">
+            <!-- Navbar -->
+            <div class="navbar-area">
+                <div class="search-container">
+                    <div class="search-bar">
+                        <i class="fa-solid fa-magnifying-glass text-muted"></i>
+                        <input type="text" placeholder="Procurar paciente, dono, raça ou ID...">
+                    </div>
+                </div>
+                <div class="nav-actions">
+                    <button class="btn-purple">+ Nova Consulta</button>
+                    <i class="fa-regular fa-bell text-muted" style="cursor: pointer;"></i>
+                    <div
+                        style="width: 35px; height: 35px; background: #A29BFE; border-radius: 50%; color: white; display: flex; align-items: center; justify-content: center; font-weight: 600;">
+                        AS</div>
+                </div>
+            </div>
+
+            <!-- Summary -->
+            <div class="summary-row">
+                <div class="summary-card">
+                    <div>
+                        <div class="summary-value">0</div>
+                        <div class="summary-label">Consultas Hoje</div>
+                    </div>
+                    <i class="fa-regular fa-calendar-check fa-2x text-muted opacity-25"></i>
+                </div>
+                <div class="summary-card">
+                    <div>
+                        <div class="summary-value">0</div>
+                        <div class="summary-label">Tickets Pendentes</div>
+                    </div>
+                    <i class="fa-solid fa-ticket fa-2x text-muted opacity-25"></i>
+                </div>
+                <div class="summary-card">
+                    <div>
+                        <div class="summary-value">0</div>
+                        <div class="summary-label">Urgências</div>
+                    </div>
+                    <i class="fa-solid fa-truck-medical fa-2x text-muted opacity-25"></i>
+                </div>
+            </div>
+
+            <!-- Split View -->
+            <div class="split-view">
+                <!-- Calendar (70%) -->
+                <div class="calendar-panel">
+                    <div class="calendar-header">Agenda do Dia (15 Jan)</div>
+                    <div class="time-grid">
+                        <div class="text-center p-5">
+                            <i class="fa-regular fa-calendar fa-3x text-muted mb-3 opacity-25"></i>
+                            <p class="text-muted">Nenhuma consulta agendada para hoje.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Inbox (30%) -->
+                <div class="inbox-panel">
+                    <div class="inbox-header">
+                        Tickets Recebidos <span class="badge bg-secondary" id="ticketCountBadge">0</span>
+                    </div>
+                    <div class="ticket-list" id="vetTicketInbox">
+                        <p class="text-muted small text-center pt-4">Carregando tickets...</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal Detalhes do Ticket (Fases 2 & 3) -->
+    <div class="modal fade" id="ticketDetailModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content border-0 rounded-4 overflow-hidden">
+                <div class="modal-header modal-header-ticket border-0">
+                    <div>
+                        <div class="d-flex align-items-center gap-2 mb-1">
+                            <span class="fw-bold" id="detailTicketId">#---</span>
+                            <span id="detailTicketStatus"></span>
+                        </div>
+                        <div class="text-muted small" id="detailTicketDate">Enviado em --/--/---- às --:--</div>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="row g-4">
+                        <!-- Coluna Esquerda: Dados do Pedido -->
+                        <div class="col-lg-7">
+                            <!-- Contexto do Paciente/Dono -->
+                            <div class="d-flex align-items-center gap-3 mb-4 p-3 bg-light rounded-3">
+                                <img src="" id="detailPetPhoto" class="rounded-circle border"
+                                    style="width: 60px; height: 60px; object-fit: cover; display:none;">
+                                <div id="detailPetEmoji"
+                                    class="rounded-circle bg-white d-flex align-items-center justify-content-center border"
+                                    style="width: 60px; height: 60px; font-size: 1.8rem;">🐾</div>
+                                <div>
+                                    <h6 class="fw-bold mb-0" id="detailPetName">---</h6>
+                                    <p class="text-muted small mb-0"><span id="detailPetBreed">---</span> • Dono: <span
+                                            id="detailOwnerName" class="text-primary fw-500"
+                                            style="cursor:pointer;">---</span></p>
+                                    <a href="#" class="text-primary xsmall fw-bold text-decoration-none"
+                                        style="font-size: 0.75rem;"><i class="fa-solid fa-clock-rotate-left me-1"></i>
+                                        Ver Histórico Clínico</a>
+                                </div>
+                                <div id="detailUrgentBadge" class="ms-auto" style="display:none;">
+                                    <span class="badge bg-danger rounded-pill"><i class="fa-solid fa-bolt"></i>
+                                        URGENTE</span>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <h5 class="fw-bold mb-3" id="detailMotivo">---</h5>
+                                <div class="p-3 border rounded-3 bg-white mb-3">
+                                    <p class="mb-0 text-main" id="detailDescricao">---</p>
+                                </div>
+                            </div>
+
+                            <!-- Galeria de Média -->
+                            <div class="mb-4">
+                                <label class="small text-muted fw-bold mb-2 d-block">Média enviada pelo dono:</label>
+                                <div class="clinic-evidence-grid" id="detailMediaGallery">
+                                    <!-- Média aqui -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Coluna Direita: Decisão & Notas -->
+                        <div class="col-lg-5">
+                            <div class="p-4 border rounded-4 bg-light h-100">
+                                <!-- Seção Agendamento (Fase 2) -->
+                                <div id="vetActionSection">
+                                    <label class="small text-muted fw-bold mb-2 d-block">Sugestão de Horário do
+                                        Dono:</label>
+                                    <div class="d-flex align-items-center gap-2 mb-4 p-3 bg-white rounded-3 border">
+                                        <i class="fa-regular fa-calendar-days text-primary fs-4"></i>
+                                        <span class="fw-bold" id="detailSuggestedTime">-- de --, às --:--</span>
+                                    </div>
+
+                                    <!-- Urgente Toggle -->
+                                    <div
+                                        class="form-check form-switch mb-3 p-0 d-flex align-items-center justify-content-between">
+                                        <label class="form-check-label fw-bold text-danger" for="chkUrgente"
+                                            style="font-size: 0.75rem; cursor: pointer;">
+                                            <i class="fa-solid fa-triangle-exclamation me-1"></i> MARCAR COMO URGENTE
+                                        </label>
+                                        <input class="form-check-input ms-0" type="checkbox" role="switch"
+                                            id="chkUrgente"
+                                            style="width: 2rem; height: 1rem; cursor: pointer; margin-top: 0;">
+                                    </div>
+
+                                    <div class="d-flex gap-3 align-items-center">
+                                        <div class="d-flex flex-column align-items-center">
+                                            <button class="btn btn-success btn-action-round" id="btnMarcar"
+                                                title="Marcar Consulta">
+                                                <i class="fa-solid fa-check"></i>
+                                            </button>
+                                            <span class="fw-bold text-success mt-1"
+                                                style="font-size: 0.7rem;">Marcar</span>
+                                        </div>
+
+                                        <div class="d-flex flex-column align-items-center">
+                                            <button class="btn btn-primary btn-action-round" id="btnConversar"
+                                                title="Conversar com Dono">
+                                                <i class="fa-solid fa-comment-dots"></i>
+                                            </button>
+                                            <span class="fw-bold text-primary mt-1"
+                                                style="font-size: 0.7rem;">Conversar</span>
+                                        </div>
+
+                                        <div class="d-flex flex-column align-items-center">
+                                            <button class="btn btn-danger btn-action-round" id="btnRecusar"
+                                                title="Recusar Ticket" onclick="openRefuseModal()">
+                                                <i class="fa-solid fa-xmark"></i>
+                                            </button>
+                                            <span class="fw-bold text-danger mt-1"
+                                                style="font-size: 0.7rem;">Recusar</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Seção Conclusão (Fase 3 - Visível apenas se status for 'marcado' ou 'em_conclusao') -->
+                                <div id="phase3Section" style="display:none;">
+                                    <div class="vet-private-area">
+                                        <div class="d-flex align-items-center gap-2 mb-3">
+                                            <span class="fs-4">🔒</span>
+                                            <h6 class="fw-bold mb-0">Área Privada (Estudo de Caso)</h6>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label class="form-label small">Registo Clínico & Notas de Estudo</label>
+                                            <textarea class="form-control" id="clinicalNotes" rows="6"
+                                                placeholder="Notas técnicas, diagnóstico, procedimentos..."></textarea>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label class="form-label small">Anexos da Clínica (Interno)</label>
+                                            <div class="d-flex flex-wrap gap-2" id="clinicalAttachments">
+                                                <!-- Attachments appear here -->
+                                            </div>
+                                            <button class="btn btn-sm btn-outline-light w-100 py-2 mt-2"
+                                                style="border-style: dashed;" id="btnAddClinicalMedia">
+                                                <i class="fa-solid fa-plus gap-1"></i> Anexar Exame (Raio-X, Foto, etc.)
+                                            </button>
+                                            <input type="file" id="clinicalMediaInput" class="d-none" accept="image/*">
+                                        </div>
+                                    </div>
+
+                                    <div class="mt-4">
+                                        <label class="small text-muted fw-bold mb-2 d-block">Resumo Público (Para o
+                                            Dono):</label>
+                                        <textarea class="form-control" id="publicFeedback" rows="3"
+                                            placeholder="Recomendações, medicação, próximos passos..."></textarea>
+                                    </div>
+
+                                    <button class="btn btn-dark w-100 py-3 rounded-3 mt-4 fw-bold"
+                                        id="btnFinalizar">Finalizar e Arquivar Consulta</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <script>
+        const SUPABASE_URL = 'https://xqtbtggmwejnkhckduti.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhxdGJ0Z2dtd2VqbmtoY2tkdXRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc2OTU5NjEsImV4cCI6MjA4MzI3MTk2MX0.G1wG0UC6sF7r6tMxGdqLGvsHa_dxlVD1-j6QNEw32IM';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        console.log('Script started, Supabase client created');
+
+        // ── AUTH GUARD ──────────────────────────────────────────────────
+        async function initVetAuth() {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (!session) {
+                window.location.href = 'login.html?role=veterinario';
+                return;
+            }
+            const { data: vet } = await supabaseClient
+                .from('veterinarios')
+                .select('nome')
+                .eq('user_id', session.user.id)
+                .single();
+
+            if (!vet) {
+                await supabaseClient.auth.signOut();
+                window.location.href = 'login.html?role=veterinario';
+                return;
+            }
+
+            // Show vet initials in avatar
+            const initials = vet.nome ? vet.nome.split(' ').map(p => p[0]).slice(0, 2).join('').toUpperCase() : 'VT';
+            document.querySelector('.nav-actions div[style*="border-radius: 50%"]').textContent = initials;
+
+            // Load data
+            loadTickets();
+        }
+
+        // Logout
+        document.querySelector('a[href="index.html"]').addEventListener('click', async (e) => {
+            e.preventDefault();
+            await supabaseClient.auth.signOut();
+            window.location.href = 'index.html';
+        });
+
+        initVetAuth();
+
+        let currentTicketId = null;
+
+        async function loadTickets() {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('tickets')
+                    .select('*, animais(nome, foto_url, raca, "Data de nascimento")')
+                    .neq('estado', 'arquivado')
+                    .neq('estado', 'recusado')
+                    .order('criado_em', { ascending: false });
+
+                const inbox = document.getElementById('vetTicketInbox');
+                const badge = document.getElementById('ticketCountBadge');
+
+                if (error) {
+                    console.error('Erro Supabase:', error);
+                    inbox.innerHTML = '<p class="text-danger small text-center pt-4">Erro de conexão.</p>';
+                    return;
+                }
+
+                if (!data || data.length === 0) {
+                    inbox.innerHTML = '<p class="text-muted small text-center pt-4">Sem novos pedidos.</p>';
+                    badge.textContent = '0';
+                    updateSummaryStats([]);
+                    return;
+                }
+
+                badge.textContent = data.length;
+                inbox.innerHTML = '';
+
+                data.forEach(t => {
+                    const card = document.createElement('div');
+                    card.className = 'ticket-card';
+                    card.style.cursor = 'pointer';
+                    card.onclick = () => openTicketDetail(t.id);
+
+                    let statusBadge = '';
+                    if (t.estado === 'pendente') statusBadge = '<span class="ticket-badge">Novo</span>';
+                    else if (t.estado === 'marcado') statusBadge = '<span class="ticket-badge bg-success">Marcado</span>';
+
+                    const date = new Date(t.criado_em);
+                    const timeStr = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+                    let urgentBadge = '';
+                    if (t.urgente) urgentBadge = '<span class="badge bg-danger ms-1" style="font-size: 0.6rem;"><i class="fa-solid fa-bolt"></i></span>';
+
+                    card.innerHTML = `
+                        <div class="ticket-head">
+                            <strong>${t.animais?.nome || 'Paciente'}${" "} ${urgentBadge}</strong>
+                            ${statusBadge}
+                        </div>
+                        <p class="ticket-body text-truncate" style="max-width: 200px;">
+                            "${t.motivo}"
+                        </p>
+                        <div class="ticket-time">${timeStr}</div>
+                    `;
+                    inbox.appendChild(card);
+                });
+
+                // Update Summary Stats
+                updateSummaryStats(data);
+
+            } catch (err) {
+                console.error('Erro ao carregar tickets:', err);
+                document.getElementById('vetTicketInbox').innerHTML = '<p class="text-danger small text-center pt-4">Erro ao carregar dados. Verifique a consola.</p>';
+            }
+        }
+
+        function updateSummaryStats(data) {
+            try {
+                const todayAppts = data.filter(t => t.estado === 'marcado').length;
+                const pendingTickets = data.filter(t => t.estado === 'pendente').length;
+                const urgentCount = data.filter(t => t.urgente === true).length;
+
+                const summaryValues = document.querySelectorAll('.summary-value');
+                if (summaryValues.length >= 3) {
+                    summaryValues[0].textContent = todayAppts;
+                    summaryValues[1].textContent = pendingTickets;
+                    summaryValues[2].textContent = urgentCount;
+                }
+            } catch (e) {
+                console.warn("Erro ao atualizar status:", e);
+            }
+        }
+        console.log('updateSummaryStats function defined');
+
+        async function openTicketDetail(id) {
+            currentTicketId = id;
+            try {
+                const { data, error } = await supabaseClient
+                    .from('tickets')
+                    .select('*, animais(*)')
+                    .eq('id', id)
+                    .single();
+
+                if (error || !data) return;
+
+                document.getElementById('detailTicketId').textContent = `#${data.id}`;
+                document.getElementById('detailMotivo').textContent = data.motivo;
+                document.getElementById('detailDescricao').textContent = data.descricao;
+                document.getElementById('detailPetName').textContent = data.animais.nome;
+                document.getElementById('detailPetBreed').textContent = data.animais.raca || 'Raça não definida';
+
+                // Fetch real owner name
+                if (data.id_dono) {
+                    const { data: dono } = await supabaseClient
+                        .from('clientes')
+                        .select('nome')
+                        .eq('id', data.id_dono)
+                        .single();
+                    document.getElementById('detailOwnerName').textContent = dono?.nome || 'Dono';
+                } else {
+                    document.getElementById('detailOwnerName').textContent = 'Dono';
+                }
+
+                // Status Pill
+                const statusEl = document.getElementById('detailTicketStatus');
+                statusEl.className = `status-pill status-pill-${data.estado}`;
+                statusEl.textContent = data.estado;
+
+                // Date
+                const date = new Date(data.criado_em);
+                document.getElementById('detailTicketDate').textContent = `Enviado em ${date.toLocaleDateString()} às ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+
+                // Suggested Time
+                const sugDate = data.data_sugerida ? new Date(data.data_sugerida) : null;
+                document.getElementById('detailSuggestedTime').textContent = sugDate
+                    ? sugDate.toLocaleString([], { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' })
+                    : 'Sem horário sugerido';
+
+                // Pet Photo
+                const photoEl = document.getElementById('detailPetPhoto');
+                const emojiEl = document.getElementById('detailPetEmoji');
+                if (data.animais.foto_url) {
+                    photoEl.src = data.animais.foto_url;
+                    photoEl.style.display = 'block';
+                    emojiEl.style.display = 'none';
+                } else {
+                    photoEl.style.display = 'none';
+                    emojiEl.style.display = 'flex';
+
+                    let emoji = '🐾';
+                    if (data.animais.tipo_animal?.toLowerCase().includes('cão')) emoji = '🐶';
+                    if (data.animais.tipo_animal?.toLowerCase().includes('gato')) emoji = '🐱';
+                    emojiEl.textContent = emoji;
+                }
+
+                // Gallery
+                const gallery = document.getElementById('detailMediaGallery');
+                gallery.innerHTML = '';
+
+                // Reset Clinical Uploads
+                document.getElementById('clinicalAttachments').innerHTML = '';
+                selectedClinicalFiles = [];
+                if (data.evidencias_url) {
+                    const urls = data.evidencias_url.split(',');
+                    urls.forEach(url => {
+                        const img = document.createElement('img');
+                        img.src = url.trim();
+                        img.className = 'clinic-evidence-item';
+                        img.onclick = () => {
+                            const win = window.open("", "_blank");
+                            win.document.write(`<img src="${url.trim()}" style="max-width:100%; height:auto; display:block; margin:auto; border-radius:10px;">`);
+                            win.document.body.style.backgroundColor = "#000";
+                        };
+                        gallery.appendChild(img);
+                    });
+                } else {
+                    gallery.innerHTML = '<p class="text-muted small">Sem fotos enviadas.</p>';
+                }
+
+                // Urgente State
+                document.getElementById('chkUrgente').checked = data.urgente || false;
+                document.getElementById('detailUrgentBadge').style.display = data.urgente ? 'block' : 'none';
+
+                // Visibility of Sections
+                const actionSection = document.getElementById('vetActionSection');
+                const phase3Section = document.getElementById('phase3Section');
+
+                if (data.estado === 'pendente') {
+                    actionSection.style.display = 'block';
+                    phase3Section.style.display = 'none';
+                } else if (data.estado === 'marcado' || data.estado === 'em_conclusao') {
+                    actionSection.style.display = 'none';
+                    phase3Section.style.display = 'block';
+                    document.getElementById('clinicalNotes').value = data.notas_privadas || '';
+                    document.getElementById('publicFeedback').value = data.feedback_publico || '';
+                } else {
+                    actionSection.style.display = 'none';
+                    phase3Section.style.display = 'none';
+                }
+
+                // Actually show the modal
+                const modalElement = document.getElementById('ticketDetailModal');
+                let modal = bootstrap.Modal.getInstance(modalElement);
+                if (!modal) modal = new bootstrap.Modal(modalElement);
+                modal.show();
+
+            } catch (err) { console.error(err); }
+        }
+        console.log('openTicketDetail function defined');
+
+        async function updateStatus(status) {
+            if (!currentTicketId) return;
+            console.log('Updating status...', status, currentTicketId);
+
+            const btn = document.getElementById('btnMarcar');
+            let originalHtml = '';
+            if (btn && status === 'marcado') {
+                originalHtml = btn.innerHTML;
+                btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
+                btn.disabled = true;
+            }
+
+            const { data, error } = await supabaseClient
+                .from('tickets')
+                .update({ estado: status })
+                .eq('id', currentTicketId)
+                .select();
+
+            if (error) {
+                console.error('Error updating status:', error);
+                alert('Erro ao atualizar ticket: ' + error.message);
+            } else if (!data || data.length === 0) {
+                console.warn('Operação ignorada: 0 linhas afetadas.');
+                alert('ALERTA: O estado do ticket NÃO foi alterado.\nVerifique se tem permissões para editar este ticket.\nID: ' + currentTicketId);
+            } else {
+                console.log('Status updated successfully', data);
+                const modalEl = document.getElementById('ticketDetailModal');
+                const modal = bootstrap.Modal.getInstance(modalEl);
+                if (modal) modal.hide();
+                loadTickets();
+            }
+
+            if (btn && status === 'marcado') {
+                btn.innerHTML = originalHtml;
+                btn.disabled = false;
+            }
+        }
+
+        let selectedClinicalFiles = [];
+
+        document.getElementById('btnAddClinicalMedia').onclick = () => document.getElementById('clinicalMediaInput').click();
+
+        const mediaInput = document.getElementById('clinicalMediaInput');
+        // Ensure multiple files can be selected
+        if (!mediaInput.hasAttribute('multiple')) mediaInput.setAttribute('multiple', 'true');
+
+        mediaInput.onchange = (e) => {
+            const files = e.target.files;
+            if (files && files.length > 0) {
+                Array.from(files).forEach(file => {
+                    selectedClinicalFiles.push(file);
+
+                    const reader = new FileReader();
+                    reader.onload = (re) => {
+                        const img = document.createElement('img');
+                        img.src = re.target.result;
+                        img.style.width = '60px';
+                        img.style.height = '60px';
+                        img.style.objectFit = 'cover';
+                        img.style.borderRadius = '8px';
+                        img.className = 'border border-secondary fade-in-scale me-2 mb-2';
+                        img.title = file.name;
+                        img.style.cursor = 'pointer';
+                        img.onclick = () => img.remove(); // Simple remove (visual only for now, ideally remove from array too but strict syncing requires index tracking)
+                        // Only visual remove is confusing. Let's just keep it simple.
+                        document.getElementById('clinicalAttachments').appendChild(img);
+                    };
+                    reader.readAsDataURL(file);
+                });
+            }
+            mediaInput.value = ''; // Allow selecting more
+        };
+
+        async function finalizeTicket() {
+            if (!currentTicketId) return;
+            const notes = document.getElementById('clinicalNotes').value;
+            const feedback = document.getElementById('publicFeedback').value;
+            const btn = document.getElementById('btnFinalizar');
+
+            // Simple validation
+            if (!notes.trim()) {
+                alert('Por favor, adicione as notas clínicas antes de finalizar.');
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> A enviar...';
+
+            // 1. Upload Images
+            let uploadedUrls = [];
+            if (selectedClinicalFiles.length > 0) {
+                for (const file of selectedClinicalFiles) {
+                    try {
+                        const fileName = `ticket_${currentTicketId}_${Date.now()}_${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
+                        const { data: upData, error: upError } = await supabaseClient
+                            .storage
+                            .from('relatorios')
+                            .upload(fileName, file);
+
+                        if (upError) throw upError;
+
+                        const { data: pubData } = supabaseClient
+                            .storage
+                            .from('relatorios')
+                            .getPublicUrl(fileName);
+
+                        if (pubData && pubData.publicUrl) uploadedUrls.push(pubData.publicUrl);
+
+                    } catch (err) {
+                        console.error('Upload Error:', err);
+                        alert(`Erro ao enviar imagem ${file.name}: ${err.message}\nVerifique se o bucket 'relatorios' existe.`);
+                        btn.disabled = false;
+                        btn.textContent = 'Finalizar e Arquivar Consulta';
+                        return;
+                    }
+                }
+            }
+
+            // 2. Update Database
+            const updatePayload = {
+                estado: 'arquivado',
+                notas_privadas: notes,
+                feedback_publico: feedback
+            };
+            if (uploadedUrls.length > 0) {
+                updatePayload.relatorio_urls = uploadedUrls.join(',');
+            }
+
+            const { error } = await supabaseClient
+                .from('tickets')
+                .update(updatePayload)
+                .eq('id', currentTicketId);
+
+            if (!error) {
+                const modalElement = document.getElementById('ticketDetailModal');
+                bootstrap.Modal.getInstance(modalElement).hide();
+                loadTickets();
+                console.log('Ticket arquivado com sucesso!');
+            } else {
+                alert('Erro ao finalizar consulta: ' + error.message);
+                if (error.message.includes('relatorio_urls')) {
+                    alert('DICA: Execute o comando SQL para adicionar a coluna "relatorio_urls".');
+                }
+            }
+            btn.disabled = false;
+            btn.textContent = 'Finalizar e Arquivar Consulta';
+        }
+
+        const btnMarcar = document.getElementById('btnMarcar');
+        if (btnMarcar) {
+            btnMarcar.onclick = () => updateStatus('marcado');
+        }
+
+
+        // Fix: Open refuse modal via JS (Bootstrap can't open nested modals via data-*)
+        let refuseModalInstance = null;
+
+        function openRefuseModal() {
+            // First hide the detail modal
+            const detailModal = bootstrap.Modal.getInstance(document.getElementById('ticketDetailModal'));
+            if (detailModal) detailModal.hide();
+
+            // After it hides, open the refuse modal
+            document.getElementById('ticketDetailModal').addEventListener('hidden.bs.modal', function onHidden() {
+                document.getElementById('refusalReasonText').value = '';
+                refuseModalInstance = new bootstrap.Modal(document.getElementById('refuseReasonModal'));
+                refuseModalInstance.show();
+            }, { once: true });
+        }
+
+        // Event delegation — refuseReasonModal HTML is AFTER this script, so getElementById returns null
+        document.addEventListener('click', async function (e) {
+            const btn = e.target.closest('#btnConfirmarRecusa');
+            if (!btn) return;
+
+            console.log('Confirmar Recusa clicado. currentTicketId =', currentTicketId);
+
+            const refusalReasonText = document.getElementById('refusalReasonText');
+            const reason = refusalReasonText ? refusalReasonText.value.trim() : '';
+
+            if (!reason) { alert('Por favor, indique o motivo da recusa.'); return; }
+            if (!currentTicketId) { alert('Erro: ID do ticket não encontrado.'); return; }
+
+            const originalText = btn.textContent;
+            btn.disabled = true;
+            btn.textContent = 'A processar...';
+
+            try {
+                const { data, error } = await supabaseClient
+                    .from('tickets')
+                    .update({ estado: 'recusado', motivo_recusa: reason })
+                    .eq('id', currentTicketId)
+                    .select();
+
+                if (error) {
+                    alert('Erro na base de dados: ' + error.message);
+                } else if (!data || data.length === 0) {
+                    alert('Ticket não foi atualizado. ID: ' + currentTicketId);
+                } else {
+                    if (refuseModalInstance) { refuseModalInstance.hide(); refuseModalInstance = null; }
+                    if (refusalReasonText) refusalReasonText.value = '';
+                    loadTickets();
+                }
+            } catch (err) {
+                alert('Erro inesperado: ' + err.message);
+            }
+
+            btn.disabled = false;
+            btn.textContent = originalText;
+        });
+
+        const chkUrgente = document.getElementById('chkUrgente');
+        if (chkUrgente) {
+            chkUrgente.onchange = async (e) => {
+                if (!currentTicketId) return;
+                const isUrgent = e.target.checked;
+
+                const { error } = await supabaseClient
+                    .from('tickets')
+                    .update({ urgente: isUrgent })
+                    .eq('id', currentTicketId);
+
+                if (!error) {
+                    const detailUrgentBadge = document.getElementById('detailUrgentBadge');
+                    if (detailUrgentBadge) {
+                        detailUrgentBadge.style.display = isUrgent ? 'block' : 'none';
+                    }
+                    loadTickets();
+                }
+            };
+        }
+
+        const btnConversar = document.getElementById('btnConversar');
+        if (btnConversar) {
+            btnConversar.onclick = () => {
+                alert('A abrir chat com o dono João Silva... (Simulação de Chat estilo WhatsApp)');
+            };
+        }
+
+        const btnFinalizar = document.getElementById('btnFinalizar');
+        if (btnFinalizar) {
+            btnFinalizar.onclick = finalizeTicket;
+        }
+
+        console.log('Event listeners set, about to initialize...');
+        // Inicialização Direta
+        setTimeout(function () {
+            console.log('Initializing dashboard (direct call)...');
+            loadTickets();
+        }, 500);
+    </script>
+
+    <!-- Modal para Motivo de Recusa -->
+    <div class="modal fade" id="refuseReasonModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-4">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold text-danger">Recusar Ticket</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-muted small mb-3">Por favor, explique ao dono o motivo da recusa deste pedido
+                        de consulta.</p>
+                    <textarea id="refusalReasonText" class="form-control rounded-3" rows="4"
+                        placeholder="Ex: Não temos disponibilidade nesta horário, por favor sugira outro..."></textarea>
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-light rounded-pill px-4 fw-bold"
+                        data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-danger rounded-pill px-4 fw-bold"
+                        id="btnConfirmarRecusa">Confirmar Recusa</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
