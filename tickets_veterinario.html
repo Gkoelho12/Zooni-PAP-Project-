@@ -643,12 +643,15 @@
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         // ── AUTH GUARD ──────────────────────────────────────────────────
+        let currentVetUserId = null;
+
         async function initAuth() {
             const { data: { session } } = await supabaseClient.auth.getSession();
             if (!session) {
                 window.location.href = 'login.html?role=veterinario';
                 return;
             }
+            currentVetUserId = session.user.id;
             loadTickets();
         }
 
@@ -663,12 +666,14 @@
         let currentFilter = 'todos';
         let allTickets = [];
 
-        // Load all tickets
+        // Load only tickets assigned to the logged-in vet
         async function loadTickets() {
+            if (!currentVetUserId) return;
             try {
                 const { data, error } = await supabaseClient
                     .from('tickets')
                     .select('*, animais(nome, foto_url, tipo_animal)')
+                    .eq('id_veterinario', currentVetUserId)
                     .order('criado_em', { ascending: false });
 
                 if (error) {
@@ -687,7 +692,7 @@
         }
 
         // Render tickets based on filter
-        function renderTickets() {
+        async function renderTickets() {
             const tbody = document.getElementById('ticketsTableBody');
 
             let filteredTickets = allTickets;
@@ -734,7 +739,7 @@
                             <span>${t.animais?.nome || 'Desconhecido'}</span>
                         </div>
                     </td>
-                    <td>João Silva</td>
+                    <td id="owner-${t.id}">—</td>
                     <td>${t.motivo} ${urgentBadge}</td>
                     <td>${suggestedDate ? suggestedDate.toLocaleString([], { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Sem data'}</td>
                     <td>${statusBadge}</td>
@@ -743,6 +748,19 @@
 
                 tbody.appendChild(row);
             });
+
+            // Load owner names asynchronously (avoid breaking the join)
+            const uniqueDonoIds = [...new Set(filteredTickets.filter(t => t.id_dono).map(t => t.id_dono))];
+            if (uniqueDonoIds.length > 0) {
+                const { data: donos } = await supabaseClient
+                    .from('clientes').select('id, nome').in('id', uniqueDonoIds);
+                const donoMap = {};
+                donos?.forEach(d => donoMap[d.id] = d.nome);
+                filteredTickets.forEach(t => {
+                    const cell = document.getElementById(`owner-${t.id}`);
+                    if (cell && t.id_dono) cell.textContent = donoMap[t.id_dono] || '—';
+                });
+            }
         }
 
         // Show empty state
@@ -787,7 +805,10 @@
                 document.getElementById('detailDescricao').textContent = data.descricao;
                 document.getElementById('detailPetName').textContent = data.animais.nome;
                 document.getElementById('detailPetBreed').textContent = data.animais.raca || 'Raça não definida';
-                document.getElementById('detailOwnerName').textContent = 'João Silva';
+                // Fetch owner name from clientes table
+                const { data: clienteData } = await supabaseClient
+                    .from('clientes').select('nome').eq('id', data.id_dono).single();
+                document.getElementById('detailOwnerName').textContent = clienteData?.nome || '—';
 
                 // Status Pill
                 const statusEl = document.getElementById('detailTicketStatus');

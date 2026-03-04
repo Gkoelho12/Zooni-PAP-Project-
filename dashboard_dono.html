@@ -1043,12 +1043,30 @@
                             statusHtml = '<div class="status-badge status-pendente"><i class="fa-regular fa-clock"></i> Pendente</div>';
                         }
                         else if (t.estado === 'marcado') {
-                            statusHtml = '<div class="status-badge status-marcado" style="background: #d1fae5; color: #065f46; border: 1px solid #10b981;"><i class="fa-solid fa-calendar-check"></i> Aceite</div>';
+                            statusHtml = '<div class="status-badge status-marcado" style="background: #d1fae5; color: #065f46;"><i class="fa-solid fa-calendar-check"></i> Aceite</div>';
                         }
                         else if (t.estado === 'recusado') {
                             statusHtml = '<div class="status-badge status-recusado"><i class="fa-solid fa-circle-xmark"></i> Recusado</div>';
                             if (t.motivo_recusa) {
-                                refusalReasonHtml = `<div class="mt-2 p-2 bg-danger-subtle text-danger small rounded border border-danger-subtle"><strong>Motivo:</strong> ${t.motivo_recusa}</div>`;
+                                let reasonText = t.motivo_recusa;
+                                let vetRecMatch = reasonText.match(/\|VET_REC:([^:]+):([^|]+)\|/);
+                                let recBtn = '';
+
+                                if (vetRecMatch) {
+                                    let vetId = vetRecMatch[1];
+                                    let vetNome = vetRecMatch[2].replace(/'/g, "\\'");
+                                    reasonText = reasonText.replace(vetRecMatch[0], '').trim();
+
+                                    recBtn = `
+                                    <div class="mt-3 text-center">
+                                        <div class="text-muted small mb-2"><i class="fa-solid fa-info-circle text-primary"></i> O veterinário recomendou um colega:</div>
+                                        <button class="btn btn-sm btn-outline-primary fw-bold px-3 py-2 w-100 rounded-pill" onclick="openNewTicketModalWithVet(${t.id}, '${vetId}', '${vetNome}')">
+                                            <i class="fa-solid fa-user-doctor me-1"></i> Marcar com Dr/a. ${vetNome}
+                                        </button>
+                                    </div>`;
+                                }
+
+                                refusalReasonHtml = `<div class="mt-2 p-3 bg-danger-subtle text-danger small rounded border border-danger-subtle"><strong>Motivo:</strong> ${reasonText}${recBtn}</div>`;
                             }
                         }
                         else if (t.estado === 'arquivado') {
@@ -1140,8 +1158,8 @@
             try {
                 const { data, error } = await supabaseClient
                     .from('veterinarios')
-                    .select('user_id, nome, nome_clinica, especialidade, status')
-                    .eq('status', 'pendente') // includes active vets (status=pendente means registered)
+                    .select('user_id, nome, clinica, especialidade, status')
+                    .eq('status', 'ativo') // only show active/approved vets
                     .order('nome');
 
                 const sel = document.getElementById('ticketVeterinario');
@@ -1155,7 +1173,7 @@
                 data.forEach(vet => {
                     const opt = document.createElement('option');
                     opt.value = vet.user_id;
-                    const clinica = vet.nome_clinica ? ` — ${vet.nome_clinica}` : '';
+                    const clinica = vet.clinica ? ` — ${vet.clinica}` : '';
                     const esp = vet.especialidade ? ` • ${vet.especialidade}` : '';
                     opt.textContent = `${vet.nome}${clinica}${esp}`;
                     sel.appendChild(opt);
@@ -1300,9 +1318,59 @@
                 alert('Ticket eliminado com sucesso.');
             } catch (err) {
                 console.error(err);
-                alert('Erro ao eliminar ticket: ' + err.message);
+                alert('Erro inesperado ao eliminar ticket: ' + err.message);
             }
         }
+
+        // Helper function for Vet Recommendations
+        window.openNewTicketModalWithVet = function (ticketId, vetId, vetNome) {
+            document.getElementById('forwardTicketId').value = ticketId;
+            document.getElementById('forwardVetId').value = vetId;
+            document.getElementById('forwardVetNameDisplay').textContent = vetNome;
+            document.getElementById('forwardDataSugerida').value = ''; // Reset
+
+            const forwardModal = new bootstrap.Modal(document.getElementById('forwardTicketModal'));
+            forwardModal.show();
+        };
+
+        // Submit Forwarded Ticket
+        document.addEventListener('submit', async (e) => {
+            if (e.target && e.target.id === 'formForwardTicket') {
+                e.preventDefault();
+                const btn = document.getElementById('btnSubmitForwardTicket');
+                btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> A enviar...';
+                btn.disabled = true;
+
+                const ticketId = document.getElementById('forwardTicketId').value;
+                const newVetId = document.getElementById('forwardVetId').value;
+                const newDate = document.getElementById('forwardDataSugerida').value;
+
+                try {
+                    // Update the existing ticket with the new vet, new date, remove refuse reason, and set state to pending
+                    const { error } = await supabaseClient
+                        .from('tickets')
+                        .update({
+                            id_veterinario: newVetId,
+                            data_sugerida: newDate || null,
+                            estado: 'pendente',
+                            motivo_recusa: null
+                        })
+                        .eq('id', ticketId);
+
+                    if (error) throw error;
+
+                    bootstrap.Modal.getInstance(document.getElementById('forwardTicketModal')).hide();
+                    loadTickets();
+                    alert('Consulta marcada com sucesso com o veterinário recomendado!');
+                } catch (error) {
+                    console.error('Erro ao remarcar ticket:', error);
+                    alert('Erro ao remarcar consulta: ' + error.message);
+                } finally {
+                    btn.innerHTML = 'Confirmar Marcação';
+                    btn.disabled = false;
+                }
+            }
+        });
 
         // ── LOGOUT ──────────────────────────────────────────────────────
         document.querySelector('a[href="index.html"]').addEventListener('click', async (e) => {
@@ -1382,6 +1450,40 @@
                 <div class="modal-footer border-0">
                     <button type="button" class="btn btn-secondary rounded-pill px-4"
                         data-bs-dismiss="modal">Fechar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Forward Ticket (Vet Recommendation) -->
+    <div class="modal fade" id="forwardTicketModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-4">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold text-primary">Remarcar Consulta</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formForwardTicket">
+                        <input type="hidden" id="forwardTicketId">
+                        <input type="hidden" id="forwardVetId">
+
+                        <p class="text-muted small mb-4">O seu pedido será encaminhado diretamente para <strong
+                                id="forwardVetNameDisplay" class="text-dark"></strong> com as mesmas informações e
+                            médias do pedido original.</p>
+
+                        <div class="mb-4">
+                            <label class="small text-muted fw-bold">Sugira uma nova data e hora</label>
+                            <input type="datetime-local" class="form-control mt-2" id="forwardDataSugerida" required>
+                            <small class="text-secondary mt-1 d-block"><i class="fa-solid fa-circle-info"></i> Sujeito a
+                                confirmação.</small>
+                        </div>
+
+                        <div class="d-grid mt-4">
+                            <button type="submit" class="btn btn-primary rounded-pill py-2 fw-bold"
+                                id="btnSubmitForwardTicket">Confirmar Marcação</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>

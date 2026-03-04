@@ -824,6 +824,37 @@
         </div>
     </div>
 
+    <!-- ═══ MODAL: Reset Password ═══ -->
+    <div class="modal fade" id="resetPasswordModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold">Redefinir Password</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-muted small">Nova password para <strong id="resetPasswordVetName">---</strong>:</p>
+                    <input type="hidden" id="resetPasswordUserId">
+                    <div class="d-flex gap-2">
+                        <input type="text" class="form-control-zooni" id="resetPasswordInput"
+                            placeholder="Nova password (min 6 caracteres)">
+                        <button type="button" class="btn-primary-zooni"
+                            onclick="document.getElementById('resetPasswordInput').value = Math.random().toString(36).slice(-8) + 'Z1@'"
+                            style="white-space:nowrap;">
+                            <i class="fa-solid fa-dice"></i> Gerar
+                        </button>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-light rounded-pill px-4 fw-bold"
+                        data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-warning rounded-pill px-4 fw-bold text-dark"
+                        id="btnConfirmReset" onclick="confirmResetPassword()">Redefinir</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- ═══ MODAL: Adicionar item (Especialidade / Tipo / Raça) ═══ -->
     <div class="modal fade" id="addItemModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
@@ -960,6 +991,7 @@
                     ? `<button class="btn-action btn-view" onclick="changeVetStatus(${v.id},'ativo')"><i class="fa-solid fa-circle-check"></i> Ativar</button>`
                     : `<button class="btn-action btn-suspend" onclick="changeVetStatus(${v.id},'suspenso')"><i class="fa-solid fa-ban"></i> Suspender</button>`
                 }
+                            ${v.user_id ? `<button class="btn-action btn-suspend" style="background:#fef08a; color:#854d0e" onclick="openResetPasswordModal('${v.user_id}', '${v.nome.replace(/'/g, "\\'")}')"><i class="fa-solid fa-key"></i> Passe</button>` : ''}
                         </div>
                     </td>
                 </tr>`).join('');
@@ -971,6 +1003,39 @@
             document.getElementById('vetModalTitle').textContent = 'Adicionar Veterinário';
             document.getElementById('vetPasswordGroup').style.display = 'block';
             new bootstrap.Modal(document.getElementById('vetModal')).show();
+        }
+
+        function openResetPasswordModal(userId, vetName) {
+            document.getElementById('resetPasswordUserId').value = userId;
+            document.getElementById('resetPasswordVetName').textContent = vetName;
+            document.getElementById('resetPasswordInput').value = '';
+            new bootstrap.Modal(document.getElementById('resetPasswordModal')).show();
+        }
+
+        async function confirmResetPassword() {
+            const userId = document.getElementById('resetPasswordUserId').value;
+            const password = document.getElementById('resetPasswordInput').value.trim();
+            const btn = document.getElementById('btnConfirmReset');
+
+            if (!password || password.length < 6) {
+                alert('A password deve ter pelo menos 6 caracteres.');
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = 'A processar...';
+
+            const { error } = await sbAdmin.auth.admin.updateUserById(userId, { password });
+
+            btn.disabled = false;
+            btn.innerHTML = 'Redefinir';
+
+            if (error) {
+                alert('Erro ao redefinir password: ' + error.message);
+            } else {
+                alert('✅ Password redefinida com sucesso!\n\nEntrega a nova password ao veterinário.');
+                bootstrap.Modal.getInstance(document.getElementById('resetPasswordModal')).hide();
+            }
         }
 
         async function editVet(id) {
