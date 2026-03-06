@@ -971,7 +971,7 @@
 
         // ─── VETS ───
         async function loadVets() {
-            const { data } = await sb.from('veterinarios').select('*').order('nome');
+            const { data, error } = await sbAdmin.from('veterinarios').select('*').order('nome');
             const tbody = document.getElementById('vetsTbody');
             if (!data || data.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted py-4">Nenhum veterinário registado.</td></tr>';
@@ -986,12 +986,12 @@
                     <td>${badgeVetStatus(v.status)}</td>
                     <td>
                         <div class="d-flex gap-1 flex-wrap">
-                            <button class="btn-action btn-edit" onclick="editVet(${v.id})"><i class="fa-solid fa-pen-to-square"></i> Editar</button>
+                            <button class="btn-action btn-edit" onclick="editVet('${v.user_id}')"><i class="fa-solid fa-pen-to-square"></i> Editar</button>
                             ${v.status === 'suspenso'
-                    ? `<button class="btn-action btn-view" onclick="changeVetStatus(${v.id},'ativo')"><i class="fa-solid fa-circle-check"></i> Ativar</button>`
-                    : `<button class="btn-action btn-suspend" onclick="changeVetStatus(${v.id},'suspenso')"><i class="fa-solid fa-ban"></i> Suspender</button>`
+                    ? `<button class="btn-action btn-view" onclick="changeVetStatus('${v.user_id}','ativo')"><i class="fa-solid fa-circle-check"></i> Ativar</button>`
+                    : `<button class="btn-action btn-suspend" onclick="changeVetStatus('${v.user_id}','suspenso')"><i class="fa-solid fa-ban"></i> Suspender</button>`
                 }
-                            ${v.user_id ? `<button class="btn-action btn-suspend" style="background:#fef08a; color:#854d0e" onclick="openResetPasswordModal('${v.user_id}', '${v.nome.replace(/'/g, "\\'")}')"><i class="fa-solid fa-key"></i> Passe</button>` : ''}
+                            ${v.user_id ? `<button class="btn-action btn-suspend" style="background:#fef08a; color:#854d0e" onclick="openResetPasswordModal('${v.user_id}', '${v.nome.replace(/'/g, "\\'")}')" ><i class="fa-solid fa-key"></i> Passe</button>` : ''}
                         </div>
                     </td>
                 </tr>`).join('');
@@ -1038,10 +1038,11 @@
             }
         }
 
-        async function editVet(id) {
-            const { data: v } = await sb.from('veterinarios').select('*').eq('id', id).single();
-            if (!v) return;
-            document.getElementById('vetId').value = v.id;
+        async function editVet(userId) {
+            const { data: v, error } = await sbAdmin.from('veterinarios').select('*').eq('user_id', userId).single();
+            if (error) { alert('Erro ao carregar veterinário: ' + error.message); return; }
+            if (!v) { alert('Veterinário não encontrado.'); return; }
+            document.getElementById('vetId').value = v.user_id;
             document.getElementById('vetNome').value = v.nome || '';
             document.getElementById('vetEmail').value = v.email || '';
             document.getElementById('vetEspecialidade').value = v.especialidade || '';
@@ -1102,9 +1103,11 @@
 
                 alert(`✅ Veterinário criado!\n\nEmail: ${email}\nPassword: ${password}\n\nPartilha estas credenciais com o veterinário.`);
             } else {
-                // UPDATE
-                const { error } = await sb.from('veterinarios').update({ nome, email, especialidade, clinica, cedula_omv, telefone }).eq('id', id);
+                // UPDATE — use sbAdmin + user_id as key
+                const userId = id; // id field stores user_id when editing
+                const { error } = await sbAdmin.from('veterinarios').update({ nome, email, especialidade, clinica, cedula_omv, telefone }).eq('user_id', userId);
                 if (error) { alert('Erro ao atualizar: ' + error.message); btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Guardar'; return; }
+                alert(`✅ Perfil de ${nome} atualizado com sucesso!`);
             }
 
             bootstrap.Modal.getInstance(document.getElementById('vetModal')).hide();
@@ -1113,10 +1116,10 @@
             btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Guardar';
         }
 
-        async function changeVetStatus(id, status) {
+        async function changeVetStatus(userId, status) {
             const msg = status === 'suspenso' ? 'Suspender este veterinário?' : 'Ativar este veterinário?';
             if (!confirm(msg)) return;
-            await sb.from('veterinarios').update({ status }).eq('id', id);
+            await sbAdmin.from('veterinarios').update({ status }).eq('user_id', userId);
             loadVets();
         }
 

@@ -1,0 +1,17 @@
+id
+id_dono
+id_animal
+motivo
+descricao
+evidencias_url
+data_sugerida
+estado
+criado_em
+notas_privadas
+feedback_publico
+anexos_clinica_url
+urgente
+motivo_recusa
+relatorio_urls
+user_id
+id_veterinario
