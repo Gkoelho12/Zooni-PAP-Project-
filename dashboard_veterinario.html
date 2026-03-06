@@ -491,7 +491,8 @@
             <a href="#" class="nav-link"><i class="fa-solid fa-users"></i> Pacientes</a>
 
             <div class="nav-line-break"></div>
-            <a href="#" class="nav-link"><i class="fa-solid fa-gear"></i> Configurações</a>
+            <a href="#" class="nav-link" onclick="openVetProfileModal(); return false;"><i class="fa-solid fa-gear"></i>
+                Configurações</a>
             <a href="index.html" class="nav-link text-danger"><i class="fa-solid fa-arrow-right-from-bracket"></i>
                 Sair</a>
         </aside>
@@ -509,8 +510,9 @@
                 <div class="nav-actions">
                     <button class="btn-purple">+ Nova Consulta</button>
                     <i class="fa-regular fa-bell text-muted" style="cursor: pointer;"></i>
-                    <div
-                        style="width: 35px; height: 35px; background: #A29BFE; border-radius: 50%; color: white; display: flex; align-items: center; justify-content: center; font-weight: 600;">
+                    <div onclick="openVetProfileModal()"
+                        style="width: 35px; height: 35px; background: #A29BFE; border-radius: 50%; color: white; display: flex; align-items: center; justify-content: center; font-weight: 600; cursor: pointer; transition: opacity 0.2s;"
+                        title="Editar Perfil" id="vetAvatarBtn">
                         AS</div>
                 </div>
             </div>
@@ -1250,7 +1252,101 @@
             console.log('Initializing dashboard (direct call)...');
             loadTickets();
         }, 500);
+        // ── PERFIL DO VETERINÁRIO ───────────────────────────────────────
+        async function openVetProfileModal() {
+            if (!vetUserId) { alert('Sessão não iniciada.'); return; }
+            const { data, error } = await supabaseClient
+                .from('veterinarios')
+                .select('nome, telefone, clinica, especialidade')
+                .eq('user_id', vetUserId)
+                .single();
+            if (error || !data) { alert('Erro ao carregar perfil.'); return; }
+
+            document.getElementById('vetProfileNome').value = data.nome || '';
+            document.getElementById('vetProfileTelefone').value = data.telefone || '';
+            document.getElementById('vetProfileClinica').value = data.clinica || '';
+            document.getElementById('vetProfileEspecialidade').value = data.especialidade || '';
+            document.getElementById('vetProfileSaveMsg').classList.add('d-none');
+            new bootstrap.Modal(document.getElementById('editVetProfileModal')).show();
+        }
+
+        document.addEventListener('submit', async function (e) {
+            if (!e.target || e.target.id !== 'vetProfileForm') return;
+            e.preventDefault();
+            const btn = document.getElementById('btnSalvarVetPerfil');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> A guardar...';
+
+            const nome = document.getElementById('vetProfileNome').value.trim();
+            const telefone = document.getElementById('vetProfileTelefone').value.trim();
+            const clinica = document.getElementById('vetProfileClinica').value.trim();
+            const especialidade = document.getElementById('vetProfileEspecialidade').value.trim();
+
+            const { error } = await supabaseClient
+                .from('veterinarios')
+                .update({ nome, telefone, clinica, especialidade })
+                .eq('user_id', vetUserId);
+
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fa-solid fa-floppy-disk me-1"></i> Guardar Alterações';
+
+            if (error) {
+                alert('Erro ao guardar: ' + error.message);
+            } else {
+                // Update avatar initials
+                const initials = nome.split(' ').map(p => p[0]).slice(0, 2).join('').toUpperCase();
+                const avatarBtn = document.getElementById('vetAvatarBtn');
+                if (avatarBtn) avatarBtn.textContent = initials;
+                // Show success
+                document.getElementById('vetProfileSaveMsg').classList.remove('d-none');
+                setTimeout(() => document.getElementById('vetProfileSaveMsg').classList.add('d-none'), 3000);
+            }
+        });
     </script>
+
+    <!-- Modal Editar Perfil do Veterinário -->
+    <div class="modal fade" id="editVetProfileModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-4">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold"><i class="fa-solid fa-user-doctor me-2 text-primary"></i>O Meu
+                        Perfil</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="vetProfileForm">
+                        <div class="mb-3">
+                            <label class="small text-muted fw-bold">Nome Completo</label>
+                            <input type="text" class="form-control mt-1" id="vetProfileNome" required
+                                placeholder="Ex: Ana Silva">
+                        </div>
+                        <div class="mb-3">
+                            <label class="small text-muted fw-bold">Número de Telemóvel</label>
+                            <input type="tel" class="form-control mt-1" id="vetProfileTelefone"
+                                placeholder="Ex: 912 345 678">
+                        </div>
+                        <div class="mb-3">
+                            <label class="small text-muted fw-bold">Clínica</label>
+                            <input type="text" class="form-control mt-1" id="vetProfileClinica"
+                                placeholder="Ex: Clínica Vet Lisboa">
+                        </div>
+                        <div class="mb-4">
+                            <label class="small text-muted fw-bold">Especialidade</label>
+                            <input type="text" class="form-control mt-1" id="vetProfileEspecialidade"
+                                placeholder="Ex: Cirurgia, Dermatologia...">
+                        </div>
+                        <div id="vetProfileSaveMsg" class="alert alert-success py-2 small d-none">
+                            <i class="fa-solid fa-circle-check me-1"></i> Perfil actualizado com sucesso!
+                        </div>
+                        <button type="submit" class="btn w-100 py-2 fw-bold text-white rounded-3"
+                            id="btnSalvarVetPerfil" style="background: var(--primary);">
+                            <i class="fa-solid fa-floppy-disk me-1"></i> Guardar Alterações
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Modal para Motivo de Recusa -->
     <div class="modal fade" id="refuseReasonModal" tabindex="-1" aria-hidden="true">

@@ -525,6 +525,134 @@
         .status-recusado {
             color: var(--danger);
         }
+
+        /* ── PET PROFILE OFFCANVAS ─────────────────────────────── */
+        .pet-profile-header {
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+            color: white;
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-shrink: 0;
+        }
+
+        .pet-profile-avatar {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .pet-profile-emoji-lg {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            flex-shrink: 0;
+        }
+
+        .profile-tab-nav {
+            background: #f8f9fa;
+            border-bottom: 1px solid #eee;
+            padding: 0.75rem 1rem;
+            flex-shrink: 0;
+        }
+
+        .profile-tab-nav .nav-link {
+            color: var(--text-sec);
+            border-radius: 8px;
+            padding: 0.4rem 0.9rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .profile-tab-nav .nav-link.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .offcanvas-tab-content {
+            padding: 1.25rem;
+            overflow-y: auto;
+            flex-grow: 1;
+        }
+
+        .offcanvas-footer-actions {
+            padding: 1rem;
+            border-top: 1px solid #eee;
+            background: white;
+            display: flex;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        #petProfileOffcanvas {
+            display: flex !important;
+            flex-direction: column;
+        }
+
+        .health-item {
+            background: #f8faf8;
+            border: 1px solid #e8f0e8;
+            border-left: 3px solid var(--primary-light);
+            border-radius: 10px;
+            padding: 10px 14px;
+            margin-bottom: 9px;
+        }
+
+        .health-item.next-dose-soon {
+            border-left-color: var(--orange);
+        }
+
+        .health-item.next-dose-ok {
+            border-left-color: var(--mint);
+        }
+
+        .health-item-title {
+            font-weight: 700;
+            font-size: 0.88rem;
+        }
+
+        .health-item-date {
+            font-size: 0.78rem;
+            color: var(--text-sec);
+        }
+
+        .info-label {
+            font-size: 0.72rem;
+            color: var(--text-sec);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 2px;
+        }
+
+        .info-value {
+            font-size: 0.93rem;
+            font-weight: 500;
+            color: var(--text-main);
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1.1rem;
+        }
+
+        .ticket-history-item {
+            background: #f8faf8;
+            border-radius: 10px;
+            padding: 10px 14px;
+            margin-bottom: 8px;
+            border: 1px solid #e8f0e8;
+        }
     </style>
 </head>
 
@@ -549,7 +677,8 @@
             </ul>
 
             <div style="margin-top: auto;">
-                <a href="#" class="nav-link"><i class="fa-regular fa-user"></i> Meu Perfil</a>
+                <a href="#" class="nav-link" onclick="openProfileModal(); return false;"><i
+                        class="fa-regular fa-user"></i> Meu Perfil</a>
                 <a href="index.html" class="nav-link text-white-50"><i class="fa-solid fa-arrow-right-from-bracket"></i>
                     Sair</a>
 
@@ -685,13 +814,13 @@
 
     <!-- Modal Adicionar Pet (Legacy Logic Preserved) -->
     <div class="modal fade" id="addPetModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
                 <div class="modal-header border-0 pb-0">
                     <h5 class="modal-title fw-bold" id="addPetModalLabel">Gerir Animal</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body" style="max-height:75vh; overflow-y:auto;">
                     <form id="animalForm">
                         <input type="hidden" id="petId">
 
@@ -720,6 +849,35 @@
                             <input type="date" class="form-control" id="nascimento" required>
                         </div>
 
+                        <div class="row mb-3">
+                            <div class="col-6">
+                                <label class="small text-muted fw-bold">Peso (kg)</label>
+                                <input type="number" step="0.1" min="0" class="form-control" id="peso"
+                                    placeholder="Ex: 12.5">
+                            </div>
+                            <div class="col-6">
+                                <label class="small text-muted fw-bold">Sexo</label>
+                                <select class="form-select" id="sexo">
+                                    <option value="">Não indicado</option>
+                                    <option value="macho">♂ Macho</option>
+                                    <option value="femea">♀ Fêmea</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="mb-3 d-flex align-items-center gap-2">
+                            <div class="form-check form-switch mb-0">
+                                <input class="form-check-input" type="checkbox" id="castrado" role="switch">
+                                <label class="form-check-label small text-muted fw-bold" for="castrado">Castrado /
+                                    Esterilizado</label>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="small text-muted fw-bold">N.º Microchip</label>
+                            <input type="text" class="form-control" id="microchip" placeholder="Ex: 620098100012345">
+                        </div>
+
                         <div class="mb-3">
                             <label class="small text-muted fw-bold">Foto</label>
                             <div id="previewContainer" onclick="document.getElementById('foto').click()">
@@ -731,6 +889,18 @@
                                     id="btnRemoverFoto">Remover</button>
                                 <input type="hidden" id="removeFotoFlag" value="false">
                             </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="small text-muted fw-bold">Alergias Conhecidas</label>
+                            <textarea class="form-control" id="alergias" rows="2"
+                                placeholder="Ex: Amendoim, determinados antibióticos..."></textarea>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="small text-muted fw-bold">Doenças Crónicas</label>
+                            <textarea class="form-control" id="doencas_cronicas" rows="2"
+                                placeholder="Ex: Diabetes, Leishmaniose..."></textarea>
                         </div>
 
                         <button type="submit" class="btn-primary-modal" id="btnSalvar">Salvar</button>
@@ -843,6 +1013,7 @@
 
                     const card = document.createElement('div');
                     card.className = 'pet-card-wide';
+                    card.onclick = (e) => { if (!e.target.closest('.pet-actions-absolute')) openPetProfile(pet.id); };
                     card.innerHTML = `
                         <div class="pet-actions-absolute">
                             <button class="btn btn-sm btn-icon border-0" onclick="openEditModal(${pet.id})"><i class="fa-solid fa-pen"></i></button>
@@ -852,6 +1023,7 @@
                         <div class="pet-info">
                             <h3 class="pet-name">${pet.nome}</h3>
                             <div class="pet-breed">${pet.raca || 'Raça não definida'} • ${getAge(pet['Data de nascimento'])}</div>
+                            ${pet.peso ? `<span class="badge bg-light text-muted border mt-1">${pet.peso} kg</span>` : ''}
                         </div>
                     `;
                     listDiv.appendChild(card);
@@ -887,6 +1059,14 @@
                 document.getElementById('raca').value = data.id_raca;
                 document.getElementById('nascimento').value = data['Data de nascimento'];
                 document.getElementById('nascimento').max = new Date().toISOString().split('T')[0];
+
+                // New fields
+                document.getElementById('peso').value = data.peso || '';
+                document.getElementById('sexo').value = data.sexo || '';
+                document.getElementById('castrado').checked = data.castrado || false;
+                document.getElementById('microchip').value = data.microchip || '';
+                document.getElementById('alergias').value = data.alergias || '';
+                document.getElementById('doencas_cronicas').value = data.doencas_cronicas || '';
 
                 const pc = document.getElementById('previewContainer');
                 const fullUrl = getPetImageUrl(data.foto_url);
@@ -997,7 +1177,14 @@
                 }
             }
 
-            const payload = { nome, id_tipo_animal: parseInt(id_tipo), id_raca: parseInt(id_raca), "Data de nascimento": nasc, id_dono: ID_DONO, tipo_animal: tipo_txt.toLowerCase(), raca: raca_txt, foto_url };
+            const peso = parseFloat(document.getElementById('peso').value) || null;
+            const sexo = document.getElementById('sexo').value || null;
+            const castrado = document.getElementById('castrado').checked;
+            const microchip = document.getElementById('microchip').value.trim() || null;
+            const alergias = document.getElementById('alergias').value.trim() || null;
+            const doencas_cronicas = document.getElementById('doencas_cronicas').value.trim() || null;
+
+            const payload = { nome, id_tipo_animal: parseInt(id_tipo), id_raca: parseInt(id_raca), "Data de nascimento": nasc, id_dono: ID_DONO, tipo_animal: tipo_txt.toLowerCase(), raca: raca_txt, foto_url, peso, sexo, castrado, microchip, alergias, doencas_cronicas };
 
             let dbError = null;
             if (id) {
@@ -1425,7 +1612,281 @@
             const modal = new bootstrap.Modal(modalElement);
             modal.show();
         }
+        // ── PERFIL DO ANIMAL (OFFCANVAS) ─────────────────────────────
+        let currentProfilePetId = null;
+
+        async function openPetProfile(id) {
+            currentProfilePetId = id;
+            document.getElementById('petProfileName').textContent = 'A carregar...';
+            document.getElementById('petProfileBreed').textContent = '';
+            const oc = bootstrap.Offcanvas.getOrCreateInstance(document.getElementById('petProfileOffcanvas'));
+            oc.show();
+
+            const { data: pet, error } = await supabaseClient.from('animais').select('*').eq('id', id).single();
+            if (error || !pet) { document.getElementById('petProfileName').textContent = 'Erro ao carregar.'; return; }
+
+            document.getElementById('petProfileName').textContent = pet.nome;
+            document.getElementById('petProfileBreed').textContent = `${pet.raca || 'Raça não definida'} · ${getAge(pet['Data de nascimento'])}`;
+
+            const avatarContainer = document.getElementById('petProfileAvatarContainer');
+            const fullUrl = getPetImageUrl(pet.foto_url);
+            if (fullUrl) {
+                avatarContainer.innerHTML = `<img src="${fullUrl}" class="pet-profile-avatar" alt="${pet.nome}">`;
+            } else {
+                let emoji = '🐾';
+                if (pet.tipo_animal?.toLowerCase().includes('cão')) emoji = '🐶';
+                if (pet.tipo_animal?.toLowerCase().includes('gato')) emoji = '🐱';
+                avatarContainer.innerHTML = `<div class="pet-profile-emoji-lg">${emoji}</div>`;
+            }
+
+            const sexoText = pet.sexo === 'macho' ? '♂ Macho' : pet.sexo === 'femea' ? '♀ Fêmea' : '—';
+            const castradoHtml = pet.castrado ? '<span class="badge bg-success-subtle text-success fw-bold">Sim</span>' : '<span class="badge bg-secondary-subtle text-secondary">Não</span>';
+            document.getElementById('profileMicrochip').textContent = pet.microchip || '—';
+            document.getElementById('profilePeso').textContent = pet.peso ? `${pet.peso} kg` : '—';
+            document.getElementById('profileSexo').textContent = sexoText;
+            document.getElementById('profileCastrado').innerHTML = castradoHtml;
+            document.getElementById('profileAlergias').textContent = pet.alergias || 'Nenhuma conhecida';
+            document.getElementById('profileDoencas').textContent = pet.doencas_cronicas || 'Nenhuma registada';
+
+            // Reset to first tab
+            document.querySelector('#petProfileTabs .nav-link.active')?.classList.remove('active');
+            document.querySelector('#petProfileTabs .nav-link:first-child')?.classList.add('active');
+            document.querySelectorAll('.tab-pane').forEach(p => { p.classList.remove('show', 'active'); });
+            document.getElementById('tabDados')?.classList.add('show', 'active');
+
+            loadPetVaccines(id);
+            loadPetDeworming(id);
+            loadPetTicketHistory(id);
+        }
+
+        async function loadPetVaccines(petId) {
+            const container = document.getElementById('vacinasList');
+            container.innerHTML = '<p class="text-muted small">A carregar...</p>';
+            const { data, error } = await supabaseClient.from('vacinas').select('*').eq('id_animal', petId).order('data_toma', { ascending: false });
+            if (error || !data || data.length === 0) {
+                container.innerHTML = '<p class="text-muted small text-center py-3"><i class="fa-solid fa-syringe me-1 opacity-50"></i> Sem vacinas registadas.</p>';
+                return;
+            }
+            container.innerHTML = '';
+            data.forEach(v => {
+                const tomaDate = new Date(v.data_toma).toLocaleDateString('pt-PT');
+                let nextHtml = ''; let itemClass = '';
+                if (v.data_proxima_dose) {
+                    const diff = Math.ceil((new Date(v.data_proxima_dose) - new Date()) / 86400000);
+                    const nextStr = new Date(v.data_proxima_dose).toLocaleDateString('pt-PT');
+                    if (diff <= 30) { nextHtml = `<div class="health-item-date text-warning fw-bold"><i class="fa-solid fa-triangle-exclamation me-1"></i>Próxima: ${nextStr} (${diff}d)</div>`; itemClass = 'next-dose-soon'; }
+                    else { nextHtml = `<div class="health-item-date"><i class="fa-solid fa-calendar-check me-1 text-success"></i>Próxima: ${nextStr}</div>`; itemClass = 'next-dose-ok'; }
+                }
+                const div = document.createElement('div');
+                div.className = `health-item ${itemClass}`;
+                div.innerHTML = `<div class="d-flex justify-content-between align-items-start"><div><div class="health-item-title"><i class="fa-solid fa-syringe me-1 text-primary"></i>${v.nome}</div><div class="health-item-date">Tomada: ${tomaDate}</div>${nextHtml}</div><button class="btn btn-sm btn-outline-danger border-0 py-0" onclick="deleteVacina(${v.id})"><i class="fa-solid fa-trash fa-xs"></i></button></div>`;
+                container.appendChild(div);
+            });
+        }
+
+        async function deleteVacina(id) {
+            if (!confirm('Eliminar este registo de vacina?')) return;
+            await supabaseClient.from('vacinas').delete().eq('id', id);
+            loadPetVaccines(currentProfilePetId);
+        }
+
+        async function loadPetDeworming(petId) {
+            const container = document.getElementById('desparasitacaoList');
+            container.innerHTML = '<p class="text-muted small">A carregar...</p>';
+            const { data, error } = await supabaseClient.from('desparasitacao').select('*').eq('id_animal', petId).order('data', { ascending: false });
+            if (error || !data || data.length === 0) {
+                container.innerHTML = '<p class="text-muted small text-center py-3"><i class="fa-solid fa-shield-heart me-1 opacity-50"></i> Sem desparasitações registadas.</p>';
+                return;
+            }
+            container.innerHTML = '';
+            data.forEach(d => {
+                const dataStr = new Date(d.data).toLocaleDateString('pt-PT');
+                const icon = d.tipo === 'interna' ? '💊' : '🔗';
+                const label = d.tipo === 'interna' ? 'Interna (Comprimido)' : 'Externa (Coleira/Pipeta)';
+                const div = document.createElement('div');
+                div.className = 'health-item';
+                div.innerHTML = `<div class="d-flex justify-content-between align-items-start"><div><div class="health-item-title">${icon} ${label}</div>${d.produto ? `<div class="health-item-date">Produto: ${d.produto}</div>` : ''}<div class="health-item-date"><i class="fa-regular fa-calendar me-1"></i>${dataStr}</div></div><button class="btn btn-sm btn-outline-danger border-0 py-0" onclick="deleteDesparasitacao(${d.id})"><i class="fa-solid fa-trash fa-xs"></i></button></div>`;
+                container.appendChild(div);
+            });
+        }
+
+        async function deleteDesparasitacao(id) {
+            if (!confirm('Eliminar este registo?')) return;
+            await supabaseClient.from('desparasitacao').delete().eq('id', id);
+            loadPetDeworming(currentProfilePetId);
+        }
+
+        async function loadPetTicketHistory(petId) {
+            const container = document.getElementById('petTicketHistory');
+            container.innerHTML = '<p class="text-muted small">A carregar...</p>';
+            const { data, error } = await supabaseClient.from('tickets').select('*').eq('id_animal', petId).order('criado_em', { ascending: false });
+            if (error || !data || data.length === 0) {
+                container.innerHTML = '<p class="text-muted small text-center py-3"><i class="fa-solid fa-box-open me-1 opacity-50"></i> Sem historial de consultas.</p>';
+                return;
+            }
+            const colors = { pendente: 'warning', marcado: 'success', recusado: 'danger', arquivado: 'secondary' };
+            container.innerHTML = '';
+            data.forEach(t => {
+                const dateStr = new Date(t.criado_em).toLocaleDateString('pt-PT');
+                const c = colors[t.estado] || 'secondary';
+                const div = document.createElement('div');
+                div.className = 'ticket-history-item';
+                div.innerHTML = `<div class="d-flex justify-content-between align-items-start mb-1"><span class="fw-bold small">${t.motivo}</span><span class="badge text-bg-${c}">${t.estado}</span></div><div class="small text-muted">${dateStr}</div>${t.feedback_publico ? `<div class="small mt-1 p-2 bg-white rounded border">${t.feedback_publico}</div>` : ''}`;
+                container.appendChild(div);
+            });
+        }
+
+        async function saveVacina() {
+            const nome = document.getElementById('vacinaNome').value.trim();
+            const dataToma = document.getElementById('vacinaDataToma').value;
+            const proximaDose = document.getElementById('vacinaProximaDose').value;
+            if (!nome || !dataToma) { alert('Preencha o nome e a data de toma.'); return; }
+            const btn = document.getElementById('btnSalvarVacina');
+            btn.disabled = true;
+            const { error } = await supabaseClient.from('vacinas').insert([{ id_animal: currentProfilePetId, nome, data_toma: dataToma, data_proxima_dose: proximaDose || null }]);
+            btn.disabled = false;
+            if (error) { alert('Erro: ' + error.message); return; }
+            bootstrap.Modal.getInstance(document.getElementById('addVacinaModal')).hide();
+            document.getElementById('vacinaForm').reset();
+            loadPetVaccines(currentProfilePetId);
+        }
+
+        async function saveDesparasitacao() {
+            const tipo = document.getElementById('despTipo').value;
+            const produto = document.getElementById('despProduto').value.trim();
+            const data = document.getElementById('despData').value;
+            if (!tipo || !data) { alert('Preencha o tipo e a data.'); return; }
+            const btn = document.getElementById('btnSalvarDesp');
+            btn.disabled = true;
+            const { error } = await supabaseClient.from('desparasitacao').insert([{ id_animal: currentProfilePetId, tipo, produto: produto || null, data }]);
+            btn.disabled = false;
+            if (error) { alert('Erro: ' + error.message); return; }
+            bootstrap.Modal.getInstance(document.getElementById('addDesparasitacaoModal')).hide();
+            document.getElementById('despForm').reset();
+            loadPetDeworming(currentProfilePetId);
+        }
+
+        function openTicketFromProfile() {
+            const oc = bootstrap.Offcanvas.getInstance(document.getElementById('petProfileOffcanvas'));
+            if (oc) oc.hide();
+            document.getElementById('ticketForm').reset();
+            document.getElementById('evidencePreview').innerHTML = '';
+            const now = new Date(); now.setSeconds(0, 0);
+            document.getElementById('ticketDataSugerida').min = now.toISOString().slice(0, 16);
+            preparePetSelector().then(() => {
+                document.querySelectorAll('.pet-select-item').forEach(item => {
+                    if (parseInt(item.dataset.id) === currentProfilePetId) {
+                        item.classList.add('selected');
+                        document.getElementById('ticketPetId').value = currentProfilePetId;
+                    }
+                });
+            });
+            loadVeterinarios();
+            new bootstrap.Modal(document.getElementById('addTicketModal')).show();
+        }
+
+        function editPetFromProfile() {
+            const oc = bootstrap.Offcanvas.getInstance(document.getElementById('petProfileOffcanvas'));
+            if (oc) oc.hide();
+            setTimeout(() => openEditModal(currentProfilePetId), 350);
+        }
+
+        async function deletePetFromProfile() {
+            if (!confirm('Tem a certeza? Esta ação é irreversível.\nO animal será removido permanentemente.')) return;
+            const oc = bootstrap.Offcanvas.getInstance(document.getElementById('petProfileOffcanvas'));
+            if (oc) oc.hide();
+            await deletePet(currentProfilePetId);
+        }
+
+        function openAddVacinaModal() {
+            document.getElementById('vacinaForm').reset();
+            new bootstrap.Modal(document.getElementById('addVacinaModal')).show();
+        }
+
+        function openAddDespModal() {
+            document.getElementById('despForm').reset();
+            new bootstrap.Modal(document.getElementById('addDesparasitacaoModal')).show();
+        }
+
+        // ── PERFIL DO DONO ───────────────────────────────────────────
+        async function openProfileModal() {
+            if (!ID_DONO) { alert('Sessão não iniciada.'); return; }
+            const { data, error } = await supabaseClient
+                .from('clientes')
+                .select('nome, telefone')
+                .eq('id', ID_DONO)
+                .single();
+            if (error || !data) { alert('Erro ao carregar perfil.'); return; }
+
+            document.getElementById('profileNome').value = data.nome || '';
+            document.getElementById('profileTelefone').value = data.telefone || '';
+            document.getElementById('profileSaveMsg').classList.add('d-none');
+            new bootstrap.Modal(document.getElementById('editProfileModal')).show();
+        }
+
+        document.addEventListener('submit', async function (e) {
+            if (!e.target || e.target.id !== 'profileForm') return;
+            e.preventDefault();
+            const btn = document.getElementById('btnSalvarPerfil');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> A guardar...';
+
+            const nome = document.getElementById('profileNome').value.trim();
+            const telefone = document.getElementById('profileTelefone').value.trim();
+
+            const { error } = await supabaseClient
+                .from('clientes')
+                .update({ nome, telefone })
+                .eq('id', ID_DONO);
+
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fa-solid fa-floppy-disk me-1"></i> Guardar Alterações';
+
+            if (error) {
+                alert('Erro ao guardar: ' + error.message);
+            } else {
+                // Update greeting
+                const primeiroNome = nome.split(' ')[0];
+                document.querySelector('.header-area h2').textContent = `Olá, ${primeiroNome}! 👋`;
+                // Show success
+                document.getElementById('profileSaveMsg').classList.remove('d-none');
+                setTimeout(() => document.getElementById('profileSaveMsg').classList.add('d-none'), 3000);
+            }
+        });
     </script>
+
+    <!-- Modal Editar Perfil do Dono -->
+    <div class="modal fade" id="editProfileModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-4">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold"><i class="fa-regular fa-user me-2 text-primary"></i>Meu Perfil</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="profileForm">
+                        <div class="mb-3">
+                            <label class="small text-muted fw-bold">Nome Completo</label>
+                            <input type="text" class="form-control mt-1" id="profileNome" required
+                                placeholder="O seu nome">
+                        </div>
+                        <div class="mb-4">
+                            <label class="small text-muted fw-bold">Número de Telefone</label>
+                            <input type="tel" class="form-control mt-1" id="profileTelefone"
+                                placeholder="Ex: 912 345 678">
+                        </div>
+                        <div id="profileSaveMsg" class="alert alert-success py-2 small d-none">
+                            <i class="fa-solid fa-circle-check me-1"></i> Perfil actualizado com sucesso!
+                        </div>
+                        <button type="submit" class="btn w-100 py-2 fw-bold text-white rounded-3" id="btnSalvarPerfil"
+                            style="background: var(--primary);">
+                            <i class="fa-solid fa-floppy-disk me-1"></i> Guardar Alterações
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Modal Detalhes Arquivados -->
     <div class="modal fade" id="archivedDetailsModal" tabindex="-1" aria-hidden="true">
@@ -1489,5 +1950,189 @@
         </div>
     </div>
 </body>
+
+<!-- ═══ Pet Profile Offcanvas ═══════════════════════════════════════ -->
+<div class="offcanvas offcanvas-end" tabindex="-1" id="petProfileOffcanvas" style="width:480px; max-width:100%;">
+    <!-- Header -->
+    <div class="pet-profile-header">
+        <div id="petProfileAvatarContainer">
+            <div class="pet-profile-emoji-lg">🐾</div>
+        </div>
+        <div class="flex-grow-1">
+            <h5 class="mb-0 fw-bold" id="petProfileName">—</h5>
+            <div class="opacity-75 small" id="petProfileBreed">—</div>
+        </div>
+        <button type="button" class="btn-close btn-close-white ms-2" data-bs-dismiss="offcanvas"></button>
+    </div>
+
+    <!-- Tabs Nav -->
+    <div class="profile-tab-nav">
+        <ul class="nav nav-pills gap-1" id="petProfileTabs">
+            <li class="nav-item">
+                <button class="nav-link active" data-bs-toggle="pill" data-bs-target="#tabDados">
+                    <i class="fa-solid fa-paw me-1"></i>Dados
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="pill" data-bs-target="#tabSaude">
+                    <i class="fa-solid fa-heart-pulse me-1"></i>Saúde
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="pill" data-bs-target="#tabHistorico">
+                    <i class="fa-solid fa-clock-rotate-left me-1"></i>Histórico
+                </button>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Tab Content -->
+    <div class="tab-content offcanvas-tab-content">
+
+        <!-- Tab A: Dados Básicos -->
+        <div class="tab-pane fade show active" id="tabDados">
+            <div class="info-grid">
+                <div>
+                    <div class="info-label">Microchip</div>
+                    <div class="info-value" id="profileMicrochip">—</div>
+                </div>
+                <div>
+                    <div class="info-label">Peso</div>
+                    <div class="info-value" id="profilePeso">—</div>
+                </div>
+                <div>
+                    <div class="info-label">Sexo</div>
+                    <div class="info-value" id="profileSexo">—</div>
+                </div>
+                <div>
+                    <div class="info-label">Castrado/Esterilizado</div>
+                    <div class="info-value" id="profileCastrado">—</div>
+                </div>
+            </div>
+            <div class="mb-3">
+                <div class="info-label mb-1">Alergias Conhecidas</div>
+                <div class="p-3 bg-light rounded-3 small" id="profileAlergias">—</div>
+            </div>
+            <div class="mb-2">
+                <div class="info-label mb-1">Doenças Crónicas</div>
+                <div class="p-3 bg-light rounded-3 small" id="profileDoencas">—</div>
+            </div>
+        </div>
+
+        <!-- Tab B: Caderneta de Saúde -->
+        <div class="tab-pane fade" id="tabSaude">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <h6 class="fw-bold mb-0"><i class="fa-solid fa-syringe me-1 text-primary"></i>Vacinas</h6>
+                <button class="btn btn-sm btn-outline-primary rounded-pill px-3" onclick="openAddVacinaModal()">+
+                    Adicionar</button>
+            </div>
+            <div id="vacinasList" class="mb-4">
+                <p class="text-muted small">A carregar...</p>
+            </div>
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <h6 class="fw-bold mb-0"><i class="fa-solid fa-shield-heart me-1 text-success"></i>Desparasitação</h6>
+                <button class="btn btn-sm btn-outline-success rounded-pill px-3" onclick="openAddDespModal()">+
+                    Adicionar</button>
+            </div>
+            <div id="desparasitacaoList">
+                <p class="text-muted small">A carregar...</p>
+            </div>
+        </div>
+
+        <!-- Tab C: Histórico de Atendimentos -->
+        <div class="tab-pane fade" id="tabHistorico">
+            <div id="petTicketHistory">
+                <p class="text-muted small">A carregar...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer Actions -->
+    <div class="offcanvas-footer-actions">
+        <button class="btn btn-primary flex-grow-1 rounded-3 fw-bold" onclick="openTicketFromProfile()">
+            <i class="fa-solid fa-ticket me-1"></i>Pedir Consulta
+        </button>
+        <button class="btn btn-outline-secondary rounded-3" onclick="editPetFromProfile()" title="Editar Animal">
+            <i class="fa-solid fa-pen"></i>
+        </button>
+        <button class="btn btn-outline-danger rounded-3" onclick="deletePetFromProfile()" title="Remover Animal">
+            <i class="fa-solid fa-trash"></i>
+        </button>
+    </div>
+</div>
+
+<!-- Modal Registar Vacina -->
+<div class="modal fade" id="addVacinaModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg rounded-4">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold"><i class="fa-solid fa-syringe me-2 text-primary"></i>Registar Vacina
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="vacinaForm">
+                    <div class="mb-3">
+                        <label class="small text-muted fw-bold">Nome da Vacina</label>
+                        <input type="text" class="form-control mt-1" id="vacinaNome" required
+                            placeholder="Ex: Raiva, Quíntupla...">
+                    </div>
+                    <div class="row mb-4">
+                        <div class="col-6">
+                            <label class="small text-muted fw-bold">Data de Toma</label>
+                            <input type="date" class="form-control mt-1" id="vacinaDataToma" required>
+                        </div>
+                        <div class="col-6">
+                            <label class="small text-muted fw-bold">Próxima Dose</label>
+                            <input type="date" class="form-control mt-1" id="vacinaProximaDose">
+                        </div>
+                    </div>
+                    <button type="button" class="btn w-100 py-2 fw-bold text-white rounded-3" id="btnSalvarVacina"
+                        style="background: var(--primary);" onclick="saveVacina()">
+                        <i class="fa-solid fa-floppy-disk me-1"></i> Guardar Vacina
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Registar Desparasitação -->
+<div class="modal fade" id="addDesparasitacaoModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg rounded-4">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold"><i class="fa-solid fa-shield-heart me-2 text-success"></i>Registar
+                    Desparasitação</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="despForm">
+                    <div class="mb-3">
+                        <label class="small text-muted fw-bold">Tipo</label>
+                        <select class="form-select mt-1" id="despTipo" required>
+                            <option value="">Selecionar...</option>
+                            <option value="interna">Interna (Comprimido)</option>
+                            <option value="externa">Externa (Coleira / Pipeta)</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="small text-muted fw-bold">Produto (opcional)</label>
+                        <input type="text" class="form-control mt-1" id="despProduto"
+                            placeholder="Ex: Milbemax, Seresto...">
+                    </div>
+                    <div class="mb-4">
+                        <label class="small text-muted fw-bold">Data</label>
+                        <input type="date" class="form-control mt-1" id="despData" required>
+                    </div>
+                    <button type="button" class="btn w-100 py-2 fw-bold text-white rounded-3" id="btnSalvarDesp"
+                        style="background: var(--mint);" onclick="saveDesparasitacao()">
+                        <i class="fa-solid fa-floppy-disk me-1"></i> Guardar Registo
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
 </html>
