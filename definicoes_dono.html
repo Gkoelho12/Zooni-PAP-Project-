@@ -1,0 +1,1781 @@
+<!DOCTYPE html>
+<html lang="pt">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Definições — Zooni</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- i18n must load early so translations apply on DOMContentLoaded -->
+    <script src="assets/js/i18n.js"></script>
+    <script src="assets/js/theme.js"></script>
+    <link rel="stylesheet" href="assets/css/theme.css">
+    <!-- Google Places Autocomplete -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDzz0paMrgyjgKyHuTeCFQ8EXfJHdZMeoM&libraries=places&callback=initPlaces" async defer></script>
+    <style>
+        :root {
+            --primary: #3D8B3D;
+            --primary-dark: #1E4D1E;
+            --primary-light: #5CB85C;
+            --bg-color: #F2F8F2;
+            --text-main: #1a2e1a;
+            --text-sec: #5a7a5a;
+            --danger: #d63031;
+            --card-bg: #ffffff;
+            --border: #e8f0e8;
+        }
+
+        [data-theme="dark"] {
+            /* Fundo Principal */
+            --bg-color: #121212;
+            /* Textos */
+            --text-main: #E4E4E7;
+            --text-sec: #A1A1AA;
+            /* Fundos de Cartões e Janelas */
+            --card-bg: #242424;
+            --card-hover: #333333;
+            /* Bordas */
+            --border-color: rgba(255, 255, 255, 0.1);
+            --border: rgba(255, 255, 255, 0.1);
+            /* Inputs */
+            --input-bg: #09090B;
+            --input-border: #52525B;
+            /* Cores de Destaque Desaturadas para Dark Mode */
+            --primary: #34D399; /* Zooni Green suave */
+            --danger: #F87171; /* Vermelho suave */
+        }
+
+        [data-theme="dark"] body { background-color: var(--bg-color); color: var(--text-main); }
+        
+        [data-theme="dark"] .card-panel,
+        [data-theme="dark"] .pet-card,
+        [data-theme="dark"] .pet-card-wide,
+        [data-theme="dark"] .ticket-item,
+        [data-theme="dark"] .glass-card,
+        [data-theme="dark"] .settings-card,
+        [data-theme="dark"] .settings-nav,
+        [data-theme="dark"] .checklist-panel { 
+            background-color: var(--card-bg) !important; 
+            border-color: var(--border-color) !important; 
+            color: var(--text-main) !important; 
+        }
+
+        [data-theme="dark"] .bg-white,
+        [data-theme="dark"] .bg-light { background-color: var(--card-bg) !important; }
+        
+        [data-theme="dark"] .text-dark,
+        [data-theme="dark"] .text-muted,
+        [data-theme="dark"] small,
+        [data-theme="dark"] .text-secondary { color: var(--text-sec) !important; }
+        
+        /* Prevent Google Maps Autocomplete Error Icon from repeating and blocking text */
+        .pac-target-input, #inputLocalidade {
+            background-image: none !important;
+        }
+
+        /* Formulários / Inputs */
+        [data-theme="dark"] .form-control,
+        [data-theme="dark"] .form-select,
+        [data-theme="dark"] input:not([type="checkbox"]):not([type="radio"]),
+        [data-theme="dark"] textarea,
+        [data-theme="dark"] .input-group-text,
+        [data-theme="dark"] select { 
+            background-color: var(--input-bg) !important; 
+            color: var(--text-main) !important; 
+            border: 1px solid var(--input-border) !important; 
+        }
+        
+        [data-theme="dark"] .form-control:focus,
+        [data-theme="dark"] .form-select:focus,
+        [data-theme="dark"] textarea:focus {
+            border-color: var(--primary) !important;
+            box-shadow: 0 0 0 0.25rem rgba(52, 211, 153, 0.25) !important;
+        }
+
+        [data-theme="dark"] input::placeholder,
+        [data-theme="dark"] textarea::placeholder,
+        [data-theme="dark"] .form-control::placeholder { color: var(--text-sec) !important; opacity: 1; }
+        
+        [data-theme="dark"] label,
+        [data-theme="dark"] .form-label { color: var(--text-main) !important; }
+        
+        /* Dropdowns & Menus Suspensos / Notificações / Modal */
+        [data-theme="dark"] .dropdown-menu,
+        [data-theme="dark"] .notification-dropdown,
+        [data-theme="dark"] .modal-content,
+        [data-theme="dark"] .profile-dropdown {
+            background-color: var(--card-bg) !important;
+            border: 1px solid #333 !important;
+            box-shadow: none !important;
+            color: var(--text-main) !important;
+        }
+
+        [data-theme="dark"] .dropdown-item { color: var(--text-main); }
+        [data-theme="dark"] .dropdown-item:hover { background-color: var(--card-hover); color: white; }
+        
+        [data-theme="dark"] .notification-item { border-color: var(--border-color); }
+        [data-theme="dark"] .notification-item:hover { background-color: var(--card-hover); }
+        [data-theme="dark"] .notification-item.unread { background-color: rgba(52, 211, 153, 0.05); border-left-color: var(--primary); }
+        
+        /* Toggles / Switches (Definições) */
+        [data-theme="dark"] .form-check-input[type="checkbox"][role="switch"] {
+            background-color: #3F3F46 !important;
+            border-color: #3F3F46 !important;
+        }
+        [data-theme="dark"] .form-check-input[type="checkbox"][role="switch"]:checked {
+            background-color: var(--primary) !important;
+            border-color: var(--primary) !important;
+        }
+
+        /* Settings specific nav */
+        [data-theme="dark"] .settings-nav-item { color: var(--text-sec); }
+        [data-theme="dark"] .settings-nav-item.active { color: var(--primary); }
+        [data-theme="dark"] .settings-nav-item:hover { background: rgba(255,255,255,0.05); color: var(--text-main); }
+
+        /* Fullcalendar overrides (Agenda) */
+        [data-theme="dark"] .fc { color: var(--text-main); }
+        [data-theme="dark"] .fc table,
+        [data-theme="dark"] .fc th,
+        [data-theme="dark"] .fc td { border-color: var(--border-color); background-color: var(--card-bg); }
+        [data-theme="dark"] .fc-toolbar-title,
+        [data-theme="dark"] .fc-col-header-cell-cushion,
+        [data-theme="dark"] .fc-daygrid-day-number { color: var(--text-main); }
+        [data-theme="dark"] .fc-button { background-color: var(--primary); border-color: rgba(255,255,255,0.1); color: #121212 !important; }
+        [data-theme="dark"] .fc-day-today { background-color: rgba(52, 211, 153, 0.1) !important; }
+
+        /* Bordas genéricas e Diversos */
+        [data-theme="dark"] .border,
+        [data-theme="dark"] .border-bottom,
+        [data-theme="dark"] .border-top { border-color: var(--border-color) !important; }
+        
+        [data-theme="dark"] .header-area,
+        [data-theme="dark"] .alert { background-color: transparent !important; color: var(--text-main) !important; }
+        [data-theme="dark"] .shadow-sm, [data-theme="dark"] .shadow { box-shadow: none !important; }
+        [data-theme="dark"] .rounded.border { background-color: var(--card-bg); }
+        [data-theme="dark"] .filter-pill { background-color: var(--card-bg); color: var(--text-sec); border-color: var(--border-color); }
+        [data-theme="dark"] .filter-pill.active { background-color: var(--primary); color: #121212; }
+        [data-theme="dark"] .status-badge { background-color: rgba(255,255,255,0.08); }
+
+        * { box-sizing: border-box; }
+
+        body {
+            background-color: var(--bg-color);
+            font-family: 'Outfit', sans-serif;
+            color: var(--text-main);
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        /* ── LAYOUT ──────────────────────────────────── */
+        .app-container {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            min-height: 100vh;
+        }
+
+        /* ── SIDEBAR STYLES (DONO) ── */
+        .sidebar {
+            background-color: var(--primary);
+            color: white;
+            padding: 2rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+        }
+
+        .logo-container {
+            margin-bottom: 3rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .logo-img-sidebar {
+            max-width: 180px;
+            filter: brightness(0) invert(1);
+        }
+
+        .nav-links {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            flex-grow: 1;
+        }
+
+        .nav-item {
+            margin: 0;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 15px;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            border-radius: 12px;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        .nav-link.active {
+            border-left: 4px solid #fff;
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        .nav-link i {
+            width: 24px;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+
+        .nav-link.text-danger {
+            color: #ff6b6b !important;
+        }
+        .nav-link.text-danger:hover {
+            background-color: rgba(255, 107, 107, 0.15);
+            color: #ff6b6b !important;
+        }
+
+        .nav-line-break {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin: 15px 0;
+        }
+
+        .btn-sidebar-cta {
+            background-color: white;
+            color: var(--primary);
+            border: none;
+            border-radius: 12px;
+            padding: 12px;
+            font-weight: 700;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            transition: transform 0.2s;
+            cursor: pointer;
+        }
+
+        .btn-sidebar-cta:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        /* ── MAIN CONTENT ────────────────────────────── */
+        .main-content {
+            padding: 2.5rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2.5rem;
+        }
+
+        /* ── SETTINGS LAYOUT ─────────────────────────── */
+        .settings-container {
+            display: grid;
+            grid-template-columns: 240px 1fr;
+            gap: 2rem;
+            align-items: start;
+        }
+
+        /* Settings Nav */
+        .settings-nav {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 1rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+            border: 1px solid var(--border);
+            position: sticky;
+            top: 2rem;
+        }
+
+        .settings-nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 14px;
+            border-radius: 12px;
+            cursor: pointer;
+            color: var(--text-sec);
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+        }
+
+        .settings-nav-item:hover {
+            background: var(--bg-color);
+            color: var(--text-main);
+        }
+
+        .settings-nav-item.active {
+            background: rgba(61,139,61,0.12);
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .settings-nav-item i {
+            width: 20px;
+            text-align: center;
+            font-size: 1rem;
+        }
+
+        .settings-nav-divider {
+            height: 1px;
+            background: var(--border);
+            margin: 8px 0;
+        }
+
+        /* Settings Panels */
+        .settings-panel {
+            display: none;
+        }
+
+        .settings-panel.active {
+            display: block;
+        }
+
+        .settings-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 1.75rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+            border: 1px solid var(--border);
+            margin-bottom: 1.5rem;
+        }
+
+        .settings-card-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .settings-card-title i {
+            color: var(--primary);
+        }
+
+        /* Form styles */
+        .form-label {
+            font-weight: 600;
+            font-size: 0.82rem;
+            color: var(--text-sec);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+
+        .form-control, .form-select {
+            border-radius: 10px;
+            border: 1.5px solid var(--border);
+            padding: 10px 14px;
+            font-family: 'Outfit', sans-serif;
+            background: var(--bg-color);
+            color: var(--text-main);
+            font-size: 0.95rem;
+            transition: border-color 0.2s;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(61,139,61,0.1);
+            background: var(--card-bg);
+        }
+
+        .btn-save {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 12px 28px;
+            font-weight: 700;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-save:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(61,139,61,0.3);
+        }
+
+        /* Avatar upload */
+        .avatar-section {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .avatar-preview {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--primary);
+        }
+
+        .avatar-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .btn-avatar {
+            padding: 7px 16px;
+            border-radius: 8px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: 1.5px solid var(--primary);
+            background: transparent;
+            color: var(--primary);
+            font-family: 'Outfit', sans-serif;
+            transition: all 0.2s;
+        }
+
+        .btn-avatar:hover { background: var(--primary); color: white; }
+
+        .btn-avatar-remove {
+            border-color: var(--danger);
+            color: var(--danger);
+        }
+
+        .btn-avatar-remove:hover { background: var(--danger); color: white; }
+
+        /* Toggle rows */
+        .toggle-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .toggle-row:last-child { border-bottom: none; }
+
+        .toggle-label {
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 2px;
+        }
+
+        .toggle-desc {
+            font-size: 0.78rem;
+            color: var(--text-sec);
+        }
+
+        .form-check-input[type="checkbox"] {
+            width: 44px;
+            height: 24px;
+            border-radius: 12px;
+            cursor: pointer;
+            margin: 0;
+            flex-shrink: 0;
+        }
+
+        .form-check-input:checked { background-color: var(--primary); border-color: var(--primary); }
+
+        /* Appearance selector */
+        .appearance-options {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .appearance-option {
+            border: 2px solid var(--border);
+            border-radius: 14px;
+            padding: 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-sec);
+        }
+
+        .appearance-option .icon { font-size: 1.6rem; margin-bottom: 6px; display: block; }
+
+        .appearance-option:hover { border-color: var(--primary); color: var(--primary); }
+        .appearance-option.selected { border-color: var(--primary); background: rgba(61,139,61,0.08); color: var(--primary); }
+
+        /* Invoice table */
+        .invoice-table { width: 100%; border-collapse: collapse; }
+        .invoice-table th { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-sec); padding: 10px 12px; text-align: left; border-bottom: 2px solid var(--border); }
+        .invoice-table td { padding: 12px; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
+        .invoice-table tr:last-child td { border-bottom: none; }
+
+        /* Danger zone */
+        .danger-zone {
+            border: 1.5px solid #fee2e2;
+            background: #fff5f5;
+            border-radius: 16px;
+            padding: 1.5rem;
+        }
+
+        [data-theme="dark"] .danger-zone { background: rgba(214,48,49,0.06); border-color: rgba(214,48,49,0.3); }
+
+        .btn-danger-action {
+            background: var(--danger);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 10px 22px;
+            font-weight: 700;
+            font-family: 'Outfit', sans-serif;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 12px;
+        }
+
+        .btn-danger-action:hover { opacity: 0.85; }
+
+        /* Export button */
+        .btn-export {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 12px 24px;
+            font-weight: 700;
+            font-family: 'Outfit', sans-serif;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.2s;
+        }
+
+        .btn-export:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(61,139,61,0.3); }
+
+        /* ── TOAST ───────────────────────────────────── */
+        .toast-container-custom {
+            position: fixed;
+            top: 1.5rem;
+            right: 1.5rem;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .toast-custom {
+            background: white;
+            border-radius: 14px;
+            padding: 14px 18px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 280px;
+            animation: slideInRight 0.3s ease;
+            border-left: 4px solid var(--primary);
+        }
+
+        .toast-custom.error { border-left-color: var(--danger); }
+
+        .toast-custom .toast-icon { font-size: 1.2rem; }
+        .toast-custom .toast-icon.success { color: var(--primary); }
+        .toast-custom .toast-icon.error { color: var(--danger); }
+        .toast-custom .toast-text { font-size: 0.88rem; font-weight: 600; color: #1e293b; flex-grow: 1; }
+
+        @keyframes slideInRight {
+            from { opacity: 0; transform: translateX(30px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes slideOutRight {
+            from { opacity: 1; transform: translateX(0); }
+            to { opacity: 0; transform: translateX(30px); }
+        }
+
+        /* Profile pic button */
+        .profile-pic {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            object-fit: cover;
+            cursor: pointer;
+        }
+
+        .password-strength {
+            height: 4px;
+            border-radius: 2px;
+            background: #e2e8f0;
+            margin-top: 6px;
+            overflow: hidden;
+        }
+
+        .password-strength-bar {
+            height: 100%;
+            border-radius: 2px;
+            transition: width 0.3s, background-color 0.3s;
+            width: 0%;
+        }
+
+        @media (max-width: 768px) {
+            .app-container { grid-template-columns: 1fr; }
+            .settings-container { grid-template-columns: 1fr; }
+            .sidebar { display: none; }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Toast container -->
+    <div class="toast-container-custom" id="toastContainer"></div>
+
+    <div class="app-container">
+        <!-- SIDEBAR -->
+                <aside class="sidebar">
+            <div class="logo-container d-flex justify-content-between align-items-center w-100">
+                <img src="assets/logo.png" alt="Zooni Logo" class="logo-img-sidebar">
+                <button class="btn text-white d-md-none fs-4 p-0" onclick="document.querySelector('.sidebar').classList.remove('active')" style="background:transparent; border:none;">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <ul class="nav-links">
+                <li class="nav-item">
+                    <a href="dashboard_dono.html" class="nav-link "><i class="fa-solid fa-house"></i> <span data-i18n="nav_home">Início</span></a>
+                </li>
+                <li class="nav-item">
+                    <a href="meus_animais.html" class="nav-link "><i class="fa-solid fa-dog"></i> <span data-i18n="nav_animals">Os Meus Animais</span></a>
+                </li>
+                <li class="nav-item">
+                    <a href="agenda_dono.html" class="nav-link "><i class="fa-solid fa-calendar"></i> <span data-i18n="nav_calendar">Calendário</span></a>
+                </li>
+                <li class="nav-item">
+                    <a href="chat_dono.html" class="nav-link "><i class="fa-solid fa-comments"></i> <span data-i18n="nav_chat">Chat da Clínica</span></a>
+                </li>
+                <li class="nav-item">
+                    <a href="veterinarios.html" class="nav-link "><i class="fa-solid fa-user-doctor"></i> <span>Veterinários</span></a>
+                </li>
+            </ul>
+            
+            <div class="nav-line-break"></div>
+            <a href="definicoes_dono.html" class="nav-link active"><i class="fa-solid fa-gear"></i> <span data-i18n="nav_settings">Configurações</span></a>
+            <a href="index.html" class="nav-link text-danger"><i class="fa-solid fa-arrow-right-from-bracket"></i> <span data-i18n="nav_logout">Sair</span></a>
+
+            <button class="btn-sidebar-cta mt-auto" data-bs-toggle="modal" data-bs-target="#novoTicketModal">
+                <i class="fa-solid fa-plus"></i> <span data-i18n="nav_new_ticket">Novo Pedido</span>
+            </button>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="main-content">
+            <!-- Header -->
+            <div class="page-header">
+                <div>
+                    <h2 class="fw-bold mb-1"><span data-i18n="settings_title">Definições</span> ⚙️</h2>
+                    <p class="text-secondary m-0" data-i18n="settings_subtitle">Gere a sua conta, notificações e privacidade.</p>
+                </div>
+                <div class="d-flex align-items-center gap-3">
+                    <div class="dropdown">
+                        <img src="https://ui-avatars.com/api/?name=User&background=3D8B3D&color=fff"
+                            alt="Profile" class="profile-pic" id="headerProfilePic"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                        <div class="dropdown-menu dropdown-menu-end" style="border-radius:16px; min-width:220px; padding:0; box-shadow:0 10px 30px rgba(0,0,0,0.1); border:1px solid #f1f2f6; margin-top:10px;">
+                            <div class="p-3 border-bottom text-center bg-light" style="border-radius:16px 16px 0 0;">
+                                <h6 class="mb-0 fw-bold text-dark" id="dropdownUserName">Carregando...</h6>
+                                <span class="badge bg-secondary mb-1" data-i18n="common_tutor">Tutor</span>
+                                <div class="small text-muted" id="dropdownUserEmail" style="font-size:0.75rem;">carregando...</div>
+                            </div>
+                            <div class="p-2">
+                                <a class="dropdown-item py-2" href="#" onclick="switchSection('perfil'); return false;"><i class="fa-regular fa-user me-2 text-primary"></i> <span data-i18n="common_profile">O Meu Perfil</span></a>
+                                <a class="dropdown-item py-2" href="meus_animais.html"><i class="fa-solid fa-paw me-2 text-primary"></i> <span data-i18n="common_manage_animals">Gerir Animais</span></a>
+                            </div>
+                            <div class="p-2 border-top">
+                                <a class="dropdown-item py-2 text-danger" href="#" onclick="localStorage.removeItem('zooni-remember'); supabaseClient.auth.signOut().then(() => window.location.href='login.html?logout=1');"><i class="fa-solid fa-arrow-right-from-bracket me-2"></i> <span data-i18n="common_sign_out">Terminar Sessão</span></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings Layout -->
+            <div class="settings-container">
+                <!-- Left: Nav -->
+                <nav class="settings-nav">
+                    <button class="settings-nav-item active" onclick="switchSection('perfil')">
+                        <i class="fa-regular fa-user"></i> <span data-i18n="settings_nav_profile">Perfil e Conta</span>
+                    </button>
+                    <button class="settings-nav-item" onclick="switchSection('notificacoes')">
+                        <i class="fa-regular fa-bell"></i> <span data-i18n="settings_nav_notifications">Notificações</span>
+                    </button>
+                    <button class="settings-nav-item" onclick="switchSection('preferencias')">
+                        <i class="fa-solid fa-palette"></i> <span data-i18n="settings_nav_preferences">Preferências</span>
+                    </button>
+                    <div class="settings-nav-divider"></div>
+                    <button class="settings-nav-item" onclick="switchSection('faturacao')">
+                        <i class="fa-regular fa-credit-card"></i> <span data-i18n="settings_nav_billing">Faturação</span>
+                    </button>
+                    <button class="settings-nav-item" onclick="switchSection('privacidade')">
+                        <i class="fa-solid fa-shield-halved"></i> <span data-i18n="settings_nav_privacy">Privacidade / RGPD</span>
+                    </button>
+                </nav>
+
+                <!-- Right: Panels -->
+                <div>
+
+                    <!-- ═══ PERFIL E CONTA ═══════════════════════════ -->
+                    <div id="panel-perfil" class="settings-panel active">
+
+                        <!-- Avatar -->
+                        <div class="settings-card">
+                            <div class="settings-card-title"><i class="fa-regular fa-image"></i> <span data-i18n="profile_photo_title">Foto de Perfil</span></div>
+                            <div class="avatar-section">
+                                <img src="https://ui-avatars.com/api/?name=User&background=3D8B3D&color=fff"
+                                    id="avatarPreview" class="avatar-preview" alt="Avatar">
+                                <div class="avatar-actions">
+                                    <button class="btn-avatar" onclick="document.getElementById('avatarInput').click()">
+                                        <i class="fa-solid fa-camera me-1"></i> <span data-i18n="profile_photo_change">Alterar Foto</span>
+                                    </button>
+                                    <button class="btn-avatar btn-avatar-remove" onclick="removeAvatar()">
+                                        <i class="fa-solid fa-trash me-1"></i> <span data-i18n="profile_photo_remove">Remover Foto</span>
+                                    </button>
+                                    <input type="file" id="avatarInput" accept="image/*" class="d-none" onchange="previewAvatar(event)">
+                                </div>
+                            </div>
+                            <p class="small text-muted mb-0"><i class="fa-solid fa-circle-info me-1"></i> <span data-i18n="profile_photo_hint">Formato JPG ou PNG. Tamanho máximo 2MB.</span></p>
+                        </div>
+
+                        <!-- Dados Pessoais -->
+                        <div class="settings-card">
+                            <div class="settings-card-title"><i class="fa-solid fa-id-card"></i> <span data-i18n="profile_personal_title">Dados Pessoais</span></div>
+                            <div class="row g-3 mb-3">
+                                <div class="col-12">
+                                    <label class="form-label" data-i18n="profile_full_name">Nome Completo</label>
+                                    <input type="text" class="form-control" id="inputNome" data-i18n-placeholder="profile_full_name" placeholder="O seu nome completo">
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label" data-i18n="profile_email">Email</label>
+                                    <input type="email" class="form-control" id="inputEmail" placeholder="email@exemplo.com" readonly style="opacity:0.7; cursor:not-allowed;">
+                                    <small class="text-muted" data-i18n="profile_email_hint">O email é gerido pelo sistema de autenticação.</small>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label" data-i18n="profile_phone">Telemóvel (Contacto de Emergência)</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text" style="border-radius:10px 0 0 10px; background:var(--bg-color); border-color:var(--border);">🇵🇹 +351</span>
+                                        <input type="tel" class="form-control" id="inputTelemovel" placeholder="912 345 678" style="border-radius:0 10px 10px 0;">
+                                    </div>
+                                    <small class="text-muted" data-i18n="profile_phone_hint">Usado pelos veterinários para contacto urgente.</small>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label" data-i18n="profile_location">Localidade</label>
+                                    <input type="text" class="form-control" id="inputLocalidade" placeholder="Ex: Lisboa" autocomplete="off">
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-end">
+                                <button class="btn-save" onclick="savePerfil()">
+                                    <i class="fa-solid fa-floppy-disk"></i> <span data-i18n="profile_save">Guardar Alterações</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Segurança / Password -->
+                        <div class="settings-card">
+                            <div class="settings-card-title"><i class="fa-solid fa-lock"></i> <span data-i18n="profile_security_title">Segurança</span></div>
+                            <div class="row g-3 mb-3">
+                                <div class="col-12">
+                                    <label class="form-label" data-i18n="profile_current_pass">Password Atual</label>
+                                    <input type="password" class="form-control" id="inputPasswordAtual" placeholder="••••••••">
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label" data-i18n="profile_new_pass">Nova Password</label>
+                                    <input type="password" class="form-control" id="inputPasswordNova" placeholder="••••••••" oninput="checkPasswordStrength(this.value)">
+                                    <div class="password-strength mt-2">
+                                        <div class="password-strength-bar" id="passwordStrengthBar"></div>
+                                    </div>
+                                    <small class="text-muted" id="passwordStrengthText"></small>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label" data-i18n="profile_confirm_pass">Confirmar Nova Password</label>
+                                    <input type="password" class="form-control" id="inputPasswordConfirmar" placeholder="••••••••">
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-end">
+                                <button class="btn-save" onclick="changePassword()">
+                                    <i class="fa-solid fa-key"></i> <span data-i18n="profile_change_pass">Alterar Password</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ═══ NOTIFICAÇÕES ════════════════════════════════ -->
+                    <div id="panel-notificacoes" class="settings-panel">
+
+                        <div class="settings-card">
+                            <div class="settings-card-title"><i class="fa-solid fa-heart-pulse"></i> <span data-i18n="notif_health_title">Alertas de Saúde e Rotina</span></div>
+
+                            <div class="toggle-row">
+                                <div>
+                                    <div class="toggle-label" data-i18n="notif_vaccines">Vacinas e Desparasitações</div>
+                                    <div class="toggle-desc" data-i18n="notif_vaccines_desc">Alertas quando uma vacina está prestes a expirar</div>
+                                </div>
+                                <div class="d-flex gap-3 align-items-center">
+                                    <div class="d-flex flex-column align-items-center gap-1">
+                                        <small class="text-muted" style="font-size:0.7rem;" data-i18n="notif_label_email">EMAIL</small>
+                                        <input class="form-check-input" type="checkbox" role="switch" id="notif_vacina_email" onchange="saveNotifPref('vacina_email', this.checked)">
+                                    </div>
+                                    <div class="d-flex flex-column align-items-center gap-1">
+                                        <small class="text-muted" style="font-size:0.7rem;" data-i18n="notif_label_app">APP</small>
+                                        <input class="form-check-input" type="checkbox" role="switch" id="notif_vacina_app" onchange="saveNotifPref('vacina_app', this.checked)" checked>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="toggle-row">
+                                <div>
+                                    <div class="toggle-label" data-i18n="notif_birthday">Aniversários dos Animais</div>
+                                    <div class="toggle-desc" data-i18n="notif_birthday_desc">Lembrete no dia de aniversário do pet</div>
+                                </div>
+                                <div class="d-flex gap-3 align-items-center">
+                                    <div class="d-flex flex-column align-items-center gap-1">
+                                        <small class="text-muted" style="font-size:0.7rem;" data-i18n="notif_label_email">EMAIL</small>
+                                        <input class="form-check-input" type="checkbox" role="switch" id="notif_aniversario_email" onchange="saveNotifPref('aniversario_email', this.checked)">
+                                    </div>
+                                    <div class="d-flex flex-column align-items-center gap-1">
+                                        <small class="text-muted" style="font-size:0.7rem;" data-i18n="notif_label_app">APP</small>
+                                        <input class="form-check-input" type="checkbox" role="switch" id="notif_aniversario_app" onchange="saveNotifPref('aniversario_app', this.checked)" checked>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="toggle-row">
+                                <div>
+                                    <div class="toggle-label" data-i18n="notif_medication">Medicação e Rotina</div>
+                                    <div class="toggle-desc" data-i18n="notif_medication_desc">Lembretes de medicação diária ou semanal</div>
+                                </div>
+                                <div class="d-flex gap-3 align-items-center">
+                                    <div class="d-flex flex-column align-items-center gap-1">
+                                        <small class="text-muted" style="font-size:0.7rem;" data-i18n="notif_label_email">EMAIL</small>
+                                        <input class="form-check-input" type="checkbox" role="switch" id="notif_medicacao_email" onchange="saveNotifPref('medicacao_email', this.checked)">
+                                    </div>
+                                    <div class="d-flex flex-column align-items-center gap-1">
+                                        <small class="text-muted" style="font-size:0.7rem;" data-i18n="notif_label_app">APP</small>
+                                        <input class="form-check-input" type="checkbox" role="switch" id="notif_medicacao_app" onchange="saveNotifPref('medicacao_app', this.checked)" checked>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="settings-card">
+                            <div class="settings-card-title"><i class="fa-solid fa-stethoscope"></i> <span data-i18n="notif_tickets_title">Consultas e Tickets</span></div>
+
+                            <div class="toggle-row">
+                                <div>
+                                    <div class="toggle-label" data-i18n="notif_vet_reply">Resposta do Veterinário</div>
+                                    <div class="toggle-desc" data-i18n="notif_vet_reply_desc">Quando o veterinário aceita, recusa ou responde</div>
+                                </div>
+                                <div class="d-flex gap-3 align-items-center">
+                                    <div class="d-flex flex-column align-items-center gap-1">
+                                        <small class="text-muted" style="font-size:0.7rem;" data-i18n="notif_label_email">EMAIL</small>
+                                        <input class="form-check-input" type="checkbox" role="switch" id="notif_ticket_email" onchange="saveNotifPref('ticket_email', this.checked)" checked>
+                                    </div>
+                                    <div class="d-flex flex-column align-items-center gap-1">
+                                        <small class="text-muted" style="font-size:0.7rem;" data-i18n="notif_label_app">APP</small>
+                                        <input class="form-check-input" type="checkbox" role="switch" id="notif_ticket_app" onchange="saveNotifPref('ticket_app', this.checked)" checked>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="toggle-row">
+                                <div>
+                                    <div class="toggle-label" data-i18n="notif_reminder">Lembrete antes da Consulta</div>
+                                    <div class="toggle-desc" data-i18n="notif_reminder_desc">Aviso 1 hora antes da consulta agendada</div>
+                                </div>
+                                <div class="d-flex gap-3 align-items-center">
+                                    <div class="d-flex flex-column align-items-center gap-1">
+                                        <small class="text-muted" style="font-size:0.7rem;" data-i18n="notif_label_email">EMAIL</small>
+                                        <input class="form-check-input" type="checkbox" role="switch" id="notif_lembrete_email" onchange="saveNotifPref('lembrete_email', this.checked)">
+                                    </div>
+                                    <div class="d-flex flex-column align-items-center gap-1">
+                                        <small class="text-muted" style="font-size:0.7rem;" data-i18n="notif_label_app">APP</small>
+                                        <input class="form-check-input" type="checkbox" role="switch" id="notif_lembrete_app" onchange="saveNotifPref('lembrete_app', this.checked)" checked>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="settings-card">
+                            <div class="settings-card-title"><i class="fa-solid fa-bullhorn"></i> <span data-i18n="notif_marketing_title">Novidades e Marketing</span></div>
+                            <div class="toggle-row">
+                                <div>
+                                    <div class="toggle-label" data-i18n="notif_news">Novidades do Zooni</div>
+                                    <div class="toggle-desc" data-i18n="notif_news_desc">Novas funcionalidades e atualizações da plataforma</div>
+                                </div>
+                                <div class="d-flex flex-column align-items-center gap-1">
+                                    <small class="text-muted" style="font-size:0.7rem;" data-i18n="notif_label_email">EMAIL</small>
+                                    <input class="form-check-input" type="checkbox" role="switch" id="notif_marketing_email" onchange="saveNotifPref('marketing_email', this.checked)">
+                                </div>
+                            </div>
+                            <p class="small text-muted mt-2 mb-0"><i class="fa-solid fa-scale-balanced me-1"></i> <span data-i18n="notif_gdpr_note">Conforme o RGPD, esta opção está desativada por defeito. Pode ativar a qualquer momento.</span></p>
+                        </div>
+                    </div>
+
+                    <!-- ═══ PREFERÊNCIAS ════════════════════════════════ -->
+                    <div id="panel-preferencias" class="settings-panel">
+
+                        <div class="settings-card">
+                            <div class="settings-card-title"><i class="fa-solid fa-palette"></i> <span data-i18n="pref_appearance_title">Aparência</span></div>
+                            <div class="appearance-options">
+                                <div class="appearance-option selected" id="theme-light" onclick="setTheme('light')">
+                                    <span class="icon">☀️</span>
+                                    <span data-i18n="pref_light">Modo Claro</span>
+                                </div>
+                                <div class="appearance-option" id="theme-dark" onclick="setTheme('dark')">
+                                    <span class="icon">🌙</span>
+                                    <span data-i18n="pref_dark">Modo Escuro</span>
+                                </div>
+                                <div class="appearance-option" id="theme-system" onclick="setTheme('system')">
+                                    <span class="icon">⚙️</span>
+                                    <span data-i18n="pref_auto">Automático</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="settings-card">
+                            <div class="settings-card-title"><i class="fa-solid fa-globe"></i> <span data-i18n="pref_region_title">Idioma e Região</span></div>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label" data-i18n="pref_language">Idioma</label>
+                                    <select class="form-select" id="inputIdioma" onchange="changeLanguage(this.value)">
+                                        <option value="pt">🇵🇹 Português</option>
+                                        <option value="en">🇬🇧 English</option>
+                                        <option value="es">🇪🇸 Español</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label" data-i18n="pref_timezone">Fuso Horário</label>
+                                    <select class="form-select" id="inputFuso" onchange="savePref('fuso', this.value)">
+                                        <option value="Europe/Lisbon">Europa/Lisboa (UTC+0/+1)</option>
+                                        <option value="America/Sao_Paulo">América/São Paulo (UTC-3)</option>
+                                        <option value="Europe/London">Europa/Londres (UTC+0/+1)</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ═══ FATURAÇÃO ═══════════════════════════════════ -->
+                    <div id="panel-faturacao" class="settings-panel">
+                        <div class="settings-card">
+                            <div class="settings-card-title"><i class="fa-solid fa-file-invoice"></i> Histórico de Faturas da Consulta</div>
+                            <p class="text-muted small mb-4">Pode visualizar e descarregar as faturas associadas aos tratamentos e consultas dos seus animais.</p>
+                            <div class="table-responsive">
+                                <table class="invoice-table w-100 table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Data</th>
+                                            <th>Nº Fatura</th>
+                                            <th>Descrição / Consulta</th>
+                                            <th>Total</th>
+                                            <th>Estado</th>
+                                            <th>Ação</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="invoiceList">
+                                        <tr><td colspan="6" class="text-center py-4 text-muted small"><i class="fa-solid fa-spinner fa-spin me-2"></i>A carregar faturas...</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ═══ PRIVACIDADE ═════════════════════════════════ -->
+                    <div id="panel-privacidade" class="settings-panel">
+
+                        <div class="settings-card">
+                            <div class="settings-card-title"><i class="fa-solid fa-download"></i> Exportar os Meus Dados</div>
+                            <p class="text-muted small mb-3">Receba um ficheiro com todos os dados da sua conta: animais, vacinas, histórico clínico e tickets. Conforme o Artigo 20.º do RGPD (direito à portabilidade).</p>
+                            <button class="btn-export" onclick="exportData()">
+                                <i class="fa-solid fa-file-arrow-down"></i>
+                                Descarregar os Meus Dados
+                            </button>
+                        </div>
+
+                        <div class="settings-card">
+                            <div class="settings-card-title"><i class="fa-solid fa-eye-slash"></i> Controlo de Dados</div>
+                            <div class="toggle-row">
+                                <div>
+                                    <div class="toggle-label">Partilhar dados anónimos para melhorar o Zooni</div>
+                                    <div class="toggle-desc">Estatísticas de uso sem identificação pessoal</div>
+                                </div>
+                                <input class="form-check-input" type="checkbox" role="switch" id="notif_analytics" onchange="saveNotifPref('analytics', this.checked)" checked>
+                            </div>
+                        </div>
+
+                        <div class="danger-zone">
+                            <div class="d-flex align-items-center gap-2 mb-2">
+                                <i class="fa-solid fa-triangle-exclamation text-danger fa-lg"></i>
+                                <h6 class="fw-bold text-danger mb-0">Zona de Perigo</h6>
+                            </div>
+                            <p class="small text-muted mb-0">Ao eliminar a sua conta, todos os dados — animais, fichas clínicas, histórico e tickets — serão permanentemente apagados. Esta ação <strong>não pode ser revertida</strong>.</p>
+                            <button class="btn-danger-action" data-bs-toggle="modal" data-bs-target="#deleteAccountModal">
+                                <i class="fa-solid fa-skull-crossbones me-2"></i> Eliminar Conta Permanentemente
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal: Fatura Completa -->
+    <div class="modal fade" id="invoiceModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 rounded-4 shadow-lg p-3" style="max-width: 500px;">
+                <div class="modal-header border-0 pb-0 d-flex justify-content-between align-items-center">
+                    <h5 class="modal-title fw-bold text-dark"><i class="fa-solid fa-file-invoice me-2 text-primary"></i>Detalhes da Fatura</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div id="invoiceModalBody">
+                        A carregar detalhes...
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button class="btn btn-primary w-100 rounded-3 text-white fw-bold py-2" onclick="showToast('Iniciar Download PDF... (Simulação)', 'success')">
+                        <i class="fa-solid fa-download me-2"></i>Descarregar Fatura PDF
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Eliminar Conta -->
+    <div class="modal fade" id="deleteAccountModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 rounded-4 shadow-lg">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold text-danger"><i class="fa-solid fa-triangle-exclamation me-2"></i>Confirmar Eliminação</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <p class="text-muted">Esta ação é <strong>irreversível</strong>. Para confirmar, introduza a sua palavra-passe atual.</p>
+                    <label class="form-label">Palavra-passe</label>
+                    <input type="password" class="form-control" id="deleteAccountPassword" placeholder="••••••••">
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button class="btn btn-light rounded-pill px-4 fw-bold" data-bs-dismiss="modal">Cancelar</button>
+                    <button class="btn btn-danger rounded-pill px-4 fw-bold" onclick="deleteAccount()">
+                        <i class="fa-solid fa-trash me-1"></i> Eliminar Conta
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <script>
+        const SUPABASE_URL = 'https://xqtbtggmwejnkhckduti.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhxdGJ0Z2dtd2VqbmtoY2tkdXRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc2OTU5NjEsImV4cCI6MjA4MzI3MTk2MX0.G1wG0UC6sF7r6tMxGdqLGvsHa_dxlVD1-j6QNEw32IM';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        let CURRENT_USER_ID = null;
+        let CURRENT_DONO_ID = null;
+
+        // ── AUTH ───────────────────────────────────────────────────
+        document.addEventListener('DOMContentLoaded', () => initAuth());
+
+        async function initAuth() {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (!session) { window.location.href = 'login.html?role=dono'; return; }
+
+            CURRENT_USER_ID = session.user.id;
+
+            const { data: cliente } = await supabaseClient
+                .from('clientes')
+                .select('id, nome, telemovel, localidade, foto_url')
+                .eq('user_id', session.user.id)
+                .single();
+
+            if (!cliente) { window.location.href = 'login.html?role=dono'; return; }
+
+            CURRENT_DONO_ID = cliente.id;
+
+            // Populate header — use saved photo or generated avatar
+            const nome = cliente.nome || 'Utilizador';
+            const defaultAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(nome)}&background=3D8B3D&color=fff`;
+            const photoSrc = cliente.foto_url || defaultAvatar;
+            document.getElementById('headerProfilePic').src = photoSrc;
+            document.getElementById('avatarPreview').src = photoSrc;
+            document.getElementById('dropdownUserName').textContent = nome;
+            document.getElementById('dropdownUserEmail').textContent = session.user.email;
+
+            // Populate form fields
+            document.getElementById('inputNome').value = nome;
+            document.getElementById('inputEmail').value = session.user.email;
+            document.getElementById('inputTelemovel').value = cliente.telemovel || '';
+            document.getElementById('inputLocalidade').value = cliente.localidade || '';
+
+            // Load preferences
+            loadPreferences();
+            await loadNotifications();
+            await loadFaturas();
+        }
+
+        // ── SECTION SWITCHER ───────────────────────────────────────
+        function switchSection(id) {
+            document.querySelectorAll('.settings-panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.settings-nav-item').forEach(b => b.classList.remove('active'));
+            document.getElementById('panel-' + id).classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
+
+        // ── TOAST ──────────────────────────────────────────────────
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast-custom ${type === 'error' ? 'error' : ''}`;
+            toast.innerHTML = `
+                <span class="toast-icon ${type}"><i class="fa-solid ${type === 'success' ? 'fa-circle-check' : 'fa-circle-xmark'}"></i></span>
+                <span class="toast-text">${message}</span>
+            `;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.animation = 'slideOutRight 0.3s ease forwards';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // ── LOAD FATURAS ───────────────────────────────────────────
+        
+        let localInvoices = []; // Global cache to allow modal viewing
+        
+        async function loadFaturas() {
+            try {
+                const list = document.getElementById('invoiceList');
+                // Fetch invoices from finalized tickets where fatura_url is available
+                const { data, error } = await supabaseClient
+                    .from('tickets')
+                    .select('id, motivo, data_sugerida, fatura_url, animais(nome)')
+                    .eq('id_dono', CURRENT_DONO_ID)
+                    .not('fatura_url', 'is', null)
+                    .order('data_sugerida', { ascending: false });
+
+                if (error) {
+                    throw error;
+                }
+                
+                if (data && data.length > 0) {
+                    localInvoices = data.map(t => ({
+                        id: t.id,
+                        n_fatura: 'FT-' + t.id.toString(),
+                        data_emissao: t.data_sugerida || t.criado_em || new Date().toISOString(),
+                        descricao: t.motivo + (t.animais ? ' (' + t.animais.nome + ')' : ''),
+                        valor_total: 0.00,
+                        estado: 'Paga',
+                        fatura_url: t.fatura_url
+                    }));
+                } else {
+                    list.innerHTML = '<tr><td colspan="6" class="text-center py-4 text-muted small">Sem faturas registadas.</td></tr>';
+                    return;
+                }
+
+                renderFaturas(localInvoices);
+
+            } catch (err) {
+                console.error("Erro a carregar faturas", err);
+            }
+        }
+
+        function renderFaturas(faturas) {
+            const list = document.getElementById('invoiceList');
+            list.innerHTML = '';
+            
+            faturas.forEach((ft) => {
+                const dateStr = new Date(ft.data_emissao).toLocaleDateString('pt-PT');
+                const badgeColor = ft.estado.toLowerCase() === 'paga' ? 'bg-success' : 'bg-secondary';
+                
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="align-middle fw-medium text-muted">${dateStr}</td>
+                    <td class="align-middle fw-bold">${ft.n_fatura}</td>
+                    <td class="align-middle">${ft.descricao}</td>
+                    <td class="align-middle fw-bold text-muted">Apurado na Clínica</td>
+                    <td class="align-middle"><span class="badge py-2 px-3 rounded-pill border-0 ${badgeColor}">${ft.estado}</span></td>
+                    <td class="align-middle">
+                        <a href="${ft.fatura_url}" target="_blank" class="btn btn-sm text-primary rounded-3 fw-bold bg-light border-0 px-3 text-decoration-none">
+                            <i class="fa-solid fa-download me-1"></i> Descarregar
+                        </a>
+                    </td>
+                `;
+                list.appendChild(tr);
+            });
+        }
+
+        function openInvoiceModal(index) {
+            const ft = localInvoices[index];
+            if (!ft) return;
+            
+            const tbody = document.getElementById('invoiceModalBody');
+            const dateStr = new Date(ft.data_emissao).toLocaleDateString('pt-PT');
+            
+            tbody.innerHTML = `
+                <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+                    <div>
+                        <h4 class="fw-bold mb-0 text-dark">Fatura / Recibo</h4>
+                        <div class="text-muted small">${ft.n_fatura || ('FT-'+ft.id)}</div>
+                    </div>
+                    <div class="text-end">
+                        <div class="fw-bold text-dark fs-5">€${Number(ft.valor_total).toFixed(2)}</div>
+                        <div class="text-muted small">${dateStr}</div>
+                    </div>
+                </div>
+
+                <div class="row mb-4">
+                    <div class="col-6">
+                        <div class="small fw-bold text-muted text-uppercase mb-1">Emitida a:</div>
+                        <div class="fw-bold fs-6">${document.getElementById('inputNome').value || 'Cliente Zooni'}</div>
+                        <div class="small text-muted">NIF: ${ft.nif || document.getElementById('inputNif')?.value || 'Não Especificado'}</div>
+                    </div>
+                    <div class="col-6 text-end">
+                        <div class="small fw-bold text-muted text-uppercase mb-1">Entidade Emissora:</div>
+                        <div class="fw-bold fs-6">Zooni Internacional</div>
+                        <div class="small text-muted">NIF: 504 123 456</div>
+                    </div>
+                </div>
+
+                <div class="bg-light p-3 rounded-4 mb-4">
+                    <div class="d-flex justify-content-between border-bottom pb-2 mb-2">
+                        <span class="fw-bold text-dark">Descrição da Consulta/Tratamento</span>
+                        <span class="fw-bold text-dark">Valor</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>${ft.descricao}</span>
+                        <span>€${Number(ft.subtotal || (ft.valor_total*0.77)).toFixed(2)}</span>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end mb-2">
+                    <div class="w-50">
+                        <div class="d-flex justify-content-between mb-1 small text-muted">
+                            <span>Subtotal:</span>
+                            <span>€${Number(ft.subtotal || (ft.valor_total*0.77)).toFixed(2)}</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2 small text-muted">
+                            <span>IVA (23%):</span>
+                            <span>€${Number(ft.iva || (ft.valor_total*0.23)).toFixed(2)}</span>
+                        </div>
+                        <div class="d-flex justify-content-between fw-bold pt-2 border-top fs-5 text-dark">
+                            <span>Total Emitido:</span>
+                            <span>€${Number(ft.valor_total).toFixed(2)}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            new bootstrap.Modal(document.getElementById('invoiceModal')).show();
+        }
+
+        // ── SAVE PERFIL ────────────────────────────────────────────
+        async function savePerfil() {
+            const nome = document.getElementById('inputNome').value.trim();
+            const telemovel = document.getElementById('inputTelemovel').value.trim();
+            const localidade = document.getElementById('inputLocalidade').value.trim();
+
+            if (!nome) { showToast('Por favor introduza o seu nome.', 'error'); return; }
+
+            const { error } = await supabaseClient
+                .from('clientes')
+                .update({ nome, telemovel, localidade })
+                .eq('id', CURRENT_DONO_ID);
+
+            if (error) {
+                showToast('Erro ao guardar: ' + error.message, 'error');
+            } else {
+                // Update avatar
+                document.getElementById('headerProfilePic').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(nome)}&background=3D8B3D&color=fff`;
+                document.getElementById('avatarPreview').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(nome)}&background=3D8B3D&color=fff`;
+                document.getElementById('dropdownUserName').textContent = nome;
+                showToast('Perfil atualizado com sucesso!');
+            }
+        }
+
+        // ── CHANGE PASSWORD ────────────────────────────────────────
+        async function changePassword() {
+            const nova = document.getElementById('inputPasswordNova').value;
+            const confirmar = document.getElementById('inputPasswordConfirmar').value;
+
+            if (!nova) { showToast('Introduza a nova password.', 'error'); return; }
+            if (nova !== confirmar) { showToast('As passwords não coincidem.', 'error'); return; }
+            if (nova.length < 6) { showToast('A password deve ter pelo menos 6 caracteres.', 'error'); return; }
+
+            const { error } = await supabaseClient.auth.updateUser({ password: nova });
+
+            if (error) {
+                showToast('Erro: ' + error.message, 'error');
+            } else {
+                document.getElementById('inputPasswordAtual').value = '';
+                document.getElementById('inputPasswordNova').value = '';
+                document.getElementById('inputPasswordConfirmar').value = '';
+                document.getElementById('passwordStrengthBar').style.width = '0%';
+                document.getElementById('passwordStrengthText').textContent = '';
+                showToast('Password alterada com sucesso!');
+            }
+        }
+
+        function checkPasswordStrength(password) {
+            const bar = document.getElementById('passwordStrengthBar');
+            const text = document.getElementById('passwordStrengthText');
+            let strength = 0;
+            if (password.length >= 8) strength++;
+            if (/[A-Z]/.test(password)) strength++;
+            if (/[0-9]/.test(password)) strength++;
+            if (/[^A-Za-z0-9]/.test(password)) strength++;
+
+            const levels = [
+                { width: '0%', color: '', label: '' },
+                { width: '25%', color: '#ef4444', label: 'Fraca' },
+                { width: '50%', color: '#f97316', label: 'Razoável' },
+                { width: '75%', color: '#eab308', label: 'Boa' },
+                { width: '100%', color: '#22c55e', label: 'Forte' },
+            ];
+            const lvl = password.length === 0 ? 0 : strength;
+            bar.style.width = levels[lvl].width;
+            bar.style.backgroundColor = levels[lvl].color;
+            text.textContent = levels[lvl].label;
+            text.style.color = levels[lvl].color;
+        }
+
+        // ── AVATAR ─────────────────────────────────────────────────
+        async function previewAvatar(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            if (file.size > 5 * 1024 * 1024) {
+                showToast('A imagem não pode ter mais de 5MB.', 'error');
+                return;
+            }
+
+            // Compress & resize to max 300x300 then save as base64
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                const img = new Image();
+                img.onload = async () => {
+                    // Resize
+                    const canvas = document.createElement('canvas');
+                    const MAX = 300;
+                    let w = img.width, h = img.height;
+                    if (w > h) { if (w > MAX) { h = Math.round(h * MAX / w); w = MAX; } }
+                    else { if (h > MAX) { w = Math.round(w * MAX / h); h = MAX; } }
+                    canvas.width = w; canvas.height = h;
+                    canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                    const base64 = canvas.toDataURL('image/jpeg', 0.82);
+
+                    // Show preview immediately
+                    document.getElementById('avatarPreview').src = base64;
+                    document.getElementById('headerProfilePic').src = base64;
+
+                    // Save base64 to clientes table
+                    const { error } = await supabaseClient
+                        .from('clientes')
+                        .update({ foto_url: base64 })
+                        .eq('id', CURRENT_DONO_ID);
+
+                    if (error) {
+                        showToast('Erro ao guardar foto: ' + error.message, 'error');
+                    } else {
+                        showToast('Foto de perfil atualizada com sucesso!');
+                    }
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        async function removeAvatar() {
+            const nome = document.getElementById('inputNome').value || 'User';
+            const defaultSrc = `https://ui-avatars.com/api/?name=${encodeURIComponent(nome)}&background=3D8B3D&color=fff`;
+            document.getElementById('avatarPreview').src = defaultSrc;
+            document.getElementById('headerProfilePic').src = defaultSrc;
+
+            // Clear from DB
+            if (CURRENT_DONO_ID) {
+                const { error } = await supabaseClient
+                    .from('clientes')
+                    .update({ foto_url: null })
+                    .eq('id', CURRENT_DONO_ID);
+                if (!error) showToast('Foto de perfil removida.');
+                else showToast('Erro ao remover foto.', 'error');
+            } else {
+                showToast('Foto de perfil removida.');
+            }
+        }
+
+        // ── NOTIFICATIONS PREFS ────────────────────────────────────
+        async function loadPreferences() {
+            if (!CURRENT_USER_ID) return;
+            const { data } = await supabaseClient
+                .from('preferencias_dono')
+                .select('*')
+                .eq('user_id', CURRENT_USER_ID)
+                .single();
+
+            if (data) {
+                const prefs = data.notificacoes || {};
+                Object.keys(prefs).forEach(key => {
+                    const el = document.getElementById('notif_' + key);
+                    if (el) el.checked = prefs[key];
+                });
+
+                // Theme
+                if (data.tema) setTheme(data.tema, false);
+
+                // Language / timezone
+                if (data.idioma) document.getElementById('inputIdioma').value = data.idioma;
+                if (data.fuso) document.getElementById('inputFuso').value = data.fuso;
+            }
+        }
+
+        async function saveNotifPref(key, value) {
+            if (!CURRENT_USER_ID) return;
+
+            // Upsert preference record
+            const { data: existing } = await supabaseClient
+                .from('preferencias_dono')
+                .select('notificacoes')
+                .eq('user_id', CURRENT_USER_ID)
+                .single();
+
+            const notifs = existing?.notificacoes || {};
+            notifs[key] = value;
+
+            const { error } = await supabaseClient
+                .from('preferencias_dono')
+                .upsert({ user_id: CURRENT_USER_ID, notificacoes: notifs }, { onConflict: 'user_id' });
+
+            if (!error) {
+                showToast('Preferência atualizada!');
+            } else {
+                showToast('Erro ao guardar preferência.', 'error');
+            }
+        }
+
+        async function savePref(key, value) {
+            if (!CURRENT_USER_ID) return;
+            const { error } = await supabaseClient
+                .from('preferencias_dono')
+                .upsert({ user_id: CURRENT_USER_ID, [key]: value }, { onConflict: 'user_id' });
+            if (!error) {
+                showToast(ZOONI_I18N.t('common_pref_updated'));
+            } else {
+                alert('Zooni Debug: Supabase negou gravação. Verifique as politicas de segurança (RLS) da tabela preferencias_dono! Erro: ' + error.message);
+                console.error('savePref error:', error);
+            }
+        }
+
+        // ── LANGUAGE ───────────────────────────────────────────────
+        async function changeLanguage(lang) {
+            // Instantly translate the page
+            ZOONI_I18N.apply(lang);
+            // Keep selector in sync (ZOONI_I18N updates localStorage already)
+            document.getElementById('inputIdioma').value = lang;
+            // Persist to Supabase
+            await savePref('idioma', lang);
+        }
+
+        // ── THEME ──────────────────────────────────────────────────
+        function setTheme(theme, save = true) {
+            document.querySelectorAll('.appearance-option').forEach(o => o.classList.remove('selected'));
+            document.getElementById('theme-' + theme)?.classList.add('selected');
+
+            if (theme === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+            } else if (theme === 'light') {
+                document.documentElement.removeAttribute('data-theme');
+            } else {
+                // System
+                if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                } else {
+                    document.documentElement.removeAttribute('data-theme');
+                }
+            }
+
+            localStorage.setItem('zooni-theme', theme);
+            if (save) savePref('tema', theme);
+        }
+
+        // Load theme from localStorage on page load
+        const savedTheme = localStorage.getItem('zooni-theme');
+        if (savedTheme) setTheme(savedTheme, false);
+
+        // ── EXPORT DATA ────────────────────────────────────────────
+        async function exportData() {
+            showToast('A preparar os seus dados... Aguarde.');
+
+            // Fetch all owner data
+            const [{ data: animais }, { data: tickets }] = await Promise.all([
+                supabaseClient.from('animais').select('*').eq('id_dono', CURRENT_DONO_ID),
+                supabaseClient.from('tickets').select('*').eq('id_dono', CURRENT_DONO_ID)
+            ]);
+
+            const exportObj = {
+                exportado_em: new Date().toISOString(),
+                animais: animais || [],
+                tickets: tickets || []
+            };
+
+            const blob = new Blob([JSON.stringify(exportObj, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `zooni_dados_${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+
+            showToast('Dados exportados com sucesso!');
+        }
+
+        // ── DELETE ACCOUNT ─────────────────────────────────────────
+        async function deleteAccount() {
+            const password = document.getElementById('deleteAccountPassword').value;
+            if (!password) { showToast('Introduza a sua password para confirmar.', 'error'); return; }
+
+            // Verify by re-signing in
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            const { error: signInError } = await supabaseClient.auth.signInWithPassword({
+                email: session.user.email,
+                password
+            });
+
+            if (signInError) {
+                showToast('Password incorreta. Tente novamente.', 'error');
+                return;
+            }
+
+            // Delete data
+            await supabaseClient.from('animais').delete().eq('id_dono', CURRENT_DONO_ID);
+            await supabaseClient.from('tickets').delete().eq('id_dono', CURRENT_DONO_ID);
+            await supabaseClient.from('clientes').delete().eq('id', CURRENT_DONO_ID);
+            await supabaseClient.auth.signOut();
+
+            window.location.href = 'index.html';
+        }
+
+        // ── LOGOUT ─────────────────────────────────────────────────
+        document.querySelector('a[href="index.html"]').addEventListener('click', async (e) => {
+            e.preventDefault();
+            await supabaseClient.auth.signOut();
+            window.location.href = 'index.html';
+        });
+
+        // ── GOOGLE PLACES AUTOCOMPLETE ──────────────────────────────
+        function initPlaces() {
+            const input = document.getElementById('inputLocalidade');
+            if (!input || typeof google === 'undefined') return;
+
+            const autocomplete = new google.maps.places.Autocomplete(input, {
+                types: ['geocode'], // Allow streets, addresses, and cities
+                componentRestrictions: { country: 'pt' }, // Restringe resultados apenas para Portugal
+                fields: ['name', 'address_components']
+            });
+
+            autocomplete.addListener('place_changed', () => {
+                const place = autocomplete.getPlace();
+                if (!place) return;
+
+                let finalName = place.name || input.value;
+                
+                if (place.address_components) {
+                    const locality = place.address_components.find(c =>
+                        c.types.includes('locality') || c.types.includes('administrative_area_level_1')
+                    );
+                    
+                    if (locality && locality.long_name && locality.long_name !== place.name) {
+                        // Ex: "Santa Maria Maior, Lisboa"
+                        finalName = place.name + ", " + locality.long_name;
+                    } else if (locality) {
+                        // Ex: "Lisboa"
+                        finalName = locality.long_name || place.name;
+                    }
+                }
+                input.value = finalName;
+            });
+        }
+
+        // ── LOAD NOTIFICATIONS ─────────────────────────────────────────
+        async function loadNotifications() {
+            try {
+                const { data: dbNotifs, error } = await supabaseClient
+                    .from('notificacoes')
+                    .select('*')
+                    .eq('user_id', CURRENT_DONO_ID)
+                    .order('criado_em', { ascending: false })
+                    .limit(5);
+
+                // Catch a wide 3-day net from API so Supabase timezone conversions don't hide events
+                const refDate = new Date();
+                const year = refDate.getFullYear();
+                const month = String(refDate.getMonth() + 1).padStart(2, '0');
+                const day = String(refDate.getDate()).padStart(2, '0');
+                const todayDateStr = `${year}-${month}-${day}`;
+                
+                refDate.setHours(0,0,0,0);
+                const fetchStart = new Date(refDate.getTime() - 86400000).toISOString();
+                const fetchEnd = new Date(refDate.getTime() + 172800000).toISOString();
+
+                const { data: rawEvents } = await supabaseClient
+                    .from('agenda_eventos')
+                    .select('id, titulo, tipo_evento, data_inicio, data_fim, status')
+                    .eq('dono_id', CURRENT_DONO_ID)
+                    .gte('data_inicio', fetchStart)
+                    .lte('data_inicio', fetchEnd);
+
+                const todayEvents = (rawEvents || []).filter(e => {
+                     if (!e.data_inicio) return false;
+                     const evDate = new Date(e.data_inicio);
+                     return evDate.getFullYear() === refDate.getFullYear() &&
+                            evDate.getMonth() === refDate.getMonth() &&
+                            evDate.getDate() === refDate.getDate();
+                });
+
+                const { data: todayTickets } = await supabaseClient
+                    .from('tickets')
+                    .select('id, motivo, data_agendada, hr_agendada, animais(nome)')
+                    .eq('id_dono', CURRENT_DONO_ID)
+                    .eq('estado', 'marcado')
+                    .eq('data_agendada', todayDateStr);
+
+                const listEl = document.getElementById('notificationList');
+                const badgeEl = document.getElementById('notifBadge');
+
+                if (error) throw error;
+
+                const data = dbNotifs || [];
+                const events = todayEvents || [];
+                const tickets = todayTickets || [];
+
+                const unreadCount = data.filter(n => !n.lida).length + events.length + tickets.length;
+                if (unreadCount > 0) {
+                    badgeEl.textContent = unreadCount;
+                    badgeEl.classList.remove('d-none');
+                } else {
+                    badgeEl.classList.add('d-none');
+                }
+
+                let html = '';
+
+                tickets.forEach(tk => {
+                    const nomePet = tk.animais ? tk.animais.nome : 'o seu animal';
+                    html += `
+                        <div class="notification-item unread">
+                            <div class="notification-icon ticket">
+                                <i class="fa-solid fa-stethoscope"></i>
+                            </div>
+                            <div class="notification-content">
+                                <div class="notification-text"><strong><span data-i18n="common_today_consult">Consulta Hoje</span>:</strong> ${tk.motivo} (${nomePet})</div>
+                                <div class="notification-time"><i class="fa-regular fa-clock me-1"></i>${tk.hr_agendada?.substring(0,5) || 'Hoje'}</div>
+                            </div>
+                        </div>`;
+                });
+
+                const eventIcons = { vacina: 'fa-syringe', desparasitacao: 'fa-shield-heart', consulta: 'fa-stethoscope', medicacao: 'fa-pills', rotina: 'fa-dog', banho: 'fa-shower', passeio: 'fa-person-walking-with-cane', tosquia: 'fa-scissors', treino: 'fa-bullseye', outro: 'fa-calendar-day' };
+                events.forEach(ev => {
+                    const timeStr = ev.data_inicio ? new Date(ev.data_inicio).toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' }) : '';
+                    const icon = eventIcons[ev.tipo_evento] || 'fa-calendar-day';
+                    html += `
+                        <div class="notification-item unread">
+                            <div class="notification-icon sistema">
+                                <i class="fa-solid ${icon}"></i>
+                            </div>
+                            <div class="notification-content">
+                                <div class="notification-text"><strong><span data-i18n="common_today">Hoje</span>:</strong> ${ev.titulo}</div>
+                                <div class="notification-time"><i class="fa-regular fa-clock me-1"></i>${timeStr || 'Hoje'}</div>
+                            </div>
+                        </div>`;
+                });
+
+                if (data.length === 0 && events.length === 0 && tickets.length === 0) {
+                    badgeEl.classList.add('d-none');
+                    listEl.innerHTML = '<div class="text-center p-4 text-muted small"><i class="fa-regular fa-bell-slash mb-2 d-block fa-2x opacity-50"></i>Sem notificações recentes.</div>';
+                    return;
+                }
+
+                html += data.map(n => {
+                    let icon = 'fa-info';
+                    let bgClass = 'sistema';
+                    if (n.tipo === 'saude') { icon = 'fa-heart-pulse'; bgClass = 'saude'; }
+                    if (n.tipo === 'ticket') { icon = 'fa-stethoscope'; bgClass = 'ticket'; }
+
+                    const timeAgo = formatTimeAgo(new Date(n.criado_em));
+                    const unreadClass = n.lida ? '' : 'unread';
+                    const actionFn = `markNotificationRead(${n.id}, '${n.link_destino || '#'}')`;
+
+                    return `
+                        <div class="notification-item ${unreadClass}" onclick="${actionFn}">
+                            <div class="notification-icon ${bgClass}">
+                                <i class="fa-solid ${icon}"></i>
+                            </div>
+                            <div class="notification-content">
+                                <div class="notification-text">${n.mensagem}</div>
+                                <div class="notification-time"><i class="fa-regular fa-clock me-1"></i>${timeAgo}</div>
+                            </div>
+                            ${!n.lida ? '<div class="notification-dot"></div>' : ''}
+                        </div>
+                    `;
+                }).join('');
+
+                listEl.innerHTML = html;
+            } catch (e) {
+                console.error('Erro ao carregar notificações:', e);
+            }
+        }
+
+        function formatTimeAgo(date) {
+            const now = new Date();
+            const diffMs = now - date;
+            const diffMins = Math.floor(diffMs / 60000);
+            if (diffMins < 60) return `Há ${diffMins} min`;
+            const diffHrs = Math.floor(diffMins / 60);
+            if (diffHrs < 24) return `Há ${diffHrs}h`;
+            const diffDays = Math.floor(diffHrs / 24);
+            return `Há ${diffDays}d`;
+        }
+
+        async function markNotificationRead(id, link) {
+            await supabaseClient.from('notificacoes').update({ lida: true }).eq('id', id);
+            if (link && link !== '#') window.location.href = link;
+            else loadNotifications();
+        }
+    </script>
+</body>
+
+</html>
+
+

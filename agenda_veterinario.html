@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="pt">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zooni — Agenda Dinâmica Veterinário</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- FullCalendar CSS & JS -->
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js'></script>
+    <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.15/locales/pt.global.min.js'></script>
+
+    <script src="assets/js/theme.js"></script>
+    <link rel="stylesheet" href="assets/css/theme.css">
+    
+    <style>
+        :root {
+            --primary: #3D8B3D;
+            --primary-dark: #1E4D1E;
+            --primary-light: #5CB85C;
+            --bg-color: #F2F8F2;
+            --text-main: #1a2e1a;
+            --text-sec: #5a7a5a;
+            --card-bg: #ffffff;
+            --border-color: #e8f0e8;
+
+            /* Visual Agenda Colors (Matching Owner App) */
+            --event-vacina: #d63031;
+            --event-desparasitacao: #FF7675;
+            --event-consulta: #0984e3;
+            --event-medicacao: #00B894;
+            --event-rotina: #5CB85C;
+            --event-cirurgia: #6c5ce7;
+            --event-bloqueio: #636e72;
+        }
+
+        /* Force light mode — vet pages always use the light theme */
+        [data-theme="dark"] {
+            --bg-color: #F2F8F2 !important;
+            --text-main: #1a2e1a !important;
+            --text-sec: #5a7a5a !important;
+            --card-bg: #ffffff !important;
+            --border-color: #e8f0e8 !important;
+            --border: #e8f0e8 !important;
+            --input-bg: #ffffff !important;
+            --input-border: #ced4da !important;
+            --card-hover: #f5f5f5 !important;
+            --primary: #3D8B3D !important;
+        }
+
+        body { font-family: 'Outfit', sans-serif; overflow-x: hidden; min-height: 100vh; background-color: var(--bg-color); color: var(--text-main); }
+        .app-container { display: grid; grid-template-columns: 260px 1fr; min-height: 100vh; }
+        
+        /* ── SIDEBAR STYLES ── */
+        .sidebar {
+            background-color: var(--primary-dark);
+            color: white;
+            padding: 2rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+        }
+
+        .logo-container {
+            margin-bottom: 2.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            align-items: flex-start;
+        }
+
+        .logo-img-sidebar {
+            max-width: 160px;
+            filter: brightness(0) invert(1);
+        }
+
+        .logo-subtext {
+            font-size: 0.85rem;
+            letter-spacing: 2px;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.8);
+            text-transform: uppercase;
+            padding-left: 5px;
+        }
+
+        .nav-links {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            flex-grow: 1;
+        }
+
+        .nav-item {
+            margin: 0;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 15px;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background-color: rgba(255, 255, 255, 0.15);
+            color: white;
+        }
+
+        .nav-link.active {
+            border-left: 4px solid var(--primary);
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .nav-link i {
+            width: 20px;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+
+        .nav-link.text-danger {
+            color: #ff6b6b !important;
+        }
+        .nav-link.text-danger:hover {
+            background-color: rgba(255, 107, 107, 0.15);
+            color: #ff6b6b !important;
+        }
+
+        .nav-line-break {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin: 15px 0;
+        }
+
+        /* MAIN CONTENT AREA - Styled like Owner App */
+        .main-content { padding: 2.5rem; max-width: 1400px; margin: 0 auto; width: 100%; transition: margin 0.3s; }
+        
+        .header-area { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2.5rem; }
+        
+        /* Filter Pills (Same as Owner) */
+        .filter-pill { padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; cursor: pointer; border: 1px solid #dfe6e9; background: white; color: var(--text-main); transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px; }
+        .filter-pill.active { background: #f1f2f6; border-color: transparent; }
+        .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+        
+        /* Add Event CTA Button */
+        .btn-add-event { background-color: #0d6efd; color: white; border: none; border-radius: 30px; padding: 8px 24px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.2s; box-shadow: 0 4px 10px rgba(13, 110, 253, 0.3); }
+        .btn-add-event:hover { background-color: #0b5ed7; transform: translateY(-2px); color: white; }
+
+        /* The Exact Agenda Card UI from Owner App */
+        .agenda-layout { display: block; height: calc(100vh - 220px); min-height: 600px; }
+        .glass-card { background: var(--card-bg); border-radius: 24px; padding: 1.5rem; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03); border: 1px solid var(--border-color); height: 100%; }
+        
+        /* FullCalendar Customization (Exact Match to Owner CSS) */
+        .fc { font-family: 'Outfit', sans-serif; height: 100%; }
+        .fc-theme-standard td, .fc-theme-standard th, .fc-theme-standard .fc-scrollgrid { border-color: #f1f2f6; }
+        
+        .fc .fc-toolbar-title { font-size: 1.25rem; font-weight: 700; color: var(--text-main); }
+        .fc .fc-button-primary { background-color: white; color: var(--text-main); border: 1px solid #dfe6e9; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02); text-transform: capitalize; }
+        .fc .fc-button-primary:hover { background-color: #f8f9fa; color: var(--primary); border-color: #dfe6e9; }
+        .fc .fc-button-primary:not(:disabled).fc-button-active, .fc .fc-button-primary:not(:disabled):active { background-color: var(--primary); color: white; border-color: var(--primary); }
+        
+        .fc-event { border: none; cursor: pointer; color: #ffffff !important; font-weight: 600; }
+        .fc-daygrid-event { border-radius: 4px !important; padding: 3px 4px !important; font-size: 0.75rem !important; line-height: 1.3 !important; }
+        .fc-timegrid-event { border-radius: 4px !important; padding: 3px !important; font-size: 0.75rem !important; }
+        .fc-event-main { color: #ffffff !important; }
+
+        /* Dynamic Color Classes assigned by JS */
+        .color-vacina { background-color: var(--event-vacina) !important; color: white !important; }
+        .color-consulta { background-color: var(--event-consulta) !important; color: white !important; }
+        .color-cirurgia { background-color: var(--event-cirurgia) !important; color: white !important; }
+        .color-rotina { background-color: var(--event-rotina) !important; color: white !important; }
+        .color-bloqueio { background-color: var(--event-bloqueio) !important; color: white !important; opacity: 0.8; border-bottom: 2px dashed rgba(255,255,255,0.5); }
+        .color-pendente { background-color: #fdcb6e !important; color: #2d3436 !important; }
+
+        /* Offcanvas Specific */
+        .pet-photo { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; margin-bottom: 10px; border: 3px solid #f1f2f6; }
+        .context-badge { padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; background: #f1f2f6; color: #2d3436; }
+    </style>
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- SIDEBAR -->
+                <aside class="sidebar">
+            <div class="logo-container">
+                <img src="assets/logo.png" alt="Zooni Logo" class="logo-img-sidebar">
+                <div class="logo-subtext">VETERINÁRIO</div>
+            </div>
+            
+            <ul class="nav-links">
+                <li class="nav-item">
+                    <a href="dashboard_veterinario.html" class="nav-link "><i class="fa-solid fa-chart-pie"></i> Visão Geral</a>
+                </li>
+                <li class="nav-item">
+                    <a href="agenda_veterinario.html" class="nav-link active"><i class="fa-regular fa-calendar"></i> Agenda</a>
+                </li>
+                <li class="nav-item">
+                    <a href="tickets_veterinario.html" class="nav-link "><i class="fa-solid fa-ticket"></i> Tickets</a>
+                </li>
+                <li class="nav-item">
+                    <a href="chat_veterinario.html" class="nav-link "><i class="fa-solid fa-comments"></i> Chat Médico</a>
+                </li>
+                <li class="nav-item">
+                    <a href="pacientes_veterinario.html" class="nav-link "><i class="fa-solid fa-users"></i> Pacientes</a>
+                </li>
+            </ul>
+
+            <div class="nav-line-break"></div>
+            <a href="definicoes_veterinario.html" class="nav-link"><i class="fa-solid fa-gear"></i> Configurações</a>
+            <a href="index.html" class="nav-link text-danger"><i class="fa-solid fa-arrow-right-from-bracket"></i> Sair</a>
+        </aside>
+
+        <!-- MAIN -->
+        <main class="main-content">
+            <!-- Header Area (Minha Agenda style) -->
+            <div class="header-area">
+                <div>
+                    <h2 class="fw-bold mb-1">My Schedule</h2>
+                    <p class="text-muted">All your events and appointments in one place.</p>
+                </div>
+            </div>
+
+            <!-- Fila de Filtros e Botão Adicionar Evento (Owner Style) -->
+            <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+                <div class="d-flex gap-2 flex-wrap">
+                    <div class="filter-pill active">All</div>
+                    <div class="filter-pill"><span class="dot" style="background-color: var(--event-vacina);"></span> Vaccines</div>
+                    <div class="filter-pill"><span class="dot" style="background-color: var(--event-desparasitacao);"></span> Deworming</div>
+                    <div class="filter-pill"><span class="dot" style="background-color: var(--event-medicacao);"></span> Medication</div>
+                    <div class="filter-pill"><span class="dot" style="background-color: var(--event-consulta);"></span> Appointments</div>
+                    <div class="filter-pill"><span class="dot" style="background-color: var(--event-cirurgia);"></span> Surgeries</div>
+                    <div class="filter-pill" onclick="openBlockModal()"><span class="dot" style="background-color: var(--event-bloqueio);"></span> Manual Block</div>
+                </div>
+                <!-- Standard Add Event Button just like Owner -->
+                <button class="btn-add-event" onclick="openBlockModal()"><i class="fa-solid fa-plus"></i> Add Event / Block</button>
+            </div>
+
+            <!-- Area de Layout Central (Glass Card full width) -->
+            <div class="agenda-layout">
+                <div class="glass-card">
+                    <div id="calendar"></div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Offcanvas for Patient Context -->
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="contextOffcanvas" aria-labelledby="contextOffcanvasLabel">
+        <div class="offcanvas-header border-bottom">
+            <h5 class="offcanvas-title fw-bold" id="contextOffcanvasLabel">Detalhes do Agendamento</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body" id="contextContent">
+            <!-- Dynamic Content Injected Here -->
+        </div>
+    </div>
+
+    <!-- Modal Bloqueio Manual -->
+    <div class="modal fade" id="blockModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold">Bloquear ou Agendar Evento</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <p class="text-muted small mb-4">Adicione um novo evento à sua agenda.</p>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small text-muted">Título / Motivo</label>
+                        <input type="text" id="blockTitle" class="form-control" placeholder="Ex: Hora de Almoço">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small text-muted">Tipo</label>
+                        <select class="form-select" id="blockType">
+                            <option value="Bloqueio">Bloqueio Manual (Ex: Almoço)</option>
+                            <option value="Consulta">Consulta</option>
+                            <option value="Cirurgia">Cirurgia</option>
+                            <option value="Emergencia">Emergência</option>
+                        </select>
+                    </div>
+                    <div class="row g-3 mb-4">
+                        <div class="col-6">
+                            <label class="form-label fw-bold small text-muted">Início</label>
+                            <input type="datetime-local" id="blockStart" class="form-control">
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label fw-bold small text-muted">Fim</label>
+                            <input type="datetime-local" id="blockEnd" class="form-control">
+                        </div>
+                    </div>
+                    <button class="btn btn-primary w-100 fw-bold py-2" onclick="saveBlock()">Guardar Evento</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <script>
+        const SUPABASE_URL = 'https://xqtbtggmwejnkhckduti.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhxdGJ0Z2dtd2VqbmtoY2tkdXRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc2OTU5NjEsImV4cCI6MjA4MzI3MTk2MX0.G1wG0UC6sF7r6tMxGdqLGvsHa_dxlVD1-j6QNEw32IM';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        let vetUserId = null;
+        let calendar = null;
+        let offcanvasInstance = null;
+
+        // Initialize App
+        async function init() {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (!session) { window.location.href = 'login.html?role=veterinario'; return; }
+            vetUserId = session.user.id;
+            
+            offcanvasInstance = new bootstrap.Offcanvas(document.getElementById('contextOffcanvas'));
+            initCalendar();
+            fetchAgendamentos();
+        }
+
+        // Initialize FullCalendar - Same configuration as Owner layout!
+        function initCalendar() {
+            const calendarEl = document.getElementById('calendar');
+            calendar = new FullCalendar.Calendar(calendarEl, {
+                locale: 'pt',
+                initialView: 'dayGridMonth',
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek'
+                },
+                contentHeight: '100%', // Fills the glass-card
+                dayMaxEvents: true, // Allow "more" link when too many events
+                eventClick: function(info) {
+                    showContext(info.event);
+                }
+            });
+            calendar.render();
+        }
+
+        async function fetchAgendamentos() {
+            const { data: agData, error: agError } = await supabaseClient
+                .from('agendamentos')
+                .select('*, animais(nome, foto_url, id_dono)')
+                .eq('id_vet', vetUserId)
+                .neq('status', 'Cancelado');
+
+            if (agError) console.error("Erro ao carregar agendamentos:", agError);
+
+            const { data: tkData, error: tkError } = await supabaseClient
+                .from('tickets')
+                .select('*, animais(nome, foto_url), clientes(nome)')
+                .eq('id_veterinario', vetUserId)
+                .eq('estado', 'pendente');
+
+            // Cleanup routine for expired tickets
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            let activeTkData = [];
+            
+            if (tkData) {
+                for (const t of tkData) {
+                    if (t.data_sugerida) {
+                        const sugDate = new Date(t.data_sugerida);
+                        if (sugDate < today) {
+                            if (t.estado === 'pendente') {
+                                supabaseClient.from('tickets').delete().eq('id', t.id).then(({error}) => {
+                                    if (error) console.error("Erro ao apagar ticket", error);
+                                });
+                                continue;
+                            } else if (t.estado === 'marcado') {
+                                supabaseClient.from('tickets').update({ estado: 'arquivado', feedback_publico: 'Não finalizada' }).eq('id', t.id).then(({error}) => {
+                                    if (error) console.error("Erro ao atualizar ticket", error);
+                                });
+                                continue;
+                            }
+                        }
+                    }
+                    activeTkData.push(t);
+                }
+            }
+
+            let events = [];
+            if (agData && agData.length > 0) {
+                // Manually fetch owners to prevent foreign key relation errors
+                const ownerIds = [...new Set(agData.map(ag => ag.animais?.id_dono).filter(id => id))];
+                let ownerMap = new Map();
+                if (ownerIds.length > 0) {
+                    const isUuid = typeof ownerIds[0] === 'string' && ownerIds[0].length > 20;
+                    const { data: clientsData } = await supabaseClient.from('clientes').select('id, nome, user_id').in(isUuid ? 'user_id' : 'id', ownerIds);
+                    if (clientsData) clientsData.forEach(c => ownerMap.set(c[isUuid ? 'user_id' : 'id'], c));
+                }
+
+                const agEvents = agData.map(item => {
+                    let cNames = getClassNames(item.tipo_servico, item.status);
+                    const ownerInfo = ownerMap.get(item.animais?.id_dono);
+                    return {
+                        id: 'ag_' + item.id,
+                        title: item.tipo_servico === 'Bloqueio' ? '⛔ ' + item.titulo : item.titulo,
+                        start: item.data_hora_inicio,
+                        end: item.data_hora_fim,
+                        classNames: cNames,
+                        extendedProps: {
+                            animal: item.animais,
+                            dono: ownerInfo || { nome: '—' },
+                            tipo: item.tipo_servico,
+                            status: item.status,
+                            notas: item.notas_medicas
+                        }
+                    };
+                });
+                events = [...events, ...agEvents];
+            }
+
+            if (activeTkData && activeTkData.length > 0) {
+                const tkEvents = activeTkData.filter(t => t.data_sugerida).map(t => {
+                    const isPending = t.estado === 'pendente';
+                    const isArchived = t.estado === 'arquivado';
+                    let titulo;
+                    if (isPending) titulo = `⏳ A aguardar confirmação: ${t.motivo}`;
+                    else if (isArchived) titulo = `🗄️ Arquivada: ${t.motivo}`;
+                    else titulo = `✅ Consulta Aceite: ${t.motivo}`;
+                    
+                    return {
+                        id: 'tk_' + t.id,
+                        title: titulo,
+                        start: t.data_sugerida,
+                        classNames: isPending ? ['color-pendente'] : ['color-consulta'],
+                        extendedProps: {
+                            animal: t.animais,
+                            dono: t.clientes,
+                            tipo: 'Consulta',
+                            status: t.estado,
+                            notas: t.descricao
+                        }
+                    };
+                });
+                events = [...events, ...tkEvents];
+            }
+            
+            calendar.removeAllEvents();
+            calendar.addEventSource(events);
+        }
+
+        // Color mapper specific to Zooni Owner app style
+        function getClassNames(tipo, status) {
+            if(status === 'Pendente') return ['color-pendente'];
+            if(tipo === 'Vacina') return ['color-vacina'];
+            if(tipo === 'Cirurgia' || tipo === 'Emergencia') return ['color-cirurgia'];
+            if(tipo === 'Bloqueio') return ['color-bloqueio'];
+            return ['color-consulta']; // Default style
+        }
+
+        function showContext(event) {
+            const ctx = document.getElementById('contextContent');
+            const props = event.extendedProps;
+            let imgHtml = '<div class="pet-photo bg-light d-flex align-items-center justify-content-center mx-auto" style="font-size:2rem;">🐾</div>';
+            
+            if(props.animal && props.animal.foto_url) {
+                imgHtml = `<img src="${props.animal.foto_url}" class="pet-photo mx-auto d-block">`;
+            } else if (!props.animal) {
+                imgHtml = '<div class="pet-photo bg-light d-flex align-items-center justify-content-center mx-auto" style="font-size:2rem; border-radius:8px;"><i class="fa-solid fa-ban text-muted"></i></div>';
+            }
+
+            ctx.innerHTML = `
+                ${imgHtml}
+                <div class="text-center mb-4 border-bottom pb-4">
+                    <h5 class="fw-bold mb-1">${props.animal ? props.animal.nome : 'Sem Paciente Mapeado'}</h5>
+                    <p class="text-muted small">${props.dono ? 'Dono: ' + props.dono.nome : ''}</p>
+                    <span class="context-badge">${props.tipo}</span>
+                    <span class="context-badge ms-1">${props.status}</span>
+                </div>
+                
+                <h6 class="fw-bold mb-3">Detalhes do Agendamento</h6>
+                <div class="mb-3">
+                    <small class="text-muted d-block fw-bold mb-1">Título/Motivo</small>
+                    <div>${event.title}</div>
+                </div>
+                <div class="mb-3">
+                    <small class="text-muted d-block fw-bold mb-1">Duração</small>
+                    <div><i class="fa-regular fa-clock text-muted me-1"></i> ${event.start.toLocaleString()} - ${event.end ? event.end.toLocaleString() : ''}</div>
+                </div>
+                
+                ${props.notas ? `
+                <div class="mb-3 p-3 bg-light rounded-3 border">
+                    <small class="text-muted d-block fw-bold mb-1">Notas Médicas Pivadas</small>
+                    <div style="white-space: pre-wrap;" class="small">${props.notas}</div>
+                </div>
+                ` : ''}
+
+                <div class="mt-4 pt-4 border-top">
+                    <button class="btn btn-outline-danger w-100 btn-sm" onclick="cancelar(${event.id})"><i class="fa-solid fa-trash"></i> Cancelar Agendamento</button>
+                </div>
+            `;
+            offcanvasInstance.show();
+        }
+
+        async function cancelar(id) {
+            if(confirm("Tem a certeza que deseja cancelar cancelar este evento?")) {
+                await supabaseClient.from('agendamentos').update({ status: 'Cancelado' }).eq('id', id);
+                fetchAgendamentos();
+                offcanvasInstance.hide();
+            }
+        }
+
+        // --- BLOCK MANUAL LOGIC ---
+        const blockModal = new bootstrap.Modal(document.getElementById('blockModal'));
+
+        function openBlockModal() {
+            document.getElementById('blockTitle').value = '';
+            document.getElementById('blockStart').value = '';
+            document.getElementById('blockEnd').value = '';
+            blockModal.show();
+        }
+
+        async function saveBlock() {
+            const title = document.getElementById('blockTitle').value.trim();
+            const type = document.getElementById('blockType').value;
+            const start = document.getElementById('blockStart').value;
+            const end = document.getElementById('blockEnd').value;
+
+            if(!title || !start || !end) {
+                Swal.fire('Erro', 'Preencha todos os campos.', 'error');
+                return;
+            }
+
+            if(new Date(start) >= new Date(end)) {
+                Swal.fire('Erro', 'A data de fim deve ser superior à de início.', 'error');
+                return;
+            }
+            
+            const { data: temConflito } = await supabaseClient.rpc('verificar_conflito_agendamento', {
+                p_id_vet: vetUserId,
+                p_data_inicio: new Date(start).toISOString(),
+                p_data_fim: new Date(end).toISOString(),
+                p_id_agendamento_ignorar: null
+            });
+
+            if(temConflito) {
+                Swal.fire('Conflito', 'Já existe um evento na agenda para este horário.', 'warning');
+                return;
+            }
+
+            const { error } = await supabaseClient.from('agendamentos').insert([{
+                id_vet: vetUserId,
+                titulo: title,
+                data_hora_inicio: new Date(start).toISOString(),
+                data_hora_fim: new Date(end).toISOString(),
+                tipo_servico: type,
+                status: 'Confirmado'
+            }]);
+
+            if(error) {
+                Swal.fire('Erro', error.message, 'error');
+            } else {
+                blockModal.hide();
+                Swal.fire('Sucesso', 'Evento salvo com sucesso.', 'success').then(() => {
+                    fetchAgendamentos();
+                });
+            }
+        }
+
+        init();
+    </script>
+</body>
+</html>

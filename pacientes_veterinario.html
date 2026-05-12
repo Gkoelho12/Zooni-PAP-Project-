@@ -1,0 +1,1738 @@
+<!DOCTYPE html>
+<html lang="pt">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zooni — Meus Pacientes</title>
+    <meta name="description" content="CRM clínico do veterinário Zooni — gerencie e consulte os seus pacientes com rapidez e segurança.">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="assets/js/theme.js"></script>
+    <link rel="stylesheet" href="assets/css/theme.css">
+
+    <style>
+        /* ── Variables ─────────────────────────────────────────── */
+        :root {
+            --primary: #3D8B3D;
+            --primary-dark: #1E4D1E;
+            --primary-light: #5CB85C;
+            --bg-color: #F2F8F2;
+            --text-main: #1a2e1a;
+            --text-sec: #5a7a5a;
+            --card-bg: #ffffff;
+            --border-color: #e8f0e8;
+            --input-bg: #ffffff;
+            --mint: #00B894;
+            --orange: #FF7675;
+            --danger: #d63031;
+            --warning: #fdcb6e;
+            --info: #0984e3;
+        }
+
+        /* Force light mode on vet pages */
+        [data-theme="dark"] {
+            --bg-color: #F2F8F2 !important;
+            --text-main: #1a2e1a !important;
+            --text-sec: #5a7a5a !important;
+            --primary: #3D8B3D !important;
+            --card-bg: #ffffff !important;
+            --border-color: #e8f0e8 !important;
+        }
+        [data-theme="dark"] body { background-color: #F2F8F2 !important; color: #1a2e1a !important; }
+        [data-theme="dark"] .sidebar { background: linear-gradient(180deg,#3D8B3D 0%,#1E4D1E 100%) !important; }
+        [data-theme="dark"] .patient-table-wrap,
+        [data-theme="dark"] .search-bar-wrap,
+        [data-theme="dark"] .stat-card,
+        [data-theme="dark"] .offcanvas,
+        [data-theme="dark"] .modal-content { background:#fff !important; color:#1a2e1a !important; border-color:#e8f0e8 !important; }
+
+        /* ── Layout ───────────────────────────────────────────── */
+        body {
+            background-color: var(--bg-color);
+            font-family: 'Outfit', sans-serif;
+            color: var(--text-main);
+            min-height: 100vh;
+        }
+
+        .app-container {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            min-height: 100vh;
+        }
+
+        /* ── SIDEBAR STYLES ── */
+        .sidebar {
+            background-color: var(--primary-dark);
+            color: white;
+            padding: 2rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+        }
+
+        .logo-container {
+            margin-bottom: 2.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            align-items: flex-start;
+        }
+
+        .logo-img-sidebar {
+            max-width: 160px;
+            filter: brightness(0) invert(1);
+        }
+
+        .logo-subtext {
+            font-size: 0.85rem;
+            letter-spacing: 2px;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.8);
+            text-transform: uppercase;
+            padding-left: 5px;
+        }
+
+        .nav-links {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            flex-grow: 1;
+        }
+
+        .nav-item {
+            margin: 0;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 15px;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background-color: rgba(255, 255, 255, 0.15);
+            color: white;
+        }
+
+        .nav-link.active {
+            border-left: 4px solid var(--primary);
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .nav-link i {
+            width: 20px;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+
+        .nav-link.text-danger {
+            color: #ff6b6b !important;
+        }
+        .nav-link.text-danger:hover {
+            background-color: rgba(255, 107, 107, 0.15);
+            color: #ff6b6b !important;
+        }
+
+        .nav-line-break {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin: 15px 0;
+        }
+
+        /* ── Main Content ─────────────────────────────────────── */
+        .main-content { padding: 2.5rem; }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 2rem;
+        }
+
+        /* ── Stat Cards (4 top KPIs) ──────────────────────────── */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 1.2rem 1.4rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .stat-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.06); }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .stat-label { font-size: 0.82rem; color: var(--text-sec); margin-top: 4px; font-weight: 500; }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+        }
+
+        /* ── Search & Filter Bar ──────────────────────────────── */
+        .search-bar-wrap {
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 1.2rem 1.4rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .search-input-wrap {
+            flex: 1;
+            min-width: 220px;
+            position: relative;
+        }
+
+        .search-input-wrap i {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-sec);
+            pointer-events: none;
+        }
+
+        .search-input-wrap input {
+            width: 100%;
+            padding: 10px 14px 10px 42px;
+            border: 1.5px solid var(--border-color);
+            border-radius: 12px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.92rem;
+            background: var(--input-bg);
+            color: var(--text-main);
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .search-input-wrap input:focus { border-color: var(--primary); }
+
+        .filter-pill {
+            padding: 8px 18px;
+            border: 1.5px solid var(--border-color);
+            border-radius: 20px;
+            font-size: 0.84rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: white;
+            color: var(--text-sec);
+            white-space: nowrap;
+            user-select: none;
+        }
+
+        .filter-pill:hover { border-color: var(--primary); color: var(--primary); }
+        .filter-pill.active { background: var(--primary); border-color: var(--primary); color: white; }
+
+        /* ── Patient Table ────────────────────────────────────── */
+        .patient-table-wrap {
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+
+        .patient-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .patient-table thead th {
+            background: #f8faf8;
+            padding: 12px 18px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-sec);
+            border-bottom: 1px solid var(--border-color);
+            white-space: nowrap;
+        }
+
+        .patient-table thead th:first-child { border-radius: 0; }
+
+        .patient-table tbody tr {
+            border-bottom: 1px solid #f5f7f5;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        .patient-table tbody tr:last-child { border-bottom: none; }
+        .patient-table tbody tr:hover { background: #f0f7f0; }
+
+        .patient-table tbody td {
+            padding: 14px 18px;
+            vertical-align: middle;
+            font-size: 0.9rem;
+        }
+
+        /* Animal avatar in table */
+        .animal-avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--border-color);
+            flex-shrink: 0;
+        }
+
+        .animal-emoji-sm {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            flex-shrink: 0;
+        }
+
+        .animal-name { font-weight: 700; font-size: 0.95rem; }
+        .animal-breed { font-size: 0.78rem; color: var(--text-sec); }
+
+        /* Traffic-light badges */
+        .badge-ok {
+            display: inline-flex; align-items: center; gap: 5px;
+            background: rgba(0,184,148,0.1); color: #00875A;
+            border: 1px solid rgba(0,184,148,0.25);
+            padding: 3px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 700;
+        }
+
+        .badge-warn {
+            display: inline-flex; align-items: center; gap: 5px;
+            background: rgba(253,203,110,0.18); color: #B8860B;
+            border: 1px solid rgba(253,203,110,0.4);
+            padding: 3px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 700;
+        }
+
+        .badge-danger {
+            display: inline-flex; align-items: center; gap: 5px;
+            background: rgba(214,48,49,0.1); color: var(--danger);
+            border: 1px solid rgba(214,48,49,0.2);
+            padding: 3px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 700;
+        }
+
+        .badge-alert {
+            display: inline-flex; align-items: center; gap: 4px;
+            background: rgba(214,48,49,0.08); color: var(--danger);
+            border: 1px solid rgba(214,48,49,0.2);
+            padding: 2px 9px; border-radius: 20px; font-size: 0.72rem; font-weight: 700;
+        }
+
+        .badge-neutral {
+            display: inline-flex; align-items: center; gap: 5px;
+            background: #f1f3f1; color: var(--text-sec);
+            padding: 3px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600;
+        }
+
+        /* Pagination */
+        .pagination-wrap {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 20px;
+            border-top: 1px solid var(--border-color);
+            background: #fafafa;
+        }
+
+        .pag-info { font-size: 0.82rem; color: var(--text-sec); }
+        .pag-btns { display: flex; gap: 6px; }
+
+        .pag-btn {
+            width: 34px; height: 34px;
+            border: 1.5px solid var(--border-color);
+            border-radius: 8px;
+            background: white;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.15s;
+            color: var(--text-main);
+        }
+
+        .pag-btn:hover { border-color: var(--primary); color: var(--primary); }
+        .pag-btn.active { background: var(--primary); border-color: var(--primary); color: white; }
+        .pag-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+        /* Empty / Loading */
+        .empty-table-state {
+            padding: 4rem 2rem;
+            text-align: center;
+            color: var(--text-sec);
+        }
+
+        .empty-table-state i { font-size: 3rem; opacity: 0.2; margin-bottom: 1rem; }
+
+        .skeleton-row td { background: linear-gradient(90deg, #f5f7f5 25%, #eef2ee 50%, #f5f7f5 75%); background-size: 200% 100%; animation: shimmer 1.4s infinite; height: 64px; }
+        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+        /* ── Clinical Offcanvas ───────────────────────────────── */
+        .offcanvas.offcanvas-end { width: 520px !important; }
+        .offcanvas-body { padding: 0; display: flex; flex-direction: column; overflow: hidden; }
+
+        /* Patient header banner */
+        .patient-header {
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+            color: white;
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-shrink: 0;
+        }
+
+        .patient-avatar-lg {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid rgba(255,255,255,0.3);
+            flex-shrink: 0;
+        }
+
+        .patient-emoji-lg {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.15);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 2.2rem;
+            flex-shrink: 0;
+            border: 2px solid rgba(255,255,255,0.3);
+        }
+
+        .patient-header-info { flex: 1; min-width: 0; }
+        .patient-header-name { font-size: 1.35rem; font-weight: 700; margin-bottom: 2px; }
+        .patient-header-sub { font-size: 0.85rem; opacity: 0.85; }
+
+        .patient-age-badge {
+            background: rgba(255,255,255,0.18);
+            border: 1px solid rgba(255,255,255,0.25);
+            border-radius: 12px;
+            padding: 6px 14px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .patient-age-badge .age-num { font-size: 1.4rem; font-weight: 700; line-height: 1; }
+        .patient-age-badge .age-label { font-size: 0.7rem; opacity: 0.8; }
+
+        /* Critical alerts bar */
+        .alert-bar {
+            margin: 0;
+            padding: 10px 1.5rem;
+            border-radius: 0;
+            font-size: 0.85rem;
+            font-weight: 600;
+            border: none;
+            border-bottom: 1px solid rgba(214,48,49,0.15);
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .alert-bar.danger { background: rgba(214,48,49,0.07); color: #b91c1c; }
+        .alert-bar.warning { background: rgba(253,203,110,0.18); color: #92400e; }
+
+        /* Tab navigation */
+        .clinical-tabs {
+            display: flex;
+            border-bottom: 1px solid var(--border-color);
+            background: #fafafa;
+            flex-shrink: 0;
+        }
+
+        .clinical-tab {
+            flex: 1;
+            padding: 12px 8px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--text-sec);
+            cursor: pointer;
+            text-align: center;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .clinical-tab:hover { color: var(--primary); }
+        .clinical-tab.active { color: var(--primary); border-bottom-color: var(--primary); background: white; }
+
+        /* Tab content area (scrollable) */
+        .tab-content-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.5rem;
+        }
+
+        /* Info Grid (tab 1) */
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 1.5rem;
+        }
+
+        .info-chip {
+            background: #f8faf8;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 12px 14px;
+        }
+
+        .info-chip-label { font-size: 0.72rem; color: var(--text-sec); font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 4px; }
+        .info-chip-value { font-size: 1rem; font-weight: 700; color: var(--text-main); }
+
+        .section-title-sm {
+            font-size: 0.78rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--text-sec);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-title-sm::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border-color);
+        }
+
+        /* Owner contact card */
+        .owner-card {
+            background: #f0f7f0;
+            border: 1px solid #c8e6c9;
+            border-radius: 14px;
+            padding: 14px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 1.5rem;
+        }
+
+        .owner-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            font-weight: 700;
+            font-size: 1.1rem;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .owner-name { font-weight: 700; font-size: 0.95rem; }
+        .owner-meta { font-size: 0.8rem; color: var(--text-sec); }
+
+        /* History Timeline */
+        .timeline { position: relative; padding-left: 24px; }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 7px;
+            top: 8px;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, var(--primary), transparent);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 1.2rem;
+        }
+
+        .timeline-dot {
+            position: absolute;
+            left: -22px;
+            top: 6px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--primary);
+            border: 2px solid white;
+            box-shadow: 0 0 0 2px var(--primary);
+        }
+
+        .timeline-card {
+            background: #f8faf8;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 12px 14px;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+
+        .timeline-card:hover { border-color: var(--primary); }
+
+        .timeline-date { font-size: 0.72rem; color: var(--text-sec); font-weight: 700; margin-bottom: 4px; }
+        .timeline-motivo { font-weight: 700; font-size: 0.9rem; margin-bottom: 4px; }
+        .timeline-notes { font-size: 0.82rem; color: var(--text-sec); line-height: 1.4; }
+
+        .timeline-expand {
+            font-size: 0.75rem;
+            color: var(--primary);
+            cursor: pointer;
+            font-weight: 600;
+            margin-top: 4px;
+            display: inline-block;
+        }
+
+        /* Prophylaxis grid */
+        .prophy-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .prophy-item {
+            background: #f8faf8;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .prophy-name { font-weight: 700; font-size: 0.9rem; }
+        .prophy-date { font-size: 0.78rem; color: var(--text-sec); margin-top: 2px; }
+
+        .traffic-dot {
+            width: 14px; height: 14px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .traffic-green { background: #00B894; box-shadow: 0 0 0 3px rgba(0,184,148,0.2); }
+        .traffic-yellow { background: #fdcb6e; box-shadow: 0 0 0 3px rgba(253,203,110,0.3); animation: pulse-dot 2s infinite; }
+        .traffic-red { background: var(--danger); box-shadow: 0 0 0 3px rgba(214,48,49,0.2); animation: pulse-dot 1.5s infinite; }
+        @keyframes pulse-dot { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.2); } }
+
+        /* Offcanvas footer */
+        .offcanvas-footer {
+            padding: 14px 1.5rem;
+            border-top: 1px solid var(--border-color);
+            background: #fafafa;
+            display: flex;
+            gap: 10px;
+            flex-shrink: 0;
+        }
+
+        .btn-vet-primary {
+            flex: 1;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 11px;
+            font-weight: 700;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.88rem;
+            cursor: pointer;
+            transition: opacity 0.2s;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+
+        .btn-vet-primary:hover { opacity: 0.88; }
+
+        .btn-vet-outline {
+            flex: 1;
+            background: white;
+            color: var(--primary);
+            border: 1.5px solid var(--primary);
+            border-radius: 12px;
+            padding: 11px;
+            font-weight: 700;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.88rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+
+        .btn-vet-outline:hover { background: #f0f7f0; }
+
+        /* Edit inline form */
+        .edit-field { background: white; border: 1.5px solid var(--border-color); border-radius: 10px; padding: 8px 12px; font-family: 'Outfit', sans-serif; font-size: 0.88rem; width: 100%; outline: none; transition: border-color 0.2s; }
+        .edit-field:focus { border-color: var(--primary); }
+
+        /* Quick action bar in offcanvas header */
+        .offcanvas-header { padding: 1rem 1.5rem; border-bottom: 1px solid var(--border-color); }
+    </style>
+</head>
+
+<body>
+<div class="app-container">
+    <!-- ── SIDEBAR ──────────────────────────────────────────── -->
+            <aside class="sidebar">
+            <div class="logo-container">
+                <img src="assets/logo.png" alt="Zooni Logo" class="logo-img-sidebar">
+                <div class="logo-subtext">VETERINÁRIO</div>
+            </div>
+            
+            <ul class="nav-links">
+                <li class="nav-item">
+                    <a href="dashboard_veterinario.html" class="nav-link "><i class="fa-solid fa-chart-pie"></i> Visão Geral</a>
+                </li>
+                <li class="nav-item">
+                    <a href="agenda_veterinario.html" class="nav-link "><i class="fa-regular fa-calendar"></i> Agenda</a>
+                </li>
+                <li class="nav-item">
+                    <a href="tickets_veterinario.html" class="nav-link "><i class="fa-solid fa-ticket"></i> Tickets</a>
+                </li>
+                <li class="nav-item">
+                    <a href="chat_veterinario.html" class="nav-link "><i class="fa-solid fa-comments"></i> Chat Médico</a>
+                </li>
+                <li class="nav-item">
+                    <a href="pacientes_veterinario.html" class="nav-link active"><i class="fa-solid fa-users"></i> Pacientes</a>
+                </li>
+            </ul>
+
+            <div class="nav-line-break"></div>
+            <a href="definicoes_veterinario.html" class="nav-link"><i class="fa-solid fa-gear"></i> Configurações</a>
+            <a href="index.html" class="nav-link text-danger"><i class="fa-solid fa-arrow-right-from-bracket"></i> Sair</a>
+        </aside>
+
+    <!-- ── MAIN ─────────────────────────────────────────────── -->
+    <main class="main-content">
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <div>
+                <h1 class="fw-bold mb-1" style="font-size:1.7rem;">Meus Pacientes</h1>
+                <p class="text-secondary m-0" style="font-size:0.92rem;">
+                    Ficha clínica, histórico e profilaxia dos seus pacientes.
+                </p>
+            </div>
+            <div class="d-flex align-items: center; gap-3">
+                <button class="btn btn-sm btn-outline-secondary rounded-pill px-3" onclick="exportCSV()" id="btnExport">
+                    <i class="fa-solid fa-file-csv me-1"></i> Exportar
+                </button>
+            </div>
+        </div>
+
+        <!-- KPI Cards -->
+        <div class="stats-row" id="statsRow">
+            <div class="stat-card">
+                <div>
+                    <div class="stat-value" id="statTotal">—</div>
+                    <div class="stat-label">Total de Pacientes</div>
+                </div>
+                <div class="stat-icon" style="background:#e8f5e9; color:#2e7d32;">
+                    <i class="fa-solid fa-paw"></i>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div>
+                    <div class="stat-value" id="statUltimoMes">—</div>
+                    <div class="stat-label">Consultados (30 dias)</div>
+                </div>
+                <div class="stat-icon" style="background:#e3f2fd; color:#1565c0;">
+                    <i class="fa-regular fa-calendar-check"></i>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div>
+                    <div class="stat-value text-danger" id="statVacinaAtrasada">—</div>
+                    <div class="stat-label">Vacinas em Atraso</div>
+                </div>
+                <div class="stat-icon" style="background:#fce4ec; color:#c62828;">
+                    <i class="fa-solid fa-syringe"></i>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div>
+                    <div class="stat-value" id="statComAlerta">—</div>
+                    <div class="stat-label">Com Alertas Clínicos</div>
+                </div>
+                <div class="stat-icon" style="background:#fff8e1; color:#e65100;">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Search & Filters -->
+        <div class="search-bar-wrap">
+            <div class="search-input-wrap">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="searchInput"
+                    placeholder="Pesquisar por nome do animal, tutor ou microchip..."
+                    oninput="filterAndRender()">
+            </div>
+            <div class="d-flex gap-2 flex-wrap">
+                <div class="filter-pill active" data-filter="todos" onclick="setFilter('todos', this)">Todos</div>
+                <div class="filter-pill" data-filter="cão" onclick="setFilter('cão', this)">🐶 Canídeos</div>
+                <div class="filter-pill" data-filter="gato" onclick="setFilter('gato', this)">🐱 Felinos</div>
+                <div class="filter-pill" data-filter="exotico" onclick="setFilter('exotico', this)">🦜 Exóticos</div>
+                <div class="filter-pill" data-filter="ultimo_mes" onclick="setFilter('ultimo_mes', this)">
+                    <i class="fa-solid fa-clock-rotate-left" style="font-size:0.78rem;"></i> Últ. Mês
+                </div>
+            </div>
+        </div>
+
+        <!-- Table -->
+        <div class="patient-table-wrap">
+            <table class="patient-table" id="patientTable">
+                <thead>
+                    <tr>
+                        <th style="width:52px;"></th>
+                        <th>Animal / Raça</th>
+                        <th>Espécie</th>
+                        <th>Tutor</th>
+                        <th>Última Consulta</th>
+                        <th>Vacina</th>
+                        <th>Alertas</th>
+                        <th style="width:40px;"></th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <!-- Skeleton loaders -->
+                    <tr class="skeleton-row"><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                    <tr class="skeleton-row"><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                    <tr class="skeleton-row"><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                    <tr class="skeleton-row"><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                    <tr class="skeleton-row"><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                </tbody>
+            </table>
+
+            <div class="pagination-wrap" id="paginationWrap" style="display:none;">
+                <div class="pag-info" id="pagInfo"></div>
+                <div class="pag-btns" id="pagBtns"></div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     CLINICAL OFFCANVAS
+══════════════════════════════════════════════════════════ -->
+<div class="offcanvas offcanvas-end" tabindex="-1" id="clinicalOffcanvas">
+    <div class="offcanvas-header">
+        <h6 class="fw-bold mb-0" style="font-size:0.82rem; text-transform:uppercase; letter-spacing:0.05em; color:var(--text-sec);">
+            <i class="fa-solid fa-stethoscope me-2"></i>Ficha Clínica
+        </h6>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+    </div>
+
+    <div class="offcanvas-body">
+        <!-- Patient Banner Header -->
+        <div class="patient-header" id="ocHeader">
+            <div class="patient-emoji-lg" id="ocEmoji">🐾</div>
+            <div class="patient-header-info">
+                <div class="patient-header-name" id="ocName">—</div>
+                <div class="patient-header-sub" id="ocSub">— · —</div>
+            </div>
+            <div class="patient-age-badge">
+                <div class="age-num" id="ocAge">—</div>
+                <div class="age-label">anos</div>
+            </div>
+        </div>
+
+        <!-- Critical Alerts — hidden if empty -->
+        <div class="alert-bar danger" id="ocAlertBar" style="display:none;">
+            <i class="fa-solid fa-triangle-exclamation mt-1 flex-shrink-0"></i>
+            <div id="ocAlertText"></div>
+        </div>
+        <div class="alert-bar warning" id="ocAllergyBar" style="display:none;">
+            <i class="fa-solid fa-pills mt-1 flex-shrink-0"></i>
+            <div><strong>Alergias:</strong> <span id="ocAllergyText"></span></div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="clinical-tabs">
+            <div class="clinical-tab active" data-tab="overview" onclick="switchTab('overview', this)">
+                <i class="fa-solid fa-id-card"></i> Visão Geral
+            </div>
+            <div class="clinical-tab" data-tab="history" onclick="switchTab('history', this)">
+                <i class="fa-solid fa-timeline"></i> Histórico
+            </div>
+            <div class="clinical-tab" data-tab="prophy" onclick="switchTab('prophy', this)">
+                <i class="fa-solid fa-syringe"></i> Profilaxia
+            </div>
+        </div>
+
+        <!-- ── TAB 1: Overview ───────────────────────────────── -->
+        <div class="tab-content-area" id="tabOverview">
+            <div class="info-grid">
+                <div class="info-chip">
+                    <div class="info-chip-label"><i class="fa-solid fa-weight-scale me-1"></i>Peso</div>
+                    <div class="info-chip-value" id="ocPeso">—</div>
+                </div>
+                <div class="info-chip">
+                    <div class="info-chip-label"><i class="fa-solid fa-microchip me-1"></i>Microchip</div>
+                    <div class="info-chip-value" id="ocMicrochip" style="font-size:0.82rem;">—</div>
+                </div>
+                <div class="info-chip">
+                    <div class="info-chip-label"><i class="fa-regular fa-calendar me-1"></i>Data de Nac.</div>
+                    <div class="info-chip-value" id="ocNasc" style="font-size:0.88rem;">—</div>
+                </div>
+                <div class="info-chip">
+                    <div class="info-chip-label"><i class="fa-solid fa-dna me-1"></i>Raça</div>
+                    <div class="info-chip-value" id="ocRaca" style="font-size:0.88rem;">—</div>
+                </div>
+            </div>
+
+            <p class="section-title-sm">Tutor</p>
+            <div class="owner-card" id="ocOwnerCard">
+                <div class="owner-avatar" id="ocOwnerInitial">?</div>
+                <div>
+                    <div class="owner-name" id="ocOwnerName">—</div>
+                    <div class="owner-meta">
+                        <a href="#" id="ocChatLink" class="text-success fw-bold text-decoration-none">
+                            <i class="fa-solid fa-comment-dots me-1"></i>Enviar Mensagem
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Edit clinical data (inline) -->
+            <p class="section-title-sm">Dados Clínicos (Editar)</p>
+            <div class="mb-3">
+                <label class="small fw-bold text-muted mb-1 d-block">Peso (kg)</label>
+                <input type="number" step="0.1" class="edit-field" id="editPeso" placeholder="Ex: 8.5">
+            </div>
+            <div class="mb-3">
+                <label class="small fw-bold text-muted mb-1 d-block">Microchip</label>
+                <input type="text" class="edit-field" id="editMicrochip" placeholder="Ex: 620098103312345">
+            </div>
+            <div class="mb-3">
+                <label class="small fw-bold text-muted mb-1 d-block">
+                    <i class="fa-solid fa-pills text-danger me-1"></i>Alergias Conhecidas
+                </label>
+                <input type="text" class="edit-field" id="editAlergias" placeholder="Ex: Penicilina, Aspirina">
+            </div>
+            <div class="mb-3">
+                <label class="small fw-bold text-muted mb-1 d-block">
+                    <i class="fa-solid fa-triangle-exclamation text-warning me-1"></i>Alertas Comportamentais
+                </label>
+                <textarea class="edit-field" id="editAlertas" rows="2" placeholder="Ex: Animal reativo; morde em consulta"></textarea>
+            </div>
+            <button class="btn-vet-primary" onclick="saveClinicalData()" id="btnSaveClinical">
+                <i class="fa-solid fa-floppy-disk"></i> Guardar Alterações
+            </button>
+        </div>
+
+        <!-- ── TAB 2: History Timeline ───────────────────────── -->
+        <div class="tab-content-area" id="tabHistory" style="display:none;">
+            <div class="timeline" id="historyTimeline">
+                <div class="text-center py-4 text-muted">
+                    <i class="fa-solid fa-circle-notch fa-spin fa-2x mb-3 opacity-25"></i>
+                    <p class="small">A carregar histórico...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── TAB 3: Prophylaxis ────────────────────────────── -->
+        <div class="tab-content-area" id="tabProphy" style="display:none;">
+            <p class="section-title-sm mb-3">Vacinação</p>
+            <div class="prophy-grid mb-4" id="prophyVacinas">
+                <div class="text-center text-muted small py-3">A carregar...</div>
+            </div>
+
+            <p class="section-title-sm mb-3">Desparasitação</p>
+            <div class="prophy-grid" id="prophyDesparas">
+                <div class="text-center text-muted small py-3">A carregar...</div>
+            </div>
+
+            <!-- Edit next dates -->
+            <div class="mt-4 p-3 border rounded-3" style="background:#f8faf8;">
+                <p class="small fw-bold text-muted mb-3">Actualizar Datas</p>
+                <div class="row g-3">
+                    <div class="col-6">
+                        <label class="small fw-bold text-muted mb-1 d-block">Próxima Vacina</label>
+                        <input type="date" class="edit-field" id="editProxVacina">
+                    </div>
+                    <div class="col-6">
+                        <label class="small fw-bold text-muted mb-1 d-block">Próx. Desparasitação</label>
+                        <input type="date" class="edit-field" id="editProxDesparas">
+                    </div>
+                </div>
+                <button class="btn-vet-primary mt-3" onclick="saveProphylaxis()" id="btnSaveProphy">
+                    <i class="fa-solid fa-floppy-disk"></i> Guardar Datas
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer actions -->
+    <div class="offcanvas-footer">
+        <button class="btn-vet-outline" id="btnChatOffcanvas">
+            <i class="fa-solid fa-comment-dots"></i> Conversar
+        </button>
+        <button class="btn-vet-primary" onclick="window.location.href='tickets_veterinario.html'">
+            <i class="fa-solid fa-ticket"></i> Ver Tickets
+        </button>
+    </div>
+</div>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+    /* ── Supabase Init ────────────────────────────────────────── */
+    const SUPABASE_URL = 'https://xqtbtggmwejnkhckduti.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhxdGJ0Z2dtd2VqbmtoY2tkdXRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc2OTU5NjEsImV4cCI6MjA4MzI3MTk2MX0.G1wG0UC6sF7r6tMxGdqLGvsHa_dxlVD1-j6QNEw32IM';
+    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    /* ── State ────────────────────────────────────────────────── */
+    let VET_USER_ID = null;
+    let allPatients = [];       // Raw data from DB
+    let filteredPatients = [];  // After search/filter
+    let currentAnimalId = null; // Selected for offcanvas
+    let currentDonoId = null;
+    let currentFilter = 'todos';
+
+    const PAGE_SIZE = 12;
+    let currentPage = 1;
+
+    /* ── Bootstrap Offcanvas Instance ───────────────────────── */
+    const offcanvasEl = document.getElementById('clinicalOffcanvas');
+    const ocInstance = new bootstrap.Offcanvas(offcanvasEl);
+
+    /* ── Auth & Bootstrap ────────────────────────────────────── */
+    async function init() {
+        const { data: { session } } = await sb.auth.getSession();
+        if (!session) { window.location.href = 'login.html?role=veterinario'; return; }
+        VET_USER_ID = session.user.id;
+        await loadPatients();
+    }
+
+    /* ── Load Patients from DB ───────────────────────────────── */
+    async function loadPatients() {
+        try {
+            // Source 1: agendamentos of this vet
+            const { data: agendamentos, error } = await sb
+                .from('agendamentos')
+                .select(`
+                    id_animal,
+                    data_hora_inicio,
+                    status,
+                    animais (*)
+                `)
+                .eq('id_vet', VET_USER_ID)
+                .order('data_hora_inicio', { ascending: false });
+
+            if (error) throw error;
+
+            // Source 2: tickets of this vet (important for archived/older cases)
+            const { data: tickets, error: ticketsError } = await sb
+                .from('tickets')
+                .select(`
+                    id_animal,
+                    criado_em,
+                    estado,
+                    animais (*)
+                `)
+                .eq('id_veterinario', VET_USER_ID)
+                .order('criado_em', { ascending: false });
+            if (ticketsError) throw ticketsError;
+
+            // Keep only valid vet-patient appointments:
+            // - has patient
+            // - not canceled
+            // NOTE: we intentionally do not restrict by past date here, so
+            // all vet patients with consultations/appointments are visible.
+            const validAgendamentos = (agendamentos || []).filter(ag => {
+                if (!ag?.id_animal || !ag?.data_hora_inicio) return false;
+                const status = String(ag.status || '').toLowerCase();
+                if (status.includes('cancel')) return false;
+                return true;
+            });
+
+            const validTickets = (tickets || []).filter(t => {
+                if (!t?.id_animal) return false;
+                const estado = String(t.estado || '').toLowerCase();
+                if (estado.includes('cancel') || estado.includes('recus')) return false;
+                return true;
+            });
+
+            // Some rows may come with id_animal but without expanded `animais` relation.
+            // Backfill these animals directly to avoid hiding valid patients.
+            const fallbackAnimalIds = [...new Set([
+                ...validAgendamentos.filter(ag => !ag.animais && ag.id_animal).map(ag => ag.id_animal),
+                ...validTickets.filter(t => !t.animais && t.id_animal).map(t => t.id_animal)
+            ])];
+            const animalMap = new Map();
+            validAgendamentos.forEach(ag => {
+                if (ag.animais?.id) animalMap.set(ag.animais.id, ag.animais);
+            });
+            validTickets.forEach(t => {
+                if (t.animais?.id) animalMap.set(t.animais.id, t.animais);
+            });
+            if (fallbackAnimalIds.length > 0) {
+                const { data: missingAnimals, error: missingAnimalsError } = await sb
+                    .from('animais')
+                    .select('*')
+                    .in('id', fallbackAnimalIds);
+                if (missingAnimalsError) throw missingAnimalsError;
+                (missingAnimals || []).forEach(a => animalMap.set(a.id, a));
+            }
+
+            // Fetch owner mapping
+            const ownerIds = [...new Set([
+                ...validAgendamentos.map(ag => (ag.animais || animalMap.get(ag.id_animal))?.id_dono),
+                ...validTickets.map(t => (t.animais || animalMap.get(t.id_animal))?.id_dono)
+            ]
+                .filter(id => id)
+            )];
+            let ownerMap = new Map();
+            if (ownerIds.length > 0) {
+                const isUuid = typeof ownerIds[0] === 'string' && ownerIds[0].length > 20;
+                const colName = isUuid ? 'user_id' : 'id';
+                const { data: cliData } = await sb.from('clientes').select('id, nome, user_id').in(colName, ownerIds);
+                if (cliData) cliData.forEach(c => ownerMap.set(c[colName], c));
+            }
+
+            // Deduplicate by animal id, keeping the most recent agendamento
+            const seen = new Map();
+            validAgendamentos.forEach(ag => {
+                const animal = ag.animais || animalMap.get(ag.id_animal);
+                if (!animal) return;
+                const aId = animal.id;
+                if (!seen.has(aId)) {
+                    const ownerInfo = ownerMap.get(animal.id_dono) || {};
+                    seen.set(aId, {
+                        ...animal,
+                        ultima_data_agendamento: ag.data_hora_inicio,
+                        dono_nome: ownerInfo.nome || '—',
+                        dono_id_bigint: ownerInfo.id,
+                        dono_user_id: ownerInfo.user_id || animal.id_dono
+                    });
+                }
+            });
+
+            // Add animals that may exist only in tickets for this vet
+            validTickets.forEach(t => {
+                const animal = t.animais || animalMap.get(t.id_animal);
+                if (!animal) return;
+                const aId = animal.id;
+                if (!seen.has(aId)) {
+                    const ownerInfo = ownerMap.get(animal.id_dono) || {};
+                    seen.set(aId, {
+                        ...animal,
+                        ultima_data_agendamento: t.criado_em || null,
+                        dono_nome: ownerInfo.nome || '—',
+                        dono_id_bigint: ownerInfo.id,
+                        dono_user_id: ownerInfo.user_id || animal.id_dono
+                    });
+                }
+            });
+
+            allPatients = Array.from(seen.values());
+            updateStats();
+            filterAndRender();
+
+        } catch (err) {
+            console.error('Erro ao carregar pacientes:', err);
+            alert("ERRO FATAL: " + (err.message || err));
+            document.getElementById('tableBody').innerHTML = `
+                <tr><td colspan="8">
+                    <div class="empty-table-state">
+                        <i class="fa-solid fa-circle-exclamation"></i>
+                        <p class="fw-bold">Erro ao carregar pacientes</p>
+                        <p class="small text-danger">${err.message || err}</p>
+                    </div>
+                </td></tr>`;
+        }
+    }
+
+    /* ── Stats KPIs ──────────────────────────────────────────── */
+    function updateStats() {
+        document.getElementById('statTotal').textContent = allPatients.length;
+
+        const thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+        const recentCount = allPatients.filter(p => {
+            if (!p.ultima_data_agendamento) return false;
+            return new Date(p.ultima_data_agendamento) >= thirtyDaysAgo;
+        }).length;
+        document.getElementById('statUltimoMes').textContent = recentCount;
+
+        const today = new Date(); today.setHours(0,0,0,0);
+        const atrasadas = allPatients.filter(p => {
+            if (!p.proxima_vacina) return false;
+            return new Date(p.proxima_vacina) < today;
+        }).length;
+        document.getElementById('statVacinaAtrasada').textContent = atrasadas;
+
+        const comAlerta = allPatients.filter(p => p.alertas_clinicos || p.alergias).length;
+        document.getElementById('statComAlerta').textContent = comAlerta;
+    }
+
+    /* ── Filter & Search ─────────────────────────────────────── */
+    function setFilter(filter, pill) {
+        currentFilter = filter;
+        document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+        pill.classList.add('active');
+        currentPage = 1;
+        filterAndRender();
+    }
+
+    function filterAndRender() {
+        const query = document.getElementById('searchInput').value.trim().toLowerCase();
+        const today = new Date(); today.setHours(0,0,0,0);
+        const thirtyDaysAgo = new Date(); thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+        filteredPatients = allPatients.filter(p => {
+            // Species filter
+            if (currentFilter === 'cão') {
+                if (!p.tipo_animal?.toLowerCase().includes('cão')) return false;
+            } else if (currentFilter === 'gato') {
+                if (!p.tipo_animal?.toLowerCase().includes('gato')) return false;
+            } else if (currentFilter === 'exotico') {
+                const t = p.tipo_animal?.toLowerCase() || '';
+                if (t.includes('cão') || t.includes('gato')) return false;
+            } else if (currentFilter === 'ultimo_mes') {
+                if (!p.ultima_data_agendamento) return false;
+                if (new Date(p.ultima_data_agendamento) < thirtyDaysAgo) return false;
+            }
+
+            // Text search
+            if (query) {
+                const nome = p.nome?.toLowerCase() || '';
+                const dono = p.dono_nome?.toLowerCase() || '';
+                const chip = p.microchip?.toLowerCase() || '';
+                const raca = p.raca?.toLowerCase() || '';
+                if (!nome.includes(query) && !dono.includes(query) &&
+                    !chip.includes(query) && !raca.includes(query)) return false;
+            }
+            return true;
+        });
+
+        renderTable();
+    }
+
+    /* ── Render Table ────────────────────────────────────────── */
+    function renderTable() {
+        const tbody = document.getElementById('tableBody');
+        const pagWrap = document.getElementById('paginationWrap');
+
+        if (filteredPatients.length === 0) {
+            tbody.innerHTML = `
+                <tr><td colspan="8">
+                    <div class="empty-table-state">
+                        <i class="fa-solid fa-paw"></i>
+                        <p class="fw-bold mb-1">Nenhum paciente encontrado</p>
+                        <p class="small">Ajuste os filtros ou a pesquisa.</p>
+                    </div>
+                </td></tr>`;
+            pagWrap.style.display = 'none';
+            return;
+        }
+
+        const totalPages = Math.ceil(filteredPatients.length / PAGE_SIZE);
+        if (currentPage > totalPages) currentPage = 1;
+        const pageData = filteredPatients.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
+
+        tbody.innerHTML = pageData.map(p => buildRow(p)).join('');
+        renderPagination(filteredPatients.length, totalPages);
+        pagWrap.style.display = 'flex';
+    }
+
+    function buildRow(p) {
+        const today = new Date(); today.setHours(0,0,0,0);
+
+        // Avatar
+        const avatarHtml = p.foto_url
+            ? `<img src="${p.foto_url}" class="animal-avatar" alt="${p.nome}">`
+            : `<div class="animal-emoji-sm">${getSpeciesEmoji(p.tipo_animal)}</div>`;
+
+        // Vaccine badge (traffic light)
+        let vacBadge = '<span class="badge-neutral">—</span>';
+        if (p.proxima_vacina) {
+            const d = new Date(p.proxima_vacina); d.setHours(0,0,0,0);
+            const diff = Math.round((d - today) / 86400000);
+            if (diff < 0) {
+                vacBadge = `<span class="badge-danger"><i class="fa-solid fa-circle-xmark"></i> ${Math.abs(diff)}d atraso</span>`;
+            } else if (diff <= 30) {
+                vacBadge = `<span class="badge-warn"><i class="fa-solid fa-circle-exclamation"></i> ${diff}d</span>`;
+            } else {
+                vacBadge = `<span class="badge-ok"><i class="fa-solid fa-circle-check"></i> Em dia</span>`;
+            }
+        }
+
+        // Alert badges
+        let alertBadges = '';
+        if (p.alergias) alertBadges += `<span class="badge-alert me-1"><i class="fa-solid fa-pills"></i> Alergia</span>`;
+        if (p.alertas_clinicos) alertBadges += `<span class="badge-alert"><i class="fa-solid fa-triangle-exclamation"></i> Alerta</span>`;
+        if (!alertBadges) alertBadges = '<span class="badge-neutral">—</span>';
+
+        // Last appointment
+        const lastDate = p.ultima_data_agendamento
+            ? new Date(p.ultima_data_agendamento).toLocaleDateString('pt-PT', { day:'2-digit', month:'short', year:'numeric' })
+            : '—';
+
+        return `
+            <tr onclick="openClinicalFile(${JSON.stringify(p).replace(/"/g, '&quot;')})" id="row-${p.id}">
+                <td>${avatarHtml}</td>
+                <td>
+                    <div class="animal-name">${escHtml(p.nome)}</div>
+                    <div class="animal-breed">${escHtml(p.raca || p.tipo_animal || '—')}</div>
+                </td>
+                <td><span style="font-size:1.2rem;" title="${escHtml(p.tipo_animal || '')}">${getSpeciesEmoji(p.tipo_animal)} <small class="text-muted" style="font-size:0.75rem;">${escHtml(p.tipo_animal || '—')}</small></span></td>
+                <td>
+                    <div class="fw-600" style="font-weight:600;">${escHtml(p.dono_nome || '—')}</div>
+                </td>
+                <td><span class="small text-muted">${lastDate}</span></td>
+                <td>${vacBadge}</td>
+                <td>${alertBadges}</td>
+                <td>
+                    <i class="fa-solid fa-chevron-right text-muted" style="font-size:0.8rem;"></i>
+                </td>
+            </tr>`;
+    }
+
+    /* ── Pagination ─────────────────────────────────────────── */
+    function renderPagination(total, totalPages) {
+        const start = (currentPage - 1) * PAGE_SIZE + 1;
+        const end = Math.min(currentPage * PAGE_SIZE, total);
+        document.getElementById('pagInfo').textContent = `${start}–${end} de ${total} pacientes`;
+
+        const btns = document.getElementById('pagBtns');
+        btns.innerHTML = '';
+
+        const prev = document.createElement('button');
+        prev.className = 'pag-btn';
+        prev.innerHTML = '<i class="fa-solid fa-chevron-left"></i>';
+        prev.disabled = currentPage === 1;
+        prev.onclick = () => { currentPage--; renderTable(); };
+        btns.appendChild(prev);
+
+        // Show up to 5 page numbers
+        const pages = [];
+        for (let i = 1; i <= totalPages; i++) {
+            if (i === 1 || i === totalPages || Math.abs(i - currentPage) <= 1) {
+                pages.push(i);
+            } else if (pages[pages.length - 1] !== '...') {
+                pages.push('...');
+            }
+        }
+
+        pages.forEach(p => {
+            if (p === '...') {
+                const span = document.createElement('span');
+                span.className = 'pag-btn';
+                span.style.cursor = 'default';
+                span.textContent = '...';
+                btns.appendChild(span);
+            } else {
+                const btn = document.createElement('button');
+                btn.className = `pag-btn${p === currentPage ? ' active' : ''}`;
+                btn.textContent = p;
+                btn.onclick = () => { currentPage = p; renderTable(); };
+                btns.appendChild(btn);
+            }
+        });
+
+        const next = document.createElement('button');
+        next.className = 'pag-btn';
+        next.innerHTML = '<i class="fa-solid fa-chevron-right"></i>';
+        next.disabled = currentPage === totalPages;
+        next.onclick = () => { currentPage++; renderTable(); };
+        btns.appendChild(next);
+    }
+
+    /* ── Clinical Offcanvas ──────────────────────────────────── */
+    function openClinicalFile(patient) {
+        currentAnimalId = patient.id;
+        currentDonoId = patient.dono_id_bigint;
+
+        // Header
+        const emoji = getSpeciesEmoji(patient.tipo_animal);
+        if (patient.foto_url) {
+            document.getElementById('ocEmoji').innerHTML = `<img src="${patient.foto_url}" class="patient-avatar-lg" alt="${escHtml(patient.nome)}">`;
+        } else {
+            document.getElementById('ocEmoji').innerHTML = emoji;
+            document.getElementById('ocEmoji').style.fontSize = '2.2rem';
+        }
+
+        document.getElementById('ocName').textContent = patient.nome || '—';
+        document.getElementById('ocSub').textContent = `${patient.tipo_animal || '—'} · ${patient.raca || 'Raça não definida'}`;
+
+        // Age
+        const age = calcAge(patient['Data de nascimento'] || patient.data_nascimento);
+        document.getElementById('ocAge').textContent = age !== null ? age : '—';
+
+        // Alerts
+        const alertBar = document.getElementById('ocAlertBar');
+        const allergyBar = document.getElementById('ocAllergyBar');
+        if (patient.alertas_clinicos) {
+            alertBar.style.display = 'flex';
+            document.getElementById('ocAlertText').textContent = patient.alertas_clinicos;
+        } else {
+            alertBar.style.display = 'none';
+        }
+        if (patient.alergias) {
+            allergyBar.style.display = 'flex';
+            document.getElementById('ocAllergyText').textContent = patient.alergias;
+        } else {
+            allergyBar.style.display = 'none';
+        }
+
+        // Overview tab data
+        const pesoAtual = patient.peso_kg ?? patient.peso ?? null;
+        document.getElementById('ocPeso').textContent = pesoAtual ? `${pesoAtual} kg` : '—';
+        document.getElementById('ocMicrochip').textContent = patient.microchip || 'Não registado';
+        document.getElementById('ocNasc').textContent = patient['Data de nascimento']
+            ? new Date(patient['Data de nascimento']).toLocaleDateString('pt-PT') : '—';
+        document.getElementById('ocRaca').textContent = patient.raca || '—';
+
+        // Owner card
+        const ownerName = patient.dono_nome || '—';
+        document.getElementById('ocOwnerName').textContent = ownerName;
+        document.getElementById('ocOwnerInitial').textContent = ownerName.charAt(0).toUpperCase();
+        const chatUrl = `chat_veterinario.html?dono_id=${patient.dono_id_bigint || ''}`;
+        document.getElementById('ocChatLink').href = chatUrl;
+        document.getElementById('btnChatOffcanvas').onclick = () => { window.location.href = chatUrl; };
+
+        // Prefill edit fields
+        document.getElementById('editPeso').value = pesoAtual || '';
+        document.getElementById('editMicrochip').value = patient.microchip || '';
+        document.getElementById('editAlergias').value = patient.alergias || '';
+        document.getElementById('editAlertas').value = patient.alertas_clinicos || '';
+        document.getElementById('editProxVacina').value = patient.proxima_vacina || '';
+        document.getElementById('editProxDesparas').value = patient.proxima_desparas || '';
+
+        // Reset to overview tab
+        switchTab('overview', document.querySelector('.clinical-tab[data-tab="overview"]'));
+
+        // Load history and prophylaxis
+        loadHistory(patient.id, patient.dono_id_bigint);
+        loadProphylaxis(patient);
+
+        ocInstance.show();
+    }
+
+    /* ── Tab Switcher ────────────────────────────────────────── */
+    function switchTab(tab, el) {
+        document.querySelectorAll('.clinical-tab').forEach(t => t.classList.remove('active'));
+        if (el) el.classList.add('active');
+
+        ['tabOverview', 'tabHistory', 'tabProphy'].forEach(id => {
+            document.getElementById(id).style.display = 'none';
+        });
+
+        if (tab === 'overview') document.getElementById('tabOverview').style.display = 'block';
+        if (tab === 'history') document.getElementById('tabHistory').style.display = 'block';
+        if (tab === 'prophy') document.getElementById('tabProphy').style.display = 'block';
+    }
+
+    /* ── History Timeline ────────────────────────────────────── */
+    async function loadHistory(animalId, donoId) {
+        const tl = document.getElementById('historyTimeline');
+        tl.innerHTML = `<div class="text-center py-4 text-muted"><i class="fa-solid fa-circle-notch fa-spin fa-2x mb-3 opacity-25"></i><p class="small">A carregar histórico...</p></div>`;
+
+        try {
+            const { data: hist } = await sb
+                .from('agendamentos')
+                .select('id, titulo, data_hora_inicio, tipo_servico, notas_medicas, status')
+                .eq('id_vet', VET_USER_ID)
+                .eq('id_animal', animalId)
+                .in('status', ['Confirmado', 'Concluido'])
+                .order('data_hora_inicio', { ascending: false });
+
+            // Also check tickets
+            const { data: tickets } = await sb
+                .from('tickets')
+                .select('id, motivo, descricao, criado_em, estado, notas_privadas, feedback_publico')
+                .eq('id_animal', animalId)
+                .eq('id_veterinario', VET_USER_ID)
+                .in('estado', ['arquivado', 'marcado'])
+                .order('criado_em', { ascending: false });
+
+            // Merge and sort
+            const events = [];
+            (hist || []).forEach(h => events.push({
+                date: h.data_hora_inicio,
+                title: h.titulo || h.tipo_servico || 'Agendamento',
+                notes: h.notas_medicas || '',
+                type: 'agendamento',
+                id: h.id
+            }));
+            (tickets || []).forEach(t => events.push({
+                date: t.criado_em,
+                title: t.motivo || 'Ticket',
+                notes: (t.notas_privadas || t.feedback_publico || t.descricao || '').substring(0, 200),
+                type: 'ticket',
+                id: t.id
+            }));
+
+            events.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            if (events.length === 0) {
+                tl.innerHTML = `<div class="empty-table-state py-4"><i class="fa-solid fa-timeline"></i><p class="small">Sem histórico registado.</p></div>`;
+                return;
+            }
+
+            tl.innerHTML = events.map((ev, i) => `
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-card">
+                        <div class="timeline-date">
+                            <i class="fa-regular fa-calendar me-1"></i>
+                            ${new Date(ev.date).toLocaleDateString('pt-PT', { day:'2-digit', month:'long', year:'numeric' })}
+                            <span class="ms-2 badge ${ev.type === 'ticket' ? 'bg-primary' : 'bg-success'} rounded-pill" style="font-size:0.65rem;">${ev.type === 'ticket' ? 'Ticket' : 'Consulta'}</span>
+                        </div>
+                        <div class="timeline-motivo">${escHtml(ev.title)}</div>
+                        ${ev.notes ? `
+                            <div class="timeline-notes" id="notes-${i}" style="display:none;">${escHtml(ev.notes)}</div>
+                            <span class="timeline-expand" onclick="toggleNotes('notes-${i}', this)">
+                                <i class="fa-solid fa-chevron-down me-1" style="font-size:0.65rem;"></i>Ver notas
+                            </span>
+                        ` : ''}
+                    </div>
+                </div>
+            `).join('');
+
+        } catch (err) {
+            console.error('Erro ao carregar histórico:', err);
+            tl.innerHTML = `<div class="text-center text-danger small py-3">Erro ao carregar histórico.</div>`;
+        }
+    }
+
+    function toggleNotes(id, btn) {
+        const el = document.getElementById(id);
+        const visible = el.style.display !== 'none';
+        el.style.display = visible ? 'none' : 'block';
+        btn.innerHTML = visible
+            ? '<i class="fa-solid fa-chevron-down me-1" style="font-size:0.65rem;"></i>Ver notas'
+            : '<i class="fa-solid fa-chevron-up me-1" style="font-size:0.65rem;"></i>Ocultar';
+    }
+
+    /* ── Prophylaxis ─────────────────────────────────────────── */
+    function loadProphylaxis(patient) {
+        const today = new Date(); today.setHours(0,0,0,0);
+        const renderItem = (label, dateStr) => {
+            if (!dateStr) {
+                return `<div class="prophy-item">
+                    <div><div class="prophy-name">${label}</div><div class="prophy-date">—</div></div>
+                    <div class="traffic-dot" style="background:#ddd;"></div>
+                </div>`;
+            }
+            const d = new Date(dateStr); d.setHours(0,0,0,0);
+            const diff = Math.round((d - today) / 86400000);
+            let dotClass = 'traffic-green';
+            let statusText = 'Em dia';
+            if (diff < 0) { dotClass = 'traffic-red'; statusText = `${Math.abs(diff)} dias em atraso`; }
+            else if (diff <= 30) { dotClass = 'traffic-yellow'; statusText = `Daqui a ${diff} dias`; }
+            return `<div class="prophy-item">
+                <div>
+                    <div class="prophy-name">${label}</div>
+                    <div class="prophy-date">${new Date(dateStr).toLocaleDateString('pt-PT')} · <span class="${diff < 0 ? 'text-danger' : diff <= 30 ? 'text-warning' : 'text-success'} fw-bold">${statusText}</span></div>
+                </div>
+                <div class="traffic-dot ${dotClass}"></div>
+            </div>`;
+        };
+
+        document.getElementById('prophyVacinas').innerHTML =
+            renderItem('Vacina Polivalente / Múltipla', patient.proxima_vacina);
+        document.getElementById('prophyDesparas').innerHTML =
+            renderItem('Desparasitação Interna', patient.proxima_desparas);
+    }
+
+    /* ── Save Clinical Data ─────────────────────────────────── */
+    async function saveClinicalData() {
+        if (!currentAnimalId) return;
+        const btn = document.getElementById('btnSaveClinical');
+        btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> A guardar...';
+        btn.disabled = true;
+
+        try {
+            const parsedPeso = parseFloat(document.getElementById('editPeso').value);
+            const payload = {
+                peso_kg: Number.isFinite(parsedPeso) ? parsedPeso : null,
+                microchip: document.getElementById('editMicrochip').value.trim() || null,
+                alergias: document.getElementById('editAlergias').value.trim() || null,
+                alertas_clinicos: document.getElementById('editAlertas').value.trim() || null
+            };
+
+            let { error } = await sb.from('animais').update(payload).eq('id', currentAnimalId);
+            // Compatibility fallback: some DB versions use `peso` instead of `peso_kg`
+            if (error && String(error.message || '').toLowerCase().includes('peso_kg')) {
+                const fallbackPayload = {
+                    peso: payload.peso_kg,
+                    microchip: payload.microchip,
+                    alergias: payload.alergias,
+                    alertas_clinicos: payload.alertas_clinicos
+                };
+                const retry = await sb.from('animais').update(fallbackPayload).eq('id', currentAnimalId);
+                error = retry.error;
+                if (!error) {
+                    payload.peso = fallbackPayload.peso;
+                    delete payload.peso_kg;
+                }
+            }
+            if (error) throw error;
+
+            // Update local state
+            const idx = allPatients.findIndex(p => p.id === currentAnimalId);
+            if (idx !== -1) Object.assign(allPatients[idx], payload);
+
+            // Refresh alert bars immediately
+            const pat = allPatients[idx];
+            const alertBar = document.getElementById('ocAlertBar');
+            const allergyBar = document.getElementById('ocAllergyBar');
+            if (pat.alertas_clinicos) { alertBar.style.display='flex'; document.getElementById('ocAlertText').textContent = pat.alertas_clinicos; }
+            else alertBar.style.display='none';
+            if (pat.alergias) { allergyBar.style.display='flex'; document.getElementById('ocAllergyText').textContent = pat.alergias; }
+            else allergyBar.style.display='none';
+
+            showToast('Dados clínicos guardados! ✅');
+        } catch (err) {
+            alert('Erro ao guardar: ' + err.message);
+        } finally {
+            btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Guardar Alterações';
+            btn.disabled = false;
+        }
+    }
+
+    /* ── Save Prophylaxis Dates ──────────────────────────────── */
+    async function saveProphylaxis() {
+        if (!currentAnimalId) return;
+        const btn = document.getElementById('btnSaveProphy');
+        btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> A guardar...';
+        btn.disabled = true;
+
+        try {
+            const payload = {
+                proxima_vacina: document.getElementById('editProxVacina').value || null,
+                proxima_desparas: document.getElementById('editProxDesparas').value || null
+            };
+
+            const { error } = await sb.from('animais').update(payload).eq('id', currentAnimalId);
+            if (error) throw error;
+
+            const idx = allPatients.findIndex(p => p.id === currentAnimalId);
+            if (idx !== -1) {
+                Object.assign(allPatients[idx], payload);
+                loadProphylaxis(allPatients[idx]);
+            }
+            updateStats();
+            filterAndRender();
+            showToast('Datas actualizadas! ✅');
+        } catch (err) {
+            alert('Erro ao guardar: ' + err.message);
+        } finally {
+            btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Guardar Datas';
+            btn.disabled = false;
+        }
+    }
+
+    /* ── CSV Export ──────────────────────────────────────────── */
+    function exportCSV() {
+        const headers = ['Nome', 'Raça', 'Espécie', 'Tutor', 'Microchip', 'Peso (kg)', 'Próx. Vacina', 'Alergias', 'Alertas'];
+        const rows = filteredPatients.map(p => [
+            p.nome || '', p.raca || '', p.tipo_animal || '',
+            p.dono_nome || '', p.microchip || '',
+            p.peso_kg || '', p.proxima_vacina || '',
+            p.alergias || '', p.alertas_clinicos || ''
+        ]);
+
+        const csv = [headers, ...rows].map(r => r.map(c => `"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
+        const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a'); a.href = url;
+        a.download = `pacientes_zooni_${new Date().toISOString().slice(0,10)}.csv`;
+        a.click(); URL.revokeObjectURL(url);
+    }
+
+    /* ── Helpers ─────────────────────────────────────────────── */
+    function getSpeciesEmoji(tipo) {
+        if (!tipo) return '🐾';
+        const t = tipo.toLowerCase();
+        if (t.includes('cão') || t.includes('cao')) return '🐶';
+        if (t.includes('gato')) return '🐱';
+        if (t.includes('ave') || t.includes('pássaro') || t.includes('passaro')) return '🦜';
+        if (t.includes('coelho')) return '🐰';
+        if (t.includes('hamster') || t.includes('roedor')) return '🐹';
+        if (t.includes('cobra') || t.includes('réptil') || t.includes('reptil')) return '🦎';
+        return '🐾';
+    }
+
+    function calcAge(dateStr) {
+        if (!dateStr) return null;
+        const birth = new Date(dateStr);
+        if (isNaN(birth)) return null;
+        const now = new Date();
+        return Math.floor((now - birth) / (365.25 * 24 * 3600 * 1000));
+    }
+
+    function escHtml(str) {
+        if (!str) return '';
+        return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    function showToast(msg) {
+        const t = document.createElement('div');
+        t.style.cssText = 'position:fixed;bottom:24px;right:24px;z-index:9999;background:#00B894;color:#fff;padding:14px 22px;border-radius:14px;font-weight:700;box-shadow:0 6px 24px rgba(0,0,0,.15);font-size:0.92rem;animation:slideUp 0.3s ease;';
+        t.innerHTML = msg;
+        document.body.appendChild(t);
+        setTimeout(() => t.remove(), 3000);
+    }
+
+    /* ── Logout ──────────────────────────────────────────────── */
+    const logoutBtn = document.getElementById('logoutBtn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', async (e) => {
+            e.preventDefault();
+            await sb.auth.signOut();
+            window.location.href = 'index.html';
+        });
+    }
+
+    /* ── Start ───────────────────────────────────────────────── */
+    init();
+</script>
+</body>
+</html>

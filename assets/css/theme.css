@@ -1,0 +1,462 @@
+/* ═══════════════════════════════════════════════════════
+   Zooni — Shared Theme CSS
+   Include this on EVERY page (after theme.js in <head>)
+   ═══════════════════════════════════════════════════════ */
+
+:root {
+    --primary: #32D796;
+    --primary-dark: #28A779;
+    --primary-light: #5EEAD4;
+    --bg-color: #F2F8F2;
+    --text-main: #1a2e1a;
+    --text-sec: #5a7a5a;
+    --danger: #d63031;
+    --card-bg: #ffffff;
+    --border: #e8f0e8;
+    --border-color: #e8f0e8;
+    --input-bg: #ffffff;
+    --input-border: #ced4da;
+    --card-hover: #f5f5f5;
+}
+
+[data-theme="dark"] {
+    --bg-color: #121212;
+    --text-main: #E4E4E7;
+    --text-sec: #A1A1AA;
+    --card-bg: #242424;
+    --card-hover: #333333;
+    --border-color: rgba(255, 255, 255, 0.1);
+    --border: rgba(255, 255, 255, 0.1);
+    --input-bg: #09090B;
+    --input-border: #52525B;
+    --primary: #34D399;
+    --danger: #F87171;
+}
+
+/* ── Body ─────────────────────────────────────────── */
+[data-theme="dark"] body {
+    background-color: var(--bg-color);
+    color: var(--text-main);
+}
+
+/* ── Cards & Panels ───────────────────────────────── */
+[data-theme="dark"] .card-panel,
+[data-theme="dark"] .pet-card,
+[data-theme="dark"] .pet-card-wide,
+[data-theme="dark"] .ticket-item,
+[data-theme="dark"] .glass-card,
+[data-theme="dark"] .settings-card,
+[data-theme="dark"] .settings-nav,
+[data-theme="dark"] .checklist-panel {
+    background-color: var(--card-bg) !important;
+    border-color: var(--border-color) !important;
+    color: var(--text-main) !important;
+}
+
+[data-theme="dark"] .bg-white,
+[data-theme="dark"] .bg-light { background-color: var(--card-bg) !important; color: var(--text-main) !important; }
+
+/* ── Notificações e Dropdowns: header/footer com bg-light ─ */
+[data-theme="dark"] .notification-dropdown .border-bottom,
+[data-theme="dark"] .notification-dropdown .border-top,
+[data-theme="dark"] .profile-dropdown .border-bottom,
+[data-theme="dark"] .profile-dropdown .p-3.border-bottom,
+[data-theme="dark"] .dropdown-menu .border-bottom,
+[data-theme="dark"] .dropdown-menu .border-top {
+    background-color: #1a1a1a !important;
+    color: var(--text-main) !important;
+    border-color: var(--border-color) !important;
+}
+
+/* ── Modais Bootstrap ─────────────────────────────────── */
+[data-theme="dark"] .modal-header,
+[data-theme="dark"] .modal-footer,
+[data-theme="dark"] .modal-body {
+    background-color: var(--card-bg) !important;
+    color: var(--text-main) !important;
+    border-color: var(--border-color) !important;
+}
+[data-theme="dark"] .modal-title { color: var(--text-main) !important; }
+[data-theme="dark"] .btn-close { filter: invert(1) grayscale(100%) brightness(200%); }
+
+/* ── Textos ───────────────────────────────────────── */
+[data-theme="dark"] .text-dark,
+[data-theme="dark"] .text-muted,
+[data-theme="dark"] small,
+[data-theme="dark"] .text-secondary { color: var(--text-sec) !important; }
+
+/* ── Formulários / Inputs ─────────────────────────── */
+[data-theme="dark"] .form-control,
+[data-theme="dark"] .form-select,
+[data-theme="dark"] input:not([type="checkbox"]):not([type="radio"]),
+[data-theme="dark"] textarea,
+[data-theme="dark"] .input-group-text,
+[data-theme="dark"] select {
+    background-color: var(--input-bg) !important;
+    color: var(--text-main) !important;
+    border: 1px solid var(--input-border) !important;
+}
+
+[data-theme="dark"] .form-control:focus,
+[data-theme="dark"] .form-select:focus,
+[data-theme="dark"] textarea:focus {
+    border-color: var(--primary) !important;
+    box-shadow: 0 0 0 0.25rem rgba(52, 211, 153, 0.25) !important;
+}
+
+[data-theme="dark"] input::placeholder,
+[data-theme="dark"] textarea::placeholder,
+[data-theme="dark"] .form-control::placeholder { color: var(--text-sec) !important; opacity: 1; }
+
+[data-theme="dark"] label,
+[data-theme="dark"] .form-label { color: var(--text-main) !important; }
+
+/* ── Dropdowns, Notificações & Modais ─────────────── */
+[data-theme="dark"] .dropdown-menu,
+[data-theme="dark"] .notification-dropdown,
+[data-theme="dark"] .modal-content,
+[data-theme="dark"] .profile-dropdown {
+    background-color: var(--card-bg) !important;
+    border: 1px solid #333 !important;
+    box-shadow: none !important;
+    color: var(--text-main) !important;
+}
+
+[data-theme="dark"] .dropdown-item { color: var(--text-main); }
+[data-theme="dark"] .dropdown-item:hover { background-color: var(--card-hover); color: white; }
+
+[data-theme="dark"] .notification-item { border-color: var(--border-color); }
+[data-theme="dark"] .notification-item:hover { background-color: var(--card-hover); }
+[data-theme="dark"] .notification-item.unread { background-color: rgba(52, 211, 153, 0.05); border-left-color: var(--primary); }
+
+/* ── Toggles / Switches ───────────────────────────── */
+[data-theme="dark"] .form-check-input[type="checkbox"][role="switch"] {
+    background-color: #3F3F46 !important;
+    border-color: #3F3F46 !important;
+}
+[data-theme="dark"] .form-check-input[type="checkbox"][role="switch"]:checked {
+    background-color: var(--primary) !important;
+    border-color: var(--primary) !important;
+}
+
+/* ── Settings Nav ─────────────────────────────────── */
+[data-theme="dark"] .settings-nav-item { color: var(--text-sec); }
+[data-theme="dark"] .settings-nav-item.active { color: var(--primary); }
+[data-theme="dark"] .settings-nav-item:hover { background: rgba(255,255,255,0.05); color: var(--text-main); }
+
+/* ── FullCalendar (Agenda) ────────────────────────── */
+[data-theme="dark"] .fc { color: var(--text-main); }
+[data-theme="dark"] .fc table,
+[data-theme="dark"] .fc th,
+[data-theme="dark"] .fc td { border-color: var(--border-color); background-color: var(--card-bg); }
+[data-theme="dark"] .fc-toolbar-title,
+[data-theme="dark"] .fc-col-header-cell-cushion,
+[data-theme="dark"] .fc-daygrid-day-number { color: var(--text-main); }
+[data-theme="dark"] .fc-button { background-color: var(--primary); border-color: rgba(255,255,255,0.1); color: #121212 !important; }
+[data-theme="dark"] .fc-day-today { background-color: rgba(52, 211, 153, 0.1) !important; }
+
+/* ── Bordas & Diversos ────────────────────────────── */
+[data-theme="dark"] .border,
+[data-theme="dark"] .border-bottom,
+[data-theme="dark"] .border-top { border-color: var(--border-color) !important; }
+
+[data-theme="dark"] .header-area,
+[data-theme="dark"] .alert { background-color: transparent !important; color: var(--text-main) !important; }
+[data-theme="dark"] .shadow-sm, [data-theme="dark"] .shadow { box-shadow: none !important; }
+[data-theme="dark"] .rounded.border { background-color: var(--card-bg); }
+[data-theme="dark"] .filter-pill { background-color: var(--card-bg); color: var(--text-sec); border-color: var(--border-color); }
+[data-theme="dark"] .filter-pill.active { background-color: var(--primary); color: #121212; }
+[data-theme="dark"] .status-badge { background-color: rgba(255,255,255,0.08); }
+
+/* ── Offcanvas (meus_animais / dashboard) ─────────── */
+[data-theme="dark"] .offcanvas { background-color: #242424 !important; border-left: 1px solid rgba(255,255,255,0.1) !important; color: #E4E4E7 !important; }
+[data-theme="dark"] .offcanvas .btn-close { filter: invert(1) grayscale(100%) brightness(200%); }
+[data-theme="dark"] #petProfileOffcanvas .pet-profile-header { border-bottom: 1px solid rgba(255,255,255,0.05) !important; }
+[data-theme="dark"] #petProfileOffcanvas .profile-tab-nav { border-bottom: 1px solid rgba(255,255,255,0.05) !important; }
+[data-theme="dark"] #petProfileOffcanvas .offcanvas-tab-content { background-color: #242424 !important; }
+[data-theme="dark"] #petProfileOffcanvas .bg-light { background-color: #18181B !important; color: #E4E4E7 !important; border: 1px solid rgba(255,255,255,0.05) !important; }
+[data-theme="dark"] #petProfileOffcanvas .info-label { color: #A1A1AA !important; }
+[data-theme="dark"] #petProfileOffcanvas .info-value, [data-theme="dark"] #petProfileOffcanvas .text-dark { color: #E4E4E7 !important; }
+[data-theme="dark"] #petProfileOffcanvas .pet-profile-emoji-lg { border: 2px solid #34D399 !important; background: #121212; color: #34D399; }
+[data-theme="dark"] #petProfileTabs .nav-link { background-color: transparent !important; color: #A1A1AA !important; }
+[data-theme="dark"] #petProfileTabs .nav-link.active { background-color: rgba(52, 211, 153, 0.1) !important; color: #34D399 !important; }
+[data-theme="dark"] #petProfileOffcanvas .offcanvas-footer-actions { background-color: #242424 !important; border-top: 1px solid rgba(255,255,255,0.05) !important; }
+[data-theme="dark"] #petProfileOffcanvas .btn-primary { background-color: #34D399 !important; color: #121212 !important; border: none !important; }
+[data-theme="dark"] #petProfileOffcanvas .btn-outline-secondary { color: #A1A1AA !important; border-color: rgba(255,255,255,0.1) !important; background: transparent !important; }
+[data-theme="dark"] #petProfileOffcanvas .btn-outline-secondary:hover { background-color: rgba(255,255,255,0.05) !important; color: white !important; }
+[data-theme="dark"] #petProfileOffcanvas .btn-outline-danger { color: #EF4444 !important; border-color: rgba(239, 68, 68, 0.3) !important; background: transparent !important; }
+[data-theme="dark"] #petProfileOffcanvas .btn-outline-danger:hover { background-color: rgba(239, 68, 68, 0.1) !important; color: #EF4444 !important; }
+[data-theme="dark"] #petProfileOffcanvas .health-item,
+[data-theme="dark"] #petProfileOffcanvas .ticket-history-item {
+    background-color: #1a1a1a !important;
+    border-color: rgba(255,255,255,0.05) !important;
+}
+[data-theme="dark"] #petProfileOffcanvas .health-item-title { color: #E4E4E7 !important; }
+[data-theme="dark"] #petProfileOffcanvas .health-item-date { color: #A1A1AA !important; }
+[data-theme="dark"] #petProfileOffcanvas .ticket-history-item .fw-bold { color: #E4E4E7 !important; }
+[data-theme="dark"] #petProfileOffcanvas .ticket-history-item .bg-white { background-color: #242424 !important; border-color: rgba(255,255,255,0.05) !important; }
+[data-theme="dark"] #vacinasList .status-badge, [data-theme="dark"] #desparasitacaoList .status-badge { background-color: rgba(255,255,255,0.08) !important; }
+[data-theme="dark"] #vacinasList .text-success, [data-theme="dark"] #desparasitacaoList .text-success { color: #10B981 !important; }
+[data-theme="dark"] #vacinasList .text-danger, [data-theme="dark"] #desparasitacaoList .text-danger { color: #EF4444 !important; }
+
+/* ── Global Responsive Layout ───────────────────────── */
+img,
+video,
+canvas,
+svg {
+    max-width: 100%;
+    height: auto;
+}
+
+table {
+    width: 100%;
+}
+
+/* Desktop / laptop defaults (keep existing page styles) */
+.app-container {
+    width: 100%;
+}
+
+/* Tablet */
+@media (max-width: 1100px) {
+    .app-container {
+        grid-template-columns: 84px 1fr !important;
+    }
+
+    .sidebar {
+        padding: 1.25rem 0.65rem !important;
+        align-items: center;
+    }
+
+    .logo-subtext,
+    .nav-link span,
+    .nav-link .label-text {
+        display: none !important;
+    }
+
+    .nav-link {
+        justify-content: center;
+        padding: 10px !important;
+    }
+
+    .main-content {
+        padding: 1.25rem !important;
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .stats-row,
+    .summary-row {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        display: grid !important;
+    }
+}
+
+/* ── Sidebar Global (Desktop & Mobile) ────────────────── */
+.sidebar {
+    position: sticky !important;
+    top: 0 !important;
+    height: 100vh !important;
+    overflow-y: auto !important; /* Fix for cut off buttons */
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255,255,255,0.2) transparent;
+    display: flex !important;
+    flex-direction: column !important;
+}
+
+.mobile-menu-close {
+    display: none;
+}
+
+.sidebar::-webkit-scrollbar {
+    width: 4px;
+}
+.sidebar::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.2);
+    border-radius: 10px;
+}
+
+.sidebar .nav-link.active {
+    background-color: rgba(255, 255, 255, 0.2) !important;
+    border-left: 4px solid #fff !important;
+    color: white !important;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+    body {
+        overflow-x: hidden;
+    }
+
+    .app-container {
+        display: block !important;
+        min-height: 100vh;
+    }
+
+    /* Standardized Off-canvas Sidebar for Mobile */
+    .sidebar {
+        position: fixed !important;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        width: 260px !important;
+        background: var(--primary) !important;
+        color: white !important;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease-in-out;
+        z-index: 2000 !important;
+        height: 100vh !important;
+        display: flex !important;
+        flex-direction: column !important;
+        padding: 2rem 1.5rem !important;
+        border-radius: 0 !important;
+        overflow-y: auto !important; /* Enable scrolling */
+    }
+
+    .sidebar.active {
+        transform: translateX(0);
+        box-shadow: 5px 0 25px rgba(0,0,0,0.3);
+    }
+
+    .sidebar .logo-img-sidebar {
+        max-width: 150px !important;
+        filter: brightness(0) invert(1) !important;
+    }
+
+    .mobile-menu-close {
+        display: block !important;
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background: transparent;
+        border: none;
+        color: white;
+        font-size: 1.5rem;
+        cursor: pointer;
+        opacity: 0.8;
+        transition: opacity 0.2s;
+    }
+
+    .mobile-menu-close:hover {
+        opacity: 1;
+    }
+
+    .sidebar .nav-links {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 8px !important;
+        width: 100% !important;
+        margin-top: 1rem !important;
+    }
+
+    .sidebar .nav-item {
+        flex: none !important;
+        width: 100% !important;
+    }
+
+    .sidebar .nav-link {
+        color: rgba(255, 255, 255, 0.8) !important;
+        padding: 12px 15px !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 12px !important;
+        font-size: 1rem !important;
+    }
+
+    .sidebar .nav-link span {
+        display: inline !important; /* Ensure text is visible */
+    }
+
+    .sidebar .nav-link:hover, 
+    .sidebar .nav-link.active {
+        background-color: rgba(255, 255, 255, 0.1) !important;
+        color: white !important;
+    }
+
+    /* Fixed overlapping settings menu */
+    .settings-container {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 1rem !important;
+    }
+
+    .settings-nav {
+        position: relative !important;
+        top: 0 !important;
+        width: 100% !important;
+        margin-bottom: 1rem !important;
+        display: flex !important;
+        flex-direction: row !important;
+        overflow-x: auto !important;
+        padding: 0.5rem !important;
+        gap: 0.5rem !important;
+        white-space: nowrap !important;
+        -webkit-overflow-scrolling: touch;
+        background-color: var(--card-bg) !important;
+        border-radius: 12px !important;
+    }
+
+    .settings-nav-item {
+        flex: 0 0 auto !important;
+        padding: 10px 15px !important;
+        font-size: 0.85rem !important;
+    }
+
+    .settings-nav-divider {
+        display: none !important;
+    }
+
+    .main-content {
+        padding: 1.25rem !important;
+        margin-top: 0 !important;
+    }
+
+    .page-header,
+    .header-area,
+    .navbar-area {
+        flex-direction: row !important; /* Keep items side-by-side */
+        justify-content: space-between !important;
+        align-items: center !important;
+        gap: 0.65rem;
+        height: auto !important;
+        padding: 0.75rem !important;
+        margin-bottom: 1.5rem !important;
+    }
+
+    .user-profile {
+        margin-left: auto;
+    }
+
+    .stats-row,
+    .summary-row {
+        grid-template-columns: 1fr !important;
+        gap: 10px !important;
+        padding: 0 !important;
+    }
+
+    .split-view,
+    .agenda-layout {
+        display: block !important;
+        height: auto !important;
+        min-height: 0 !important;
+        padding: 0 !important;
+    }
+
+    .calendar-panel,
+    .inbox-panel,
+    .patient-table-wrap,
+    .glass-card {
+        width: 100%;
+        margin-bottom: 0.75rem;
+    }
+
+    .offcanvas.offcanvas-end {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    .modal-dialog {
+        margin: 0.5rem;
+    }
+}
+

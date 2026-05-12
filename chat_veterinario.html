@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="pt">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zooni PRO — Central de Telemedicina</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="assets/js/theme.js"></script>
+    <style>
+        :root {
+            --primary: #3D8B3D;
+            --chat-bg: #F0F2F5;
+            --bubble-me: #2C3E50;
+            --bubble-me-text: #FFFFFF;
+            --bubble-other: #FFFFFF;
+            --bubble-other-text: #2D3436;
+            --border: rgba(150, 150, 150, 0.2);
+            --panel-bg: #FFFFFF;
+            --text-main: #2D3436;
+            --text-muted: #6c757d;
+        }
+
+        [data-theme="dark"] {
+            --primary: #34D399;
+            --chat-bg: #09090B;
+            --bubble-me: #34D399;
+            --bubble-me-text: #09090B;
+            --bubble-other: #18181B;
+            --bubble-other-text: #E4E4E7;
+            --border: #27272A;
+            --panel-bg: #121212;
+            --text-main: #E4E4E7;
+            --text-muted: #A1A1AA;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--chat-bg);
+            color: var(--text-main);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            margin: 0;
+        }
+
+        /* Layout Grid */
+        .app-container {
+            display: flex;
+            width: 100%;
+            height: 100%;
+        }
+
+        .panel-left {
+            width: 350px;
+            background: var(--panel-bg);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .panel-center {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: var(--chat-bg);
+        }
+
+        .panel-right {
+            width: 300px;
+            background: var(--panel-bg);
+            border-left: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Left Panel */
+        .btn-back {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 20px;
+            text-decoration: none;
+            color: var(--text-muted);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .btn-back:hover {
+            color: var(--primary);
+        }
+
+        .filter-tabs {
+            display: flex;
+            padding: 10px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .filter-tab {
+            flex: 1;
+            text-align: center;
+            padding: 8px;
+            cursor: pointer;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+
+        .filter-tab.active {
+            background: rgba(150, 150, 150, 0.1);
+            color: var(--text-main);
+        }
+
+        .ticket-list {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .ticket-item {
+            padding: 15px;
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .ticket-item:hover,
+        .ticket-item.active {
+            background: rgba(150, 150, 150, 0.05);
+            border-left: 4px solid var(--primary);
+        }
+
+        /* Center Panel */
+        .chat-header {
+            padding: 15px 25px;
+            border-bottom: 1px solid var(--border);
+            background: var(--panel-bg);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 25px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .chat-input-area {
+            padding: 15px 25px;
+            background: var(--panel-bg);
+            border-top: 1px solid var(--border);
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .chat-input {
+            flex: 1;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            background: var(--chat-bg);
+            padding: 10px 15px;
+            color: var(--text-main);
+            outline: none;
+        }
+
+        .btn-circle {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .btn-circle:hover {
+            transform: scale(1.05);
+        }
+
+        .btn-send {
+            background: var(--primary);
+            color: #fff;
+        }
+
+        .btn-snippet {
+            background: rgba(150, 150, 150, 0.1);
+            color: var(--primary);
+        }
+
+        /* Bubbles */
+        .bubble {
+            max-width: 65%;
+            padding: 10px 16px;
+            border-radius: 18px;
+            font-size: 0.95rem;
+            position: relative;
+            word-wrap: break-word;
+        }
+
+        .bubble-me {
+            align-self: flex-end;
+            background: var(--bubble-me);
+            color: var(--bubble-me-text);
+            border-bottom-right-radius: 4px;
+        }
+
+        .bubble-other {
+            align-self: flex-start;
+            background: var(--bubble-other);
+            color: var(--bubble-other-text);
+            border-bottom-left-radius: 4px;
+            border: 1px solid var(--border);
+        }
+
+        .bubble-sys {
+            align-self: center;
+            background: rgba(150, 150, 150, 0.1);
+            color: var(--text-main);
+            font-size: 0.8rem;
+            border-radius: 8px;
+            padding: 5px 15px;
+            text-align: center;
+            max-width: 80%;
+        }
+
+        .bubble .time {
+            font-size: 0.7rem;
+            margin-top: 4px;
+            display: block;
+            text-align: right;
+            opacity: 0.7;
+        }
+
+        .chat-img-attachment {
+            max-width: 250px;
+            border-radius: 12px;
+            margin-top: 8px;
+            cursor: pointer;
+            border: 1px solid var(--border);
+        }
+
+        /* Right Panel */
+        .context-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .context-body {
+            padding: 20px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .info-group {
+            margin-bottom: 15px;
+        }
+
+        .info-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            margin-bottom: 3px;
+        }
+
+        .info-val {
+            font-weight: 500;
+        }
+
+        .empty-chat {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Esquerda: Caixa de Entrada -->
+        <div class="panel-left">
+            <a href="dashboard_veterinario.html" class="btn-back">
+                <i class="fa-solid fa-arrow-left"></i> Voltar ao Dashboard
+            </a>
+            <div class="filter-tabs d-flex justify-content-between align-items-center bg-light">
+                <span class="ps-3 fw-bold small text-muted">Conversas Activas</span>
+                <div class="dropdown p-2">
+                    <button class="btn btn-sm btn-outline-primary" type="button" data-bs-toggle="dropdown">
+                        <i class="fa-solid fa-plus"></i>
+                    </button>
+                    <ul class="dropdown-menu shadow" id="newChatList">
+                        <li><span class="dropdown-item-text text-muted small">A carregar...</span></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="ticket-list" id="inboxList">
+                <div class="text-center p-4 text-muted small">Carregando...</div>
+            </div>
+        </div>
+
+        <!-- Centro: Chat -->
+        <div class="panel-center" id="chatArea" style="display:none;">
+            <div class="chat-header">
+                <div>
+                    <h5 class="fw-bold mb-0" id="chatTitle">Motivo</h5>
+                    <span class="small text-muted" id="chatTutor">Dono</span>
+                </div>
+                <div>
+                    <button class="btn btn-outline-danger btn-sm rounded-pill fw-bold" id="btnEncerrar"
+                        onclick="closeTicket()">
+                        <i class="fa-solid fa-lock me-1"></i> Encerrar Consulta
+                    </button>
+                </div>
+            </div>
+
+            <div class="chat-messages" id="messageStream"></div>
+
+            <div class="chat-input-area" id="chatInputArea">
+                <button class="btn-circle btn-snippet" title="Respostas Rápidas" onclick="insertSnippet()">
+                    <i class="fa-solid fa-bolt"></i>
+                </button>
+                <input type="text" id="messageInput" class="chat-input" placeholder="Responder ao dono..."
+                    autocomplete="off">
+                <button class="btn-circle btn-send" id="btnSend">
+                    <i class="fa-solid fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="empty-chat" id="emptyState" style="flex:1">
+            <i class="fa-solid fa-inbox mb-3" style="font-size: 4rem; opacity: 0.2;"></i>
+            <h4>Caixa de Entrada</h4>
+            <p>Selecione um atendimento pendente.</p>
+        </div>
+
+        <!-- Direita: Contexto do Paciente -->
+        <div class="panel-right" id="contextArea" style="display:none;">
+            <div class="context-header">
+                <div class="mb-2" style="font-size: 3rem;">🐾</div>
+                <h5 class="fw-bold mb-0" id="ctxPetName">Nome Animal</h5>
+                <span class="badge bg-light text-dark mt-1 border" id="ctxPetType">Espécie</span>
+            </div>
+            <div class="context-body">
+                <div class="info-group">
+                    <div class="info-label">Raça</div>
+                    <div class="info-val" id="ctxBreed">—</div>
+                </div>
+                <div class="info-group">
+                    <div class="info-label">Data de Nascimento</div>
+                    <div class="info-val" id="ctxDOB">—</div>
+                </div>
+                <div class="info-group">
+                    <div class="info-label">Peso</div>
+                    <div class="info-val" id="ctxWeight">—</div>
+                </div>
+                <div class="info-group">
+                    <div class="info-label">Alergias / Notas</div>
+                    <div class="info-val text-danger" id="ctxAllergies">—</div>
+                </div>
+                <hr style="border-color: var(--border);">
+                <div class="info-group">
+                    <div class="info-label">Descrição do Pedido Dono</div>
+                    <div class="small" id="ctxDesc">—</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Snippet Modal -->
+    <div class="modal fade" id="snippetModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="background: var(--panel-bg); color: var(--text-main);">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title fw-bold">Textos Rápidos ⚡</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-0">
+                    <div class="list-group list-group-flush">
+                        <button type="button" class="list-group-item list-group-item-action"
+                            onclick="useSnippet('Por favor, dirija-se à nossa clínica imediatamente. É uma urgência.')">
+                            🚨 Vir à Clínica (Urgência)
+                        </button>
+                        <button type="button" class="list-group-item list-group-item-action"
+                            onclick="useSnippet('O jejum deve ser de 8 horas para a comida e 2 horas para a água.')">
+                            🥣 Regras de Jejum
+                        </button>
+                        <button type="button" class="list-group-item list-group-item-action"
+                            onclick="useSnippet('Lave o local com soro fisiológico duas vezes ao dia. Se piorar, avise.')">
+                            🩹 Limpeza de Ferida
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <script>
+        const SUPABASE_URL = 'https://xqtbtggmwejnkhckduti.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhxdGJ0Z2dtd2VqbmtoY2tkdXRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc2OTU5NjEsImV4cCI6MjA4MzI3MTk2MX0.G1wG0UC6sF7r6tMxGdqLGvsHa_dxlVD1-j6QNEw32IM';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        let CURRENT_VET_ID = null;
+        let allClients = [];
+        let activeDonoId = null;
+        let subChannel = null;
+
+        async function initAuth() {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (!session) { window.location.href = 'login.html'; return; }
+            CURRENT_VET_ID = session.user.id;
+            await loadInbox();
+
+            // Se veio do botão "Conversar" com dono_id na URL, abrir esse chat automaticamente
+            const urlParams = new URLSearchParams(window.location.search);
+            const targetDonoId = urlParams.get('dono_id');
+            console.log('[Chat Vet] dono_id da URL:', targetDonoId);
+            if (targetDonoId) {
+                const targetClient = allClients.find(c => String(c.id) === String(targetDonoId));
+                console.log('[Chat Vet] Cliente encontrado em allClients:', targetClient);
+                if (targetClient) {
+                    openChat(targetClient);
+                } else {
+                    // Cliente não está em allClients (sem histórico de chat prévio), buscar da BD
+                    console.log('[Chat Vet] Buscando cliente da BD com id:', targetDonoId);
+                    const { data: clienteData, error: clienteErr } = await supabaseClient
+                        .from('clientes')
+                        .select('*')
+                        .eq('id', targetDonoId)
+                        .single();
+                    console.log('[Chat Vet] Resultado da BD:', clienteData, 'Erro:', clienteErr);
+                    if (clienteData) {
+                        openChat(clienteData);
+                    } else {
+                        console.warn('[Chat Vet] Cliente com id', targetDonoId, 'não encontrado na BD.');
+                    }
+                }
+            }
+        }
+
+        async function loadInbox() {
+            // Fetch all clients globally
+            const { data, error } = await supabaseClient
+                .from('clientes')
+                .select('*')
+                .order('criado_em', { ascending: false });
+
+            if (data) allClients = data;
+
+            // Gather history to see who has active chats
+            const { data: msgsHistory } = await supabaseClient
+                .from('mensagens')
+                .select('id_dono')
+                .eq('id_veterinario', CURRENT_VET_ID);
+            const activeClientIds = new Set((msgsHistory || []).map(m => m.id_dono));
+
+            // Descobrir donos que já tiveram consultas (tickets) com este veterinário
+            const { data: tickets_history } = await supabaseClient
+                .from('tickets')
+                .select('id_dono')
+                .eq('id_veterinario', CURRENT_VET_ID);
+            const consultedClientIds = new Set((tickets_history || []).map(t => t.id_dono));
+
+            renderInbox(activeClientIds, consultedClientIds);
+        }
+
+        function renderInbox(activeClientIds, consultedClientIds) {
+            const list = document.getElementById('inboxList');
+            const dropList = document.getElementById('newChatList');
+            list.innerHTML = '';
+
+            if (dropList) dropList.innerHTML = '';
+
+            if (allClients.length === 0) {
+                list.innerHTML = '<div class="p-4 text-center text-muted small">Nenhum cliente registado.</div>';
+                if (dropList) dropList.innerHTML = '<li><span class="dropdown-item-text text-muted small">Vazio</span></li>';
+                return;
+            }
+
+            let hasActiveChats = false;
+            let hasConsulted = false;
+
+            allClients.forEach(c => {
+                // Populate Dropdown for "Nova Conversa" (Apenas clientes com consultas e que AINDA NÃO estejam no chat ativo)
+                if (dropList && consultedClientIds.has(c.id) && !activeClientIds.has(c.id)) {
+                    hasConsulted = true;
+                    const li = document.createElement('li');
+                    li.innerHTML = `<button class="dropdown-item" onclick="openChat({id: ${c.id}, nome: '${c.nome.replace(/'/g, "\\'")}', email: '${c.email || ''}'})"><i class="fa-solid fa-user text-primary me-2"></i>${c.nome}</button>`;
+                    dropList.appendChild(li);
+                }
+
+                // Populate Sidebar ONLY if chat history exists
+                if (activeClientIds && activeClientIds.has(c.id)) {
+                    hasActiveChats = true;
+                    const item = document.createElement('div');
+                    item.className = 'ticket-item';
+                    item.id = `dono-row-${c.id}`;
+
+                    item.innerHTML = `
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <span class="fw-bold text-truncate">${c.nome}</span>
+                        </div>
+                        <div class="small fw-semibold text-truncate"><span style="color:var(--primary)">Chat Contínuo</span></div>
+                    `;
+                    item.onclick = () => openChat(c);
+                    list.appendChild(item);
+                }
+            });
+
+            if (!hasConsulted && dropList) {
+                dropList.innerHTML = '<li><span class="dropdown-item-text text-muted small text-wrap" style="width: 180px;">Não possui histórico de consultas com nenhum cliente.</span></li>';
+            }
+
+            if (!hasActiveChats) {
+                list.innerHTML = '<div class="p-4 text-center text-muted small">Ainda não tem conversas ativas com nenhum cliente. Inicie uma nova conversa!</div>';
+            }
+        }
+
+        async function openChat(c) {
+            activeDonoId = c.id;
+            document.querySelectorAll('.ticket-item').forEach(i => i.classList.remove('active'));
+            document.getElementById(`dono-row-${c.id}`)?.classList.add('active');
+
+            document.getElementById('emptyState').style.display = 'none';
+            document.getElementById('chatArea').style.display = 'flex';
+            document.getElementById('contextArea').style.display = 'flex';
+
+            document.getElementById('chatTitle').textContent = c.nome;
+            document.getElementById('chatTutor').textContent = c.email || 'Cliente';
+
+            // Render Context Right Panel - Pesquisar TODOS os animais do Dono
+            document.getElementById('ctxPetName').innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+            const { data: animais } = await supabaseClient.from('animais').select('*').eq('id_dono', c.id);
+
+            if (animais && animais.length > 0) {
+                document.getElementById('ctxPetName').textContent = animais.map(a => a.nome).join(', ');
+                document.getElementById('ctxPetType').textContent = animais.length + ' Pet(s)';
+                document.getElementById('ctxBreed').textContent = 'Várias Raças/Idades';
+                document.getElementById('ctxDOB').textContent = 'Chat Global';
+                document.getElementById('ctxWeight').textContent = 'Ver Perfil >';
+                document.getElementById('ctxAllergies').textContent = 'Consultar Fichas Médicas';
+                document.getElementById('ctxDesc').textContent = 'Conversa contínua com a clínica Zooni.';
+            } else {
+                document.getElementById('ctxPetName').textContent = 'Nenhum Animal Registado';
+                document.getElementById('ctxPetType').textContent = 'N/A';
+            }
+
+            // Enable chat inputs always (no close button required for continuous chat!)
+            document.getElementById('chatInputArea').style.opacity = '1';
+            document.getElementById('messageInput').disabled = false;
+            document.getElementById('btnSend').disabled = false;
+            document.getElementById('btnEncerrar').style.display = 'none'; // Arquivar is UI-only usually in global chats
+
+            // Load msgs
+            const stream = document.getElementById('messageStream');
+            stream.innerHTML = '<div class="text-center p-3 text-muted">A carregar mensagens globais...</div>';
+
+            const { data: msgs } = await supabaseClient
+                .from('mensagens')
+                .select('*')
+                .eq('id_dono', activeDonoId)
+                .eq('id_veterinario', CURRENT_VET_ID)
+                .order('criado_em', { ascending: true });
+
+            stream.innerHTML = '';
+            appendMessage({ remetente_tipo: 'sistema', texto: 'Este é o canal seguro e contínuo com este cliente. Todo o histórico entre a clínica e o dono é registado aqui para garantir qualidade clínica.' });
+
+            if (msgs) msgs.forEach(m => appendMessage(m));
+
+            // Marcar mensagens do utilizador ativo como lidas
+            await supabaseClient.from('mensagens')
+                .update({ foi_lida: true })
+                .eq('id_dono', activeDonoId)
+                .eq('id_veterinario', CURRENT_VET_ID)
+                .eq('remetente_tipo', 'dono')
+                .eq('foi_lida', false);
+
+            scrollToBottom();
+            setupRealtimeSubscription(c.id);
+        }
+
+        function appendMessage(msg) {
+            const stream = document.getElementById('messageStream');
+            const div = document.createElement('div');
+
+            const timeStr = msg.criado_em ? new Date(msg.criado_em).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Agora';
+
+            if (msg.remetente_tipo === 'sistema') {
+                div.className = 'bubble bubble-sys';
+                div.innerHTML = msg.texto;
+            } else {
+                const isMe = msg.remetente_tipo === 'veterinario';
+                div.className = `bubble ${isMe ? 'bubble-me' : 'bubble-other'}`;
+
+                let html = `<div>${msg.texto || ''}</div>`;
+                if (msg.anexo_url) {
+                    html += `<img src="${msg.anexo_url}" class="chat-img-attachment" onclick="window.open(this.src)">`;
+                }
+
+                let checkHtml = '';
+                if (isMe) {
+                    checkHtml = `<i class="fa-solid ${msg.foi_lida ? 'fa-check-double text-info' : 'fa-check'} ms-1" id="check-${msg.id}"></i>`;
+                }
+                html += `<span class="time">${timeStr} ${checkHtml}</span>`;
+
+                div.innerHTML = html;
+            }
+            stream.appendChild(div);
+            scrollToBottom();
+        }
+
+        function scrollToBottom() { const el = document.getElementById('messageStream'); el.scrollTop = el.scrollHeight; }
+
+        async function setupRealtimeSubscription(donoId) {
+            if (subChannel) { supabaseClient.removeChannel(subChannel); }
+            subChannel = supabaseClient.channel('chat_vet_stream')
+                .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'mensagens', filter: `id_veterinario=eq.${CURRENT_VET_ID}` }, payload => {
+                    if (payload.new.remetente_id !== CURRENT_VET_ID && payload.new.id_dono === donoId) {
+                        appendMessage(payload.new);
+                        // Como recebemos uma nova na conversa ativa, marcá-la lida no servidor
+                        supabaseClient.from('mensagens').update({ foi_lida: true }).eq('id', payload.new.id);
+                    }
+                    loadInbox(); // Refresh sidebar order and persistence
+                })
+                .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'mensagens', filter: `id_veterinario=eq.${CURRENT_VET_ID}` }, payload => {
+                    if (payload.new.remetente_id === CURRENT_VET_ID && payload.new.foi_lida) {
+                        const checkIcon = document.getElementById(`check-${payload.new.id}`);
+                        if (checkIcon) {
+                            checkIcon.className = 'fa-solid fa-check-double text-info ms-1';
+                        }
+                    }
+                }).subscribe();
+        }
+
+        const snippetModal = new bootstrap.Modal(document.getElementById('snippetModal'));
+        function insertSnippet() { snippetModal.show(); }
+        function useSnippet(text) {
+            document.getElementById('messageInput').value = text;
+            snippetModal.hide();
+            document.getElementById('messageInput').focus();
+        }
+
+        document.getElementById('btnSend').addEventListener('click', sendMessage);
+        document.getElementById('messageInput').addEventListener('keypress', e => { if (e.key === 'Enter') sendMessage(); });
+
+        async function sendMessage() {
+            if (!activeDonoId) return;
+            const input = document.getElementById('messageInput');
+            const text = input.value.trim();
+            if (!text) return;
+
+            input.value = '';
+
+            const { data: savedMsg } = await supabaseClient.from('mensagens').insert([{
+                id_dono: activeDonoId,
+                id_veterinario: CURRENT_VET_ID,
+                remetente_tipo: 'veterinario',
+                remetente_id: CURRENT_VET_ID,
+                texto: text
+            }]).select();
+
+            if (savedMsg && savedMsg[0]) {
+                appendMessage(savedMsg[0]);
+            }
+
+            loadInbox(); // Keeps the new user in the active conversations tab!
+        }
+
+        function setFilter(f, btn) { } // No longer relevant but kept to prevent errors
+        function closeTicket() { } // Deprecated by continuous chat
+
+        initAuth();
+    </script>
+</body>
+
+</html>

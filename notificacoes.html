@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zooni — Notificações</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Theme & Auth Core -->
+    <script src="assets/js/theme.js"></script>
+    <link rel="stylesheet" href="assets/css/theme.css">
+
+    <style>
+        :root {
+            --primary: #3D8B3D;
+            --primary-dark: #1E4D1E;
+            --primary-light: #5CB85C;
+            --bg-color: #F2F8F2;
+            --text-main: #1a2e1a;
+            --text-sec: #5a7a5a;
+            --card-bg: #ffffff;
+            --border-color: #e8f0e8;
+            --input-bg: #ffffff;
+            --lavender: #81C784;
+            --mint: #00B894;
+            --orange: #FF7675;
+            --danger: #d63031;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #121212;
+            --text-main: #E4E4E7;
+            --text-sec: #A1A1AA;
+            --card-bg: #242424;
+            --card-hover: #333333;
+            --border-color: rgba(255, 255, 255, 0.1);
+            --border: rgba(255, 255, 255, 0.1);
+            --input-bg: #09090B;
+            --input-border: #52525B;
+            --primary: #34D399; 
+            --danger: #F87171; 
+        }
+
+        body {
+            background-color: var(--bg-color);
+            font-family: 'Outfit', sans-serif;
+            color: var(--text-main);
+            overflow-x: hidden;
+        }
+
+        .app-container {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            min-height: 100vh;
+        }
+
+        /* ── SIDEBAR STYLES (DONO) ── */
+        .sidebar {
+            background-color: var(--primary);
+            color: white;
+            padding: 2rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+        }
+
+        .logo-container {
+            margin-bottom: 3rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .logo-img-sidebar {
+            max-width: 180px;
+            filter: brightness(0) invert(1);
+        }
+
+        .nav-links {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            flex-grow: 1;
+        }
+
+        .nav-item {
+            margin: 0;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 15px;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            border-radius: 12px;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        .nav-link.active {
+            border-left: 4px solid #fff;
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        .nav-link i {
+            width: 24px;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+
+        .nav-link.text-danger {
+            color: #ff6b6b !important;
+        }
+        .nav-link.text-danger:hover {
+            background-color: rgba(255, 107, 107, 0.15);
+            color: #ff6b6b !important;
+        }
+
+        .nav-line-break {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin: 15px 0;
+        }
+
+        .btn-sidebar-cta {
+            background-color: white;
+            color: var(--primary);
+            border: none;
+            border-radius: 12px;
+            padding: 12px;
+            font-weight: 700;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            transition: transform 0.2s;
+            cursor: pointer;
+        }
+
+        .btn-sidebar-cta:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .main-content {
+            padding: 2.5rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* ── Notificacoes UI ─────────────────────────────────── */
+        .notif-header {
+            display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 1.5rem;
+        }
+        
+        .filters-container {
+            display: flex; gap: 10px; margin-bottom: 2rem; overflow-x: auto; padding-bottom: 5px;
+        }
+
+        .filter-pill {
+            background-color: var(--card-bg); color: var(--text-sec); border: 1px solid var(--border-color);
+            padding: 8px 16px; border-radius: 20px; font-size: 0.9rem; font-weight: 600; cursor: pointer;
+            transition: all 0.2s; white-space: nowrap;
+        }
+        
+        .filter-pill:hover { border-color: var(--primary); color: var(--text-main); }
+        .filter-pill.active { background-color: var(--primary); color: #121212; border-color: var(--primary); }
+        
+        [data-theme="dark"] .filter-pill.active { background-color: var(--primary); color: #121212; }
+        [data-theme="light"] .filter-pill.active { background-color: var(--primary); color: white; }
+
+        .notif-list-container {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+        }
+
+        .notif-card {
+            display: flex; align-items: center; gap: 15px; padding: 20px; border-bottom: 1px solid var(--border-color);
+            position: relative; transition: background-color 0.2s;
+        }
+        
+        .notif-card:last-child { border-bottom: none; }
+        .notif-card:hover { background-color: var(--card-hover, #f8f9fa); }
+
+        .notif-card.unread {
+            background-color: rgba(52, 211, 153, 0.03); 
+        }
+        [data-theme="light"] .notif-card.unread { background-color: rgba(61, 139, 61, 0.05); }
+
+        .read-dot {
+            width: 10px; height: 10px; border-radius: 50%; background-color: transparent; flex-shrink: 0;
+        }
+        .notif-card.unread .read-dot { background-color: var(--danger, #dc3545); }
+
+        .notif-icon {
+            width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; flex-shrink: 0; background-color: rgba(0,0,0,0.05); color: var(--text-sec);
+        }
+
+        .notif-icon.saude { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
+        [data-theme="light"] .notif-icon.saude { background: #fee2e2; }
+        
+        .notif-icon.ticket { background: rgba(79, 70, 229, 0.1); color: #818cf8; }
+        [data-theme="light"] .notif-icon.ticket { background: #e0e7ff; color: #4f46e5; }
+        
+        .notif-icon.sistema { background: rgba(16, 185, 129, 0.1); color: #10b981; }
+        [data-theme="light"] .notif-icon.sistema { background: #d1fae5; }
+
+        .notif-body { flex-grow: 1; }
+        
+        .notif-title { font-size: 1rem; margin-bottom: 3px; color: var(--text-sec); }
+        .notif-card.unread .notif-title { font-weight: 700; color: var(--text-main); }
+        
+        .notif-desc { font-size: 0.85rem; color: var(--text-sec); line-height: 1.4; margin-bottom: 5px; }
+        .notif-card.unread .notif-desc { font-weight: 500; color: var(--text-main); }
+        
+        .notif-time { font-size: 0.75rem; color: var(--text-sec); opacity: 0.8; }
+
+        .notif-actions { position: absolute; right: 20px; top: 20px; opacity: 0.5; transition: opacity 0.2s; }
+        .notif-card:hover .notif-actions { opacity: 1; }
+        
+        .dropdown-toggle-no-caret::after { display: none; }
+
+        .empty-state {
+            padding: 6rem 2rem; text-align: center; color: var(--text-sec);
+        }
+        .empty-state i {
+            font-size: 4rem; opacity: 0.3; margin-bottom: 1.5rem;
+        }
+
+        /* Top Bar Re-used items for consistency */
+        .btn-icon-circle {
+            width: 45px; height: 45px; border-radius: 50%; background: var(--card-bg); border: 1px solid var(--border-color);
+            display: flex; align-items: center; justify-content: center; color: var(--text-sec); cursor: pointer; text-decoration: none;
+        }
+        .btn-icon-circle:hover { background-color: var(--card-hover, #f8f9fa); color: var(--text-main); }
+    </style>
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- SIDEBAR -->
+                <aside class="sidebar">
+            <div class="logo-container d-flex justify-content-between align-items-center w-100">
+                <img src="assets/logo.png" alt="Zooni Logo" class="logo-img-sidebar">
+                <button class="btn text-white d-md-none fs-4 p-0" onclick="document.querySelector('.sidebar').classList.remove('active')" style="background:transparent; border:none;">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <ul class="nav-links">
+                <li class="nav-item">
+                    <a href="dashboard_dono.html" class="nav-link "><i class="fa-solid fa-house"></i> <span data-i18n="nav_home">Início</span></a>
+                </li>
+                <li class="nav-item">
+                    <a href="meus_animais.html" class="nav-link "><i class="fa-solid fa-dog"></i> <span data-i18n="nav_animals">Os Meus Animais</span></a>
+                </li>
+                <li class="nav-item">
+                    <a href="agenda_dono.html" class="nav-link "><i class="fa-solid fa-calendar"></i> <span data-i18n="nav_calendar">Calendário</span></a>
+                </li>
+                <li class="nav-item">
+                    <a href="chat_dono.html" class="nav-link "><i class="fa-solid fa-comments"></i> <span data-i18n="nav_chat">Chat da Clínica</span></a>
+                </li>
+                <li class="nav-item">
+                    <a href="veterinarios.html" class="nav-link "><i class="fa-solid fa-user-doctor"></i> <span>Veterinários</span></a>
+                </li>
+            </ul>
+            
+            <div class="nav-line-break"></div>
+            <a href="definicoes_dono.html" class="nav-link "><i class="fa-solid fa-gear"></i> <span data-i18n="nav_settings">Configurações</span></a>
+            <a href="index.html" class="nav-link text-danger"><i class="fa-solid fa-arrow-right-from-bracket"></i> <span data-i18n="nav_logout">Sair</span></a>
+
+            <button class="btn-sidebar-cta mt-auto" data-bs-toggle="modal" data-bs-target="#novoTicketModal">
+                <i class="fa-solid fa-plus"></i> <span data-i18n="nav_new_ticket">Novo Pedido</span>
+            </button>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="main-content">
+            
+            <div class="notif-header">
+                <div>
+                    <h2 class="fw-bold mb-1">O Meu Histórico</h2>
+                    <p class="text-secondary m-0">Consulte o registo de todas as suas notificações e alertas.</p>
+                </div>
+                <div class="d-flex align-items-center gap-3">
+                    <button class="btn btn-outline-primary fw-bold" onclick="markAllHistoryRead()" style="border-radius: 12px; border-color: var(--border-color); color: var(--text-main);">
+                        <i class="fa-solid fa-check-double me-2"></i>Marcar todas lidas
+                    </button>
+                    <a href="definicoes_dono.html" class="btn-icon-circle" title="Definições de Notificações">
+                        <i class="fa-solid fa-gear"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- FILTERS -->
+            <div class="filters-container" id="notifFilters">
+                <div class="filter-pill active" data-filter="tudo">Tudo</div>
+                <div class="filter-pill" data-filter="nao_lidas"><i class="fa-solid fa-circle text-danger me-1" style="font-size:0.5rem"></i> Não Lidas <span id="countUnread" class="badge bg-secondary ms-1">0</span></div>
+                <div class="filter-pill" data-filter="saude"><i class="fa-solid fa-shield-heart me-1"></i> Saúde & Vacinas</div>
+                <div class="filter-pill" data-filter="mensagens"><i class="fa-solid fa-comment-dots me-1"></i> Mensagens & Tickets</div>
+            </div>
+
+            <!-- LIST -->
+            <div class="notif-list-container" id="historyListContainer">
+                <!-- Injected via JS -->
+                <div class="text-center p-5 text-muted">
+                    <span class="spinner-border text-primary"></span>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const SUPABASE_URL = 'https://xqtbtggmwejnkhckduti.supabase.co';
+        // Note: Using the provided anon key format for typical operations, but with user auth
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhxdGJ0Z2dtd2VqbmtoY2tkdXRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc2OTU5NjEsImV4cCI6MjA4MzI3MTk2MX0.G1wG0UC6sF7r6tMxGdqLGvsHa_dxlVD1-j6QNEw32IM';
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        let CURRENT_DONO_ID = null;
+        let allNotifs = [];
+        let currentFilter = 'tudo';
+
+        document.addEventListener("DOMContentLoaded", () => {
+            initAuth();
+            setupFilters();
+        });
+
+        async function initAuth() {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (!session) {
+                window.location.href = 'login.html?role=dono';
+                return;
+            }
+            CURRENT_DONO_ID = session.user.id;
+            loadHistory();
+        }
+
+        async function loadHistory() {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('notificacoes')
+                    .select('*')
+                    .eq('dono_id', CURRENT_DONO_ID)
+                    .order('criado_em', { ascending: false });
+
+                if (error) throw error;
+                allNotifs = data || [];
+                
+                // Update counter
+                const unread = allNotifs.filter(n => !n.lida).length;
+                document.getElementById('countUnread').textContent = unread;
+                if(unread === 0) document.getElementById('countUnread').style.display = 'none';
+                else document.getElementById('countUnread').style.display = 'inline-block';
+
+                renderList();
+            } catch (err) {
+                console.error("Error loading history:", err);
+            }
+        }
+
+        function setupFilters() {
+            const pills = document.querySelectorAll('.filter-pill');
+            pills.forEach(pill => {
+                pill.addEventListener('click', (e) => {
+                    pills.forEach(p => p.classList.remove('active'));
+                    e.currentTarget.classList.add('active');
+                    currentFilter = e.currentTarget.getAttribute('data-filter');
+                    renderList();
+                });
+            });
+        }
+
+        function getTimeAgo(dateStr) {
+            const date = new Date(dateStr);
+            const seconds = Math.floor((new Date() - date) / 1000);
+            
+            let interval = seconds / 31536000;
+            if (interval > 1) return `Há ${Math.floor(interval)} anos`;
+            interval = seconds / 2592000;
+            if (interval > 1) return `Há ${Math.floor(interval)} meses`;
+            interval = seconds / 86400;
+            if (interval > 1) {
+                return date.toLocaleDateString('pt-PT', { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' });
+            }
+            interval = seconds / 3600;
+            if (interval >= 1) return `Há ${Math.floor(interval)} horas`;
+            interval = seconds / 60;
+            if (interval >= 1) return `Há ${Math.floor(interval)} minutos`;
+            return "Agora mesmo";
+        }
+
+        function renderList() {
+            const container = document.getElementById('historyListContainer');
+            container.innerHTML = '';
+
+            let filtered = allNotifs;
+            if (currentFilter === 'nao_lidas') {
+                filtered = allNotifs.filter(n => !n.lida);
+            } else if (currentFilter === 'saude') {
+                filtered = allNotifs.filter(n => n.tipo === 'saude' || n.tipo === 'vacina' || n.tipo === 'desparasitante');
+            } else if (currentFilter === 'mensagens') {
+                filtered = allNotifs.filter(n => n.tipo === 'ticket' || n.tipo === 'mensagem' || n.tipo === 'sistema');
+            }
+
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fa-solid fa-cat" style="color: var(--text-sec);"></i>
+                        <h4 class="fw-bold mb-2">Tudo tranquilo por aqui!</h4>
+                        <p class="mb-4">Não tens notificações nesta categoria no momento.</p>
+                        <button class="btn btn-primary px-4 py-2" onclick="window.location.href='agenda_dono.html'" style="border-radius: 12px; font-weight: 600; background: var(--primary); border: none;">Explorar a Agenda</button>
+                    </div>
+                `;
+                return;
+            }
+
+            filtered.forEach(notif => {
+                const isUnread = !notif.lida;
+                let iconClass = 'fa-bell';
+                let typeClass = 'sistema';
+                
+                if (notif.tipo === 'saude' || notif.tipo === 'vacina' || notif.tipo === 'desparasitante') { iconClass = 'fa-syringe'; typeClass = 'saude'; }
+                else if (notif.tipo === 'ticket' || notif.tipo === 'mensagem') { iconClass = 'fa-envelope-open-text'; typeClass = 'ticket'; }
+
+                const timeAgo = getTimeAgo(notif.criado_em);
+
+                container.innerHTML += `
+                    <div class="notif-card ${isUnread ? 'unread' : ''}" id="notif-${notif.id}">
+                        <div class="read-dot"></div>
+                        <div class="notif-icon ${typeClass}">
+                            <i class="fa-solid ${iconClass}"></i>
+                        </div>
+                        <div class="notif-body">
+                            <div class="notif-title">${notif.titulo}</div>
+                            <div class="notif-desc">${notif.mensagem}</div>
+                            <div class="notif-time"><i class="fa-regular fa-clock me-1"></i> ${timeAgo}</div>
+                        </div>
+                        <div class="dropdown notif-actions">
+                            <button class="btn btn-sm btn-light border-0 rounded-circle dropdown-toggle-no-caret" type="button" data-bs-toggle="dropdown" style="width: 35px; height: 35px; background: transparent; color: var(--text-sec)">
+                                <i class="fa-solid fa-ellipsis-vertical"></i>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end shadow-sm" style="border-radius: 12px; font-size: 0.9rem;">
+                                <li><a class="dropdown-item py-2" href="#" onclick="toggleReadState('${notif.id}', ${notif.lida}); return false;">
+                                    <i class="fa-solid ${notif.lida ? 'fa-envelope' : 'fa-envelope-open'} me-2 text-primary"></i> 
+                                    Marcar como ${notif.lida ? 'Não lida' : 'Lida'}
+                                </a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-danger py-2" href="#" onclick="deleteNotif('${notif.id}'); return false;">
+                                    <i class="fa-regular fa-trash-can me-2"></i> Eliminar
+                                </a></li>
+                            </ul>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        async function toggleReadState(id, currentState) {
+            try {
+                await supabaseClient.from('notificacoes').update({ lida: !currentState }).eq('id', id);
+                const n = allNotifs.find(x => x.id === id);
+                if(n) n.lida = !currentState;
+                
+                // Update counter
+                const unread = allNotifs.filter(x => !x.lida).length;
+                document.getElementById('countUnread').textContent = unread;
+                if(unread === 0) document.getElementById('countUnread').style.display = 'none';
+                else document.getElementById('countUnread').style.display = 'inline-block';
+
+                renderList();
+            } catch(e) { console.error(e); }
+        }
+
+        async function deleteNotif(id) {
+            if(!confirm("Tem a certeza que deseja eliminar esta notificação?")) return;
+            try {
+                await supabaseClient.from('notificacoes').delete().eq('id', id);
+                allNotifs = allNotifs.filter(x => x.id !== id);
+                renderList();
+            } catch(e) { console.error(e); }
+        }
+
+        async function markAllHistoryRead() {
+            if (allNotifs.length === 0) return;
+            const unreadIds = allNotifs.filter(n => !n.lida).map(n => n.id);
+            if (unreadIds.length === 0) {
+                alert("Todas as notificações já se encontram lidas.");
+                return;
+            }
+            try {
+                await supabaseClient.from('notificacoes').update({ lida: true }).in('id', unreadIds);
+                allNotifs.forEach(n => n.lida = true);
+                document.getElementById('countUnread').textContent = "0";
+                document.getElementById('countUnread').style.display = 'none';
+                renderList();
+            } catch(e) { console.error(e); }
+        }
+    </script>
+</body>
+</html>
+
+

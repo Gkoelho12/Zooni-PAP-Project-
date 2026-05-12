@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zooni — Chat Clínico</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="assets/js/theme.js"></script>
+    <style>
+        :root {
+            --primary: #3D8B3D;
+            --chat-bg: #F0F2F5;
+            --bubble-me: #E1F3DB;
+            --bubble-other: #FFFFFF;
+            --text-main: #2D3436;
+        }
+        [data-theme="dark"] {
+            --primary: #34D399;
+            --chat-bg: #09090B;
+            --bubble-me: #1A3C2B;
+            --bubble-other: #242424;
+            --text-main: #E4E4E7;
+        }
+        body { font-family: 'Outfit', sans-serif; background-color: var(--chat-bg); color: var(--text-main); height: 100vh; overflow: hidden; display: flex; margin: 0;}
+        
+        .chat-app { display: flex; width: 100%; height: 100%; }
+        
+        .sidebar { width: 350px; background: var(--bubble-other); border-right: 1px solid rgba(150,150,150,0.2); display: flex; flex-direction: column; }
+        
+        .btn-back { display: flex; align-items: center; gap: 10px; padding: 20px; text-decoration: none; color: var(--primary); font-weight: 600; border-bottom: 1px solid rgba(150,150,150,0.2); }
+        .btn-back:hover { color: var(--primary); background: rgba(150,150,150,0.05); }
+
+        .ticket-list { flex: 1; overflow-y: auto; }
+        
+        .ticket-item { padding: 15px 20px; border-bottom: 1px solid rgba(150,150,150,0.1); cursor: pointer; transition: background 0.2s; display: flex; gap: 15px; align-items: center;}
+        .ticket-item:hover, .ticket-item.active { background: rgba(150,150,150,0.08); }
+        .ticket-avatar { width: 45px; height: 45px; border-radius: 50%; background: var(--chat-bg); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
+        
+        .chat-main { flex: 1; display: flex; flex-direction: column; background: var(--chat-bg); }
+        
+        .chat-header { padding: 15px 25px; border-bottom: 1px solid rgba(150,150,150,0.2); background: var(--bubble-other); display: flex; align-items: center; justify-content: space-between; }
+
+        .chat-messages { flex: 1; padding: 25px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
+        
+        .chat-input-area { padding: 15px 25px; background: var(--bubble-other); border-top: 1px solid rgba(150,150,150,0.2); display: flex; gap: 15px; align-items: center; }
+        
+        .chat-input { flex: 1; border-radius: 25px; background: var(--chat-bg); border: 1px solid rgba(150,150,150,0.2); padding: 10px 20px; color: var(--text-main); outline: none;}
+        .chat-input:focus { border-color: var(--primary); }
+        
+        /* Bubbles */
+        .bubble { max-width: 65%; padding: 10px 16px; border-radius: 18px; font-size: 0.95rem; position: relative; word-wrap: break-word;}
+        .bubble-me { align-self: flex-end; background: var(--bubble-me); border-bottom-right-radius: 4px; }
+        .bubble-other { align-self: flex-start; background: var(--bubble-other); border-bottom-left-radius: 4px; border: 1px solid rgba(150,150,150,0.2); }
+        .bubble-sys { align-self: center; background: rgba(150,150,150,0.1); color: var(--text-main); font-size: 0.8rem; border-radius: 8px; padding: 5px 15px; text-align: center; max-width: 80%;}
+        
+        .bubble .time { font-size: 0.7rem; color: #888; margin-top: 4px; display: block; text-align: right; }
+        .bubble-me .time { color: var(--primary); opacity: 0.8;}
+
+        .chat-img-attachment { max-width: 250px; border-radius: 12px; margin-top: 8px; cursor: pointer; border: 1px solid rgba(150,150,150,0.2);}
+        
+        .empty-chat { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #999; }
+        
+        .btn-circle { width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: none; cursor: pointer; transition: transform 0.2s; }
+        .btn-circle:hover { transform: scale(1.05); }
+        .btn-attach { background: transparent; color: #888; font-size: 1.2rem; }
+        .btn-send { background: var(--primary); color: white; font-size: 1.2rem; }
+    </style>
+</head>
+<body>
+    <div class="chat-app">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <a href="dashboard_dono.html" class="btn-back">
+                <i class="fa-solid fa-arrow-left"></i> Voltar ao Dashboard
+            </a>
+            <div class="p-3 d-flex justify-content-between align-items-center">
+                <h5 class="fw-bold mb-0">Conversas Activas</h5>
+                <div class="dropdown">
+                    <button class="btn btn-sm btn-outline-success" type="button" data-bs-toggle="dropdown">
+                        <i class="fa-solid fa-plus"></i> Nova
+                    </button>
+                    <ul class="dropdown-menu shadow" id="newChatList">
+                        <li><span class="dropdown-item-text text-muted small">A carregar...</span></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="ticket-list" id="ticketList">
+                <div class="text-center p-4 text-muted small"><i class="fa-solid fa-spinner fa-spin me-2"></i> A carregar conversas...</div>
+            </div>
+        </div>
+
+        <!-- Chat Area -->
+        <div class="chat-main" id="chatArea" style="display:none;">
+            <!-- Header -->
+            <div class="chat-header">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="ticket-avatar"><i class="fa-solid fa-stethoscope text-primary"></i></div>
+                    <div>
+                        <h6 class="fw-bold mb-0" id="chatTitle">Carregando...</h6>
+                        <span class="small text-muted" id="chatSubtitle">Clínica Zooni</span>
+                    </div>
+                </div>
+                <div>
+                    <!-- Status Badge -->
+                    <span class="badge" id="ticketStatusBadge"></span>
+                </div>
+            </div>
+
+            <!-- Messages Stream -->
+            <div class="chat-messages" id="messageStream">
+                <!-- Bolhas Renderizadas Aqui -->
+            </div>
+
+            <!-- Input Area -->
+            <div class="chat-input-area" id="chatInputArea">
+                <button class="btn-circle btn-attach" id="btnAttach" title="Anexar Imagem">
+                    <i class="fa-solid fa-paperclip"></i>
+                </button>
+                <input type="file" id="mediaUpload" class="d-none" accept="image/png, image/jpeg">
+                
+                <input type="text" id="messageInput" class="chat-input" placeholder="Escreva a sua mensagem..." autocomplete="off">
+                
+                <button class="btn-circle btn-send" id="btnSend">
+                    <i class="fa-solid fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Empty State -->
+        <div class="empty-chat" id="emptyState">
+            <i class="fa-solid fa-comments mb-3" style="font-size: 4rem; opacity: 0.2;"></i>
+            <h4>As Suas Conversas</h4>
+            <p>Selecione um pedido à esquerda para abrir o chat seguro com a clínica.</p>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <script>
+        const SUPABASE_URL = 'https://xqtbtggmwejnkhckduti.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhxdGJ0Z2dtd2VqbmtoY2tkdXRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc2OTU5NjEsImV4cCI6MjA4MzI3MTk2MX0.G1wG0UC6sF7r6tMxGdqLGvsHa_dxlVD1-j6QNEw32IM';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        let CURRENT_USER_ID = null;
+        let ID_DONO = null;
+        let activeVetId = null;
+        let subChannel = null;
+
+        async function initAuth() {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (!session) { window.location.href = 'login.html'; return; }
+            CURRENT_USER_ID = session.user.id;
+            
+            const { data: donoData } = await supabaseClient.from('clientes').select('id').eq('user_id', CURRENT_USER_ID).single();
+            if (donoData) ID_DONO = donoData.id;
+            
+            loadConversations();
+        }
+
+        async function loadConversations() {
+            // Em modelo WhatsApp contínuo, listamos a equipa clínica
+            const { data: vets, error } = await supabaseClient.from('veterinarios').select('user_id, nome').not('nome', 'is', null);
+            
+            // Buscar os veterinários favoritados pelo dono
+            const { data: favs } = await supabaseClient.from('favoritos').select('id_vet').eq('id_dono', ID_DONO);
+            const favVetIds = new Set((favs || []).map(f => f.id_vet));
+            
+            // Descobrir histórico de mensagens para ver quais chats estão "abertos"
+            const { data: msgsHistory } = await supabaseClient.from('mensagens').select('id_veterinario').eq('id_dono', ID_DONO);
+            const activeVetIds = new Set((msgsHistory || []).map(m => m.id_veterinario));
+
+            const list = document.getElementById('ticketList');
+            const dropList = document.getElementById('newChatList');
+            list.innerHTML = '';
+            dropList.innerHTML = '';
+            
+            if (error || !vets || vets.length === 0) {
+                list.innerHTML = '<div class="p-4 text-center text-muted small">Nenhum profissional clínico registado na plataforma.</div>';
+                dropList.innerHTML = '<li><span class="dropdown-item-text text-muted small">Sem veterinários</span></li>';
+                return;
+            }
+
+            let hasActiveChats = false;
+            let hasFavs = false;
+
+            vets.forEach(v => {
+                // Populate Dropdown for "Nova Conversa" (Apenas Favoritos!)
+                if(favVetIds.has(v.user_id) && !activeVetIds.has(v.user_id)) {
+                    hasFavs = true;
+                    const li = document.createElement('li');
+                    li.innerHTML = `<button class="dropdown-item" onclick="openChat({user_id: '${v.user_id}', nome: '${v.nome}'})"><i class="fa-solid fa-user-doctor text-primary me-2"></i>Dr(a). ${v.nome}</button>`;
+                    dropList.appendChild(li);
+                }
+
+                // Populate Sidebar ONLY if chat history exists
+                if(activeVetIds.has(v.user_id)) {
+                    hasActiveChats = true;
+                    const item = document.createElement('div');
+                    item.className = 'ticket-item';
+                    item.id = `vet-tab-${v.user_id}`;
+                    item.innerHTML = `
+                        <div class="ticket-avatar"><i class="fa-solid fa-user-doctor text-primary"></i></div>
+                        <div style="flex:1;">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="fw-bold text-truncate">Dr(a). ${v.nome}</span>
+                            </div>
+                            <div class="small text-muted" style="margin-top:2px;">Chat Direto Clínico</div>
+                        </div>
+                    `;
+                    item.onclick = () => openChat(v);
+                    list.appendChild(item);
+                }
+            });
+
+            if(!hasFavs) {
+                dropList.innerHTML = '<li><span class="dropdown-item-text text-muted small text-wrap" style="width: 200px;">Precisa adicionar um veterinário aos Favoritos primeiro para lhe enviar mensagem.</span></li>';
+            }
+
+            if(!hasActiveChats) {
+                list.innerHTML = '<div class="p-4 text-center text-muted small">Ainda não tem conversas ativas. Inicie uma nova conversa com os seus médicos favoritos!</div>';
+            }
+        }
+
+        async function openChat(vet) {
+            activeVetId = vet.user_id;
+            
+            // UI
+            document.querySelectorAll('.ticket-item').forEach(i => i.classList.remove('active'));
+            document.getElementById(`vet-tab-${vet.user_id}`).classList.add('active');
+            
+            document.getElementById('emptyState').style.display = 'none';
+            document.getElementById('chatArea').style.display = 'flex';
+            
+            document.getElementById('chatTitle').textContent = `Dr(a). ${vet.nome}`;
+            document.getElementById('ticketStatusBadge').textContent = 'Online';
+            document.getElementById('ticketStatusBadge').className = 'badge bg-success';
+
+            // Enable inputs
+            document.getElementById('chatInputArea').style.opacity = '1';
+            document.getElementById('messageInput').disabled = false;
+            document.getElementById('btnSend').disabled = false;
+            document.getElementById('btnAttach').disabled = false;
+            document.getElementById('messageInput').placeholder = "Escreva a sua mensagem...";
+
+            // Load initial messages
+            const stream = document.getElementById('messageStream');
+            stream.innerHTML = '<div class="text-center p-3"><i class="fa-solid fa-spinner fa-spin text-muted"></i></div>';
+
+            const { data: msgs } = await supabaseClient
+                .from('mensagens')
+                .select('*')
+                .eq('id_dono', ID_DONO)
+                .eq('id_veterinario', activeVetId)
+                .order('criado_em', { ascending: true });
+            
+            stream.innerHTML = '';
+            
+            // Intro message
+            appendMessage({ remetente_tipo: 'sistema', texto: 'Este é o novo canal permanente entre si e a Zooni. Todo o histórico clínico conversacional fica aqui registado.' });
+
+            if(msgs) msgs.forEach(m => appendMessage(m));
+
+            // Marcar mensagens recebidas como lidas
+            await supabaseClient.from('mensagens')
+                .update({foi_lida: true})
+                .eq('id_dono', ID_DONO)
+                .eq('id_veterinario', activeVetId)
+                .eq('remetente_tipo', 'veterinario')
+                .eq('foi_lida', false);
+
+            scrollToBottom();
+            setupRealtimeSubscription(activeVetId);
+        }
+
+        function appendMessage(msg) {
+            const stream = document.getElementById('messageStream');
+            const div = document.createElement('div');
+            
+            const timeStr = msg.criado_em ? new Date(msg.criado_em).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : 'Agora';
+
+            if (msg.remetente_tipo === 'sistema') {
+                div.className = 'bubble bubble-sys';
+                div.innerHTML = msg.texto;
+            } else {
+                const isMe = msg.remetente_tipo === 'dono';
+                div.className = `bubble ${isMe ? 'bubble-me' : 'bubble-other'}`;
+                
+                let html = `<div>${msg.texto || ''}</div>`;
+                if(msg.anexo_url) {
+                    html += `<img src="${msg.anexo_url}" class="chat-img-attachment" onclick="window.open(this.src)">`;
+                }
+                
+                let checkHtml = '';
+                if(isMe) {
+                    checkHtml = `<i class="fa-solid ${msg.foi_lida ? 'fa-check-double text-info' : 'fa-check'} ms-1" id="check-${msg.id}"></i>`;
+                }
+                html += `<span class="time">${timeStr} ${checkHtml}</span>`;
+                
+                div.innerHTML = html;
+            }
+            stream.appendChild(div);
+            scrollToBottom();
+        }
+
+        function scrollToBottom() {
+            const el = document.getElementById('messageStream');
+            el.scrollTop = el.scrollHeight;
+        }
+
+        async function setupRealtimeSubscription(vetId) {
+            if(subChannel) { supabaseClient.removeChannel(subChannel); }
+
+            subChannel = supabaseClient.channel('chat_dono_stream')
+            .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'mensagens', filter: `id_dono=eq.${ID_DONO}` }, payload => {
+                if(payload.new.remetente_id !== CURRENT_USER_ID && payload.new.id_veterinario === vetId) {
+                    appendMessage(payload.new);
+                    // Como recebemos uma nova, marcamos logo como lida no ecrã ativo
+                    supabaseClient.from('mensagens').update({foi_lida: true}).eq('id', payload.new.id);
+                }
+                loadConversations();
+            })
+            .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'mensagens', filter: `id_dono=eq.${ID_DONO}` }, payload => {
+                if(payload.new.remetente_id === CURRENT_USER_ID && payload.new.foi_lida) {
+                    const checkIcon = document.getElementById(`check-${payload.new.id}`);
+                    if(checkIcon) {
+                        checkIcon.className = 'fa-solid fa-check-double text-info ms-1';
+                    }
+                }
+            }).subscribe();
+        }
+
+        // Sending Message
+        document.getElementById('btnSend').addEventListener('click', sendMessage);
+        document.getElementById('messageInput').addEventListener('keypress', e => { if(e.key === 'Enter') sendMessage(); });
+
+        async function sendMessage() {
+            if(!activeVetId || !ID_DONO) return;
+            const input = document.getElementById('messageInput');
+            const fileInput = document.getElementById('mediaUpload');
+            const text = input.value.trim();
+            const file = fileInput.files[0];
+
+            if(!text && !file) return;
+
+            input.value = '';
+            fileInput.value = '';
+
+            let anexo_url = null;
+
+            if(file) {
+                const ext = file.name.split('.').pop();
+                const fName = `${ID_DONO}_${Date.now()}.${ext}`;
+                const { error: upErr } = await supabaseClient.storage.from('chat_midia').upload(fName, file);
+                if(!upErr) {
+                    const { data: pubURL } = supabaseClient.storage.from('chat_midia').getPublicUrl(fName);
+                    anexo_url = pubURL.publicUrl;
+                }
+            }
+
+            const { data: savedMsg } = await supabaseClient.from('mensagens').insert([{
+                id_dono: ID_DONO,
+                id_veterinario: activeVetId,
+                remetente_tipo: 'dono',
+                remetente_id: CURRENT_USER_ID,
+                texto: text,
+                anexo_url: anexo_url
+            }]).select();
+
+            if(savedMsg && savedMsg[0]) {
+                appendMessage(savedMsg[0]); 
+            }
+            
+            // Refresh conversation list to make sure this active chat stays in sidebar
+            loadConversations();
+
+            checkOutofHours();
+        }
+
+        async function checkOutofHours() {
+            const h = new Date().getHours();
+            if(h < 9 || h >= 20) {
+                const autoMsg = "A receção da Zooni encontra-se fechada (09:00 - 20:00). A sua mensagem ficou registada na sua conversa. Em caso de Urgência grave, utilize o telefone 91X XXX XXX.";
+                await supabaseClient.from('mensagens').insert([{
+                    id_dono: ID_DONO,
+                    id_veterinario: activeVetId,
+                    remetente_tipo: 'sistema',
+                    texto: autoMsg
+                }]);
+            }
+        }
+
+        // Attach File Logic
+        document.getElementById('btnAttach').addEventListener('click', () => document.getElementById('mediaUpload').click());
+
+        initAuth();
+    </script>
+</body>
+</html>

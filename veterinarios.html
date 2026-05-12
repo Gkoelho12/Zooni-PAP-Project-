@@ -1,0 +1,1257 @@
+<!DOCTYPE html>
+<html lang="pt">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zooni — Encontrar Veterinário</title>
+    <meta name="description" content="Pesquisa, filtra e guarda os teus veterinários de confiança na Zooni.">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="assets/js/theme.js"></script>
+    <script src="assets/js/i18n.js"></script>
+    <link rel="stylesheet" href="assets/css/theme.css">
+
+    <style>
+        :root {
+            --primary: #3D8B3D;
+            --primary-dark: #1E4D1E;
+            --primary-light: #5CB85C;
+            --bg-color: #F2F8F2;
+            --text-main: #1a2e1a;
+            --text-sec: #5a7a5a;
+            --card-bg: #ffffff;
+            --border-color: #e8f0e8;
+            --input-bg: #ffffff;
+            --mint: #00B894;
+            --orange: #FF7675;
+            --danger: #d63031;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #121212;
+            --text-main: #E4E4E7;
+            --text-sec: #A1A1AA;
+            --card-bg: #242424;
+            --card-hover: #333333;
+            --border-color: rgba(255, 255, 255, 0.1);
+            --input-bg: #09090B;
+            --input-border: #52525B;
+            --primary: #34D399;
+            --danger: #F87171;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            font-family: 'Outfit', sans-serif;
+            color: var(--text-main);
+            overflow-x: hidden;
+        }
+
+        .app-container {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            min-height: 100vh;
+        }
+
+        /* ── SIDEBAR STYLES (DONO) ── */
+        .sidebar {
+            background-color: var(--primary);
+            color: white;
+            padding: 2rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+        }
+
+        .logo-container {
+            margin-bottom: 3rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .logo-img-sidebar {
+            max-width: 180px;
+            filter: brightness(0) invert(1);
+        }
+
+        .nav-links {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            flex-grow: 1;
+        }
+
+        .nav-item {
+            margin: 0;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 15px;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            border-radius: 12px;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        .nav-link.active {
+            border-left: 4px solid #fff;
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        .nav-link i {
+            width: 24px;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+
+        .nav-link.text-danger {
+            color: #ff6b6b !important;
+        }
+
+        .nav-link.text-danger:hover {
+            background-color: rgba(255, 107, 107, 0.15);
+            color: #ff6b6b !important;
+        }
+
+        .nav-line-break {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin: 15px 0;
+        }
+
+        .btn-sidebar-cta {
+            background-color: white;
+            color: var(--primary);
+            border: none;
+            border-radius: 12px;
+            padding: 12px;
+            font-weight: 700;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            transition: transform 0.2s;
+            cursor: pointer;
+        }
+
+        .btn-sidebar-cta:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        /* ── Main Content ─────────────────────────────────────── */
+        .main-content {
+            padding: 2.5rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* ── Search & Filters ────────────────────────────────── */
+        .search-bar-wrap {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .search-input-wrap {
+            flex: 1;
+            min-width: 200px;
+            position: relative;
+        }
+
+        .search-input-wrap i {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-sec);
+        }
+
+        .search-input-wrap input {
+            width: 100%;
+            padding: 11px 14px 11px 40px;
+            border: 1.5px solid var(--border-color);
+            border-radius: 12px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.95rem;
+            background: var(--input-bg);
+            color: var(--text-main);
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .search-input-wrap input:focus {
+            border-color: var(--primary);
+        }
+
+        .filter-select {
+            padding: 11px 16px;
+            border: 1.5px solid var(--border-color);
+            border-radius: 12px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.9rem;
+            background: var(--input-bg);
+            color: var(--text-main);
+            cursor: pointer;
+            outline: none;
+        }
+
+        .filter-pill {
+            padding: 9px 16px;
+            border: 1.5px solid var(--border-color);
+            border-radius: 20px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: var(--card-bg);
+            color: var(--text-sec);
+            white-space: nowrap;
+        }
+
+        .filter-pill:hover,
+        .filter-pill.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: #fff;
+        }
+
+        /* ── Vet Cards Grid ──────────────────────────────────── */
+        .vets-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+            gap: 20px;
+        }
+
+        .vet-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 1.5rem;
+            position: relative;
+            transition: transform 0.2s, box-shadow 0.2s;
+            overflow: hidden;
+        }
+
+        .vet-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.08);
+        }
+
+        .vet-card-top {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            margin-bottom: 14px;
+        }
+
+        .vet-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            flex-shrink: 0;
+            border: 3px solid var(--border-color);
+        }
+
+        .vet-avatar-placeholder {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .vet-info {
+            flex-grow: 1;
+            min-width: 0;
+        }
+
+        .vet-name {
+            font-size: 1.05rem;
+            font-weight: 700;
+            margin-bottom: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .vet-spec {
+            font-size: 0.82rem;
+            color: var(--text-sec);
+            margin-bottom: 4px;
+        }
+
+        .vet-clinic {
+            font-size: 0.8rem;
+            color: var(--text-sec);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* ── Status Indicator ────────────────────────────────── */
+        .status-light {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 20px;
+        }
+
+        .status-light .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            animation: pulse-dot 2s infinite;
+        }
+
+        @keyframes pulse-dot {
+
+            0%,
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: 0.6;
+                transform: scale(0.85);
+            }
+        }
+
+        .status-disponivel {
+            background: rgba(0, 184, 148, 0.1);
+            color: #00875A;
+        }
+
+        .status-disponivel .dot {
+            background: #00B894;
+            box-shadow: 0 0 0 3px rgba(0, 184, 148, 0.25);
+        }
+
+        [data-theme="dark"] .status-disponivel {
+            background: rgba(0, 184, 148, 0.15);
+            color: #34D399;
+        }
+
+        .status-consulta {
+            background: rgba(255, 190, 11, 0.12);
+            color: #B8860B;
+        }
+
+        .status-consulta .dot {
+            background: #FFC107;
+            box-shadow: 0 0 0 3px rgba(255, 190, 11, 0.25);
+            animation: pulse-dot 1s infinite;
+        }
+
+        [data-theme="dark"] .status-consulta {
+            background: rgba(255, 190, 11, 0.15);
+            color: #FCD34D;
+        }
+
+        .status-ausente {
+            background: rgba(239, 68, 68, 0.1);
+            color: #B91C1C;
+        }
+
+        .status-ausente .dot {
+            background: #EF4444;
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
+            animation: none;
+        }
+
+        [data-theme="dark"] .status-ausente {
+            background: rgba(239, 68, 68, 0.15);
+            color: #F87171;
+        }
+
+        /* ── Badges ──────────────────────────────────────────── */
+        .badge-24h {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: rgba(255, 118, 117, 0.12);
+            color: #C0392B;
+            border: 1px solid rgba(255, 118, 117, 0.3);
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 3px 9px;
+            border-radius: 20px;
+        }
+
+        [data-theme="dark"] .badge-24h {
+            color: #F87171;
+            background: rgba(248, 113, 113, 0.15);
+        }
+
+        /* ── Favourite Button ────────────────────────────────── */
+        .btn-fav {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.3rem;
+            padding: 0;
+            line-height: 1;
+            color: var(--border-color);
+            transition: color 0.2s, transform 0.15s;
+        }
+
+        .btn-fav.active {
+            color: #e74c3c;
+        }
+
+        .btn-fav:hover {
+            transform: scale(1.2);
+            color: #e74c3c;
+        }
+
+        /* ── Card Footer Actions ─────────────────────────────── */
+        .vet-card-footer {
+            margin-top: 14px;
+            padding-top: 14px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-marcar {
+            flex: 1;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 9px;
+            font-weight: 700;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.88rem;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .btn-marcar:hover {
+            opacity: 0.85;
+        }
+
+        .btn-marcar:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        /* ── Empty State ─────────────────────────────────────── */
+        .empty-state {
+            grid-column: 1 / -1;
+            padding: 5rem 2rem;
+            text-align: center;
+            color: var(--text-sec);
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            opacity: 0.25;
+            margin-bottom: 1.5rem;
+        }
+
+        /* ── Skeleton Loader ─────────────────────────────────── */
+        .skeleton-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 1.5rem;
+        }
+
+        .skel {
+            background: linear-gradient(90deg, var(--border-color) 25%, rgba(255, 255, 255, 0.05) 50%, var(--border-color) 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+            border-radius: 8px;
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: 200% 0;
+            }
+
+            100% {
+                background-position: -200% 0;
+            }
+        }
+
+        /* ── Header area ─────────────────────────────────────── */
+        .header-area {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        /* ── Ticket Modal CSS (equal to meus_animais.html) ──── */
+        .evidence-upload-container {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .evidence-btn {
+            flex: 1;
+            padding: 15px;
+            border-radius: 12px;
+            border: 2px dashed #dfe6e9;
+            background: #FAFAFB;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: #636e72;
+            font-size: .8rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all .2s;
+        }
+
+        .evidence-btn:hover {
+            border-color: var(--primary, #3D8B3D);
+            color: var(--primary, #3D8B3D);
+            background: rgba(61, 139, 61, .05);
+        }
+
+        .pet-select-item {
+            cursor: pointer;
+            border: 2px solid transparent;
+            border-radius: 12px;
+            padding: 10px;
+            text-align: center;
+            transition: all .2s;
+        }
+
+        .pet-select-item:hover {
+            background: rgba(61, 139, 61, .05);
+        }
+
+        .pet-select-item.selected {
+            border-color: var(--primary, #3D8B3D);
+            background: rgba(61, 139, 61, .1);
+        }
+
+        .pet-select-img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 5px;
+        }
+
+        .pet-select-emoji {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #f1f2f6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 5px auto;
+            font-size: 1.5rem;
+        }
+
+        .btn-primary-modal {
+            display: block;
+            width: 100%;
+            padding: 14px;
+            background: var(--primary, #3D8B3D);
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 1rem;
+            font-family: 'Outfit', sans-serif;
+            cursor: pointer;
+            transition: opacity .2s;
+        }
+
+        .btn-primary-modal:hover {
+            opacity: .9;
+        }
+
+        @media (max-width: 768px) {
+            .app-container {
+                grid-template-columns: 1fr;
+            }
+
+            .vets-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="logo-container d-flex justify-content-between align-items-center w-100">
+                <img src="assets/logo.png" alt="Zooni Logo" class="logo-img-sidebar">
+                <button class="btn text-white d-md-none fs-4 p-0" onclick="document.querySelector('.sidebar').classList.remove('active')" style="background:transparent; border:none;">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <ul class="nav-links">
+                <li class="nav-item">
+                    <a href="dashboard_dono.html" class="nav-link "><i class="fa-solid fa-house"></i> <span
+                            data-i18n="nav_home">Início</span></a>
+                </li>
+                <li class="nav-item">
+                    <a href="meus_animais.html" class="nav-link "><i class="fa-solid fa-dog"></i> <span
+                            data-i18n="nav_animals">Os Meus Animais</span></a>
+                </li>
+                <li class="nav-item">
+                    <a href="agenda_dono.html" class="nav-link "><i class="fa-solid fa-calendar"></i> <span
+                            data-i18n="nav_calendar">Calendário</span></a>
+                </li>
+                <li class="nav-item">
+                    <a href="chat_dono.html" class="nav-link "><i class="fa-solid fa-comments"></i> <span
+                            data-i18n="nav_chat">Chat da Clínica</span></a>
+                </li>
+                <li class="nav-item">
+                    <a href="veterinarios.html" class="nav-link active"><i class="fa-solid fa-user-doctor"></i>
+                        <span>Veterinários</span></a>
+                </li>
+            </ul>
+
+            <div class="nav-line-break"></div>
+            <a href="definicoes_dono.html" class="nav-link "><i class="fa-solid fa-gear"></i> <span
+                    data-i18n="nav_settings">Configurações</span></a>
+            <a href="index.html" class="nav-link text-danger"><i class="fa-solid fa-arrow-right-from-bracket"></i> <span
+                    data-i18n="nav_logout">Sair</span></a>
+
+            <button class="btn-sidebar-cta mt-auto" data-bs-toggle="modal" data-bs-target="#novoTicketModal">
+                <i class="fa-solid fa-plus"></i> <span data-i18n="nav_new_ticket">Novo Pedido</span>
+            </button>
+        </aside>
+
+        <!-- MAIN -->
+        <main class="main-content">
+            <div class="header-area">
+                <div>
+                    <h1 class="fw-bold mb-1" style="font-size:1.6rem;" data-i18n="nav_vets">Encontrar Veterinário</h1>
+                    <p class="text-secondary m-0" data-i18n="vet_page_subtitle">Pesquisa, guarda favoritos e marca
+                        consultas com quem mais confias.</p>
+                </div>
+                <div class="d-flex gap-3 align-items-center">
+                    <div class="filter-pill active" id="pillTodos" onclick="setFavFilter(false, this)"
+                        data-i18n="dash_filter_all">Todos</div>
+                    <div class="filter-pill" id="pillFavoritos" onclick="setFavFilter(true, this)">
+                        <i class="fa-solid fa-heart me-1 text-danger"></i> <span
+                            data-i18n="vet_favourites">Favoritos</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Search & Filter Bar -->
+            <div class="search-bar-wrap">
+                <div class="search-input-wrap">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" id="searchVetInput" data-i18n-placeholder="vet_search_ph"
+                        placeholder="Pesquisar por nome ou clínica..." oninput="filterAndRender()">
+                </div>
+                <select class="filter-select" id="filterEspecialidade" onchange="filterAndRender()">
+                    <option value="" data-i18n="vet_all_specs">Todas as Especialidades</option>
+                </select>
+                <select class="filter-select" id="filterStatus" onchange="filterAndRender()">
+                    <option value="" data-i18n="vet_any_status">Qualquer Estado</option>
+                    <option value="disponivel">🟢 Disponível</option>
+                    <option value="consulta">🟡 Em Consulta</option>
+                    <option value="ausente">🔴 Ausente / Férias</option>
+                </select>
+            </div>
+
+            <!-- Vet Cards -->
+            <div class="vets-grid" id="vetsGrid">
+                <!-- Skeleton loaders -->
+                <div class="skeleton-card" id="skel1">
+                    <div class="skel mb-3" style="height:60px; width:60px; border-radius:50%;"></div>
+                    <div class="skel mb-2" style="height:18px; width:70%;"></div>
+                    <div class="skel" style="height:14px; width:50%;"></div>
+                </div>
+                <div class="skeleton-card" id="skel2">
+                    <div class="skel mb-3" style="height:60px; width:60px; border-radius:50%;"></div>
+                    <div class="skel mb-2" style="height:18px; width:70%;"></div>
+                    <div class="skel" style="height:14px; width:50%;"></div>
+                </div>
+                <div class="skeleton-card" id="skel3">
+                    <div class="skel mb-3" style="height:60px; width:60px; border-radius:50%;"></div>
+                    <div class="skel mb-2" style="height:18px; width:70%;"></div>
+                    <div class="skel" style="height:14px; width:50%;"></div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- ─── TICKET MODAL (exato de meus_animais.html) ──────────── -->
+    <div class="modal fade" id="addTicketModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold">Nova Consulta</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="ticketForm">
+                        <div class="mb-4">
+                            <label class="small text-muted fw-bold mb-3 d-block">Qual pet precisa de ajuda hoje?</label>
+                            <div id="petSelectorList" class="d-flex gap-3 overflow-x-auto pb-2"></div>
+                            <input type="hidden" id="ticketPetId" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="small text-muted fw-bold">Motivo Principal</label>
+                            <select class="form-select" id="ticketMotivo" required>
+                                <option value="">Selecione um motivo...</option>
+                                <option value="Vómitos">Vómitos</option>
+                                <option value="Problema de Pele">Problema de Pele</option>
+                                <option value="Vacinação">Vacinação</option>
+                                <option value="Rotina">Rotina</option>
+                                <option value="Urgência">Urgência</option>
+                                <option value="Outro">Outro</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="small text-muted fw-bold">Descreva o que se passa com o máximo de
+                                detalhes.</label>
+                            <textarea class="form-control" id="ticketDescricao" rows="4"
+                                placeholder="Ex: Quando começou? Mudou a alimentação? Está apático?..."
+                                required></textarea>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="small text-muted fw-bold">Mostre-nos o problema (Fotos/Vídeos)</label>
+                            <div class="evidence-upload-container">
+                                <div class="evidence-btn"
+                                    onclick="document.getElementById('ticketEvidenceInput').click()">
+                                    <i class="fa-solid fa-camera fa-2x mb-2"></i>
+                                    <span>Anexar Média</span>
+                                </div>
+                            </div>
+                            <input type="file" id="ticketEvidenceInput" class="d-none" accept="image/*,video/*"
+                                multiple>
+                            <div id="evidencePreview" class="mt-2 d-flex gap-2 flex-wrap"></div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="small text-muted fw-bold">Quando preferia ser atendido? (Sugestão)</label>
+                            <input type="datetime-local" class="form-control" id="ticketDataSugerida" required>
+                            <small class="text-secondary mt-1 d-block"><i class="fa-solid fa-circle-info"></i> Este
+                                horário é uma sugestão e necessita de confirmação da clínica.</small>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="small text-muted fw-bold">Escolha o Veterinário</label>
+                            <!-- Locked when coming from a vet card -->
+                            <div id="vetLockedDisplay"
+                                style="display:none; padding:10px 14px; border-radius:12px; background:rgba(61,139,61,.08); border:1.5px solid #3D8B3D; font-weight:600; color:#3D8B3D; margin-top:6px;">
+                            </div>
+                            <select class="form-select mt-1" id="ticketVeterinario" required>
+                                <option value="">A carregar veterinários...</option>
+                            </select>
+                        </div>
+
+                        <button type="submit" class="btn-primary-modal py-3" id="btnEnviarTicket">Enviar Pedido de
+                            Consulta</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const SUPABASE_URL = 'https://xqtbtggmwejnkhckduti.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhxdGJ0Z2dtd2VqbmtoY2tkdXRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc2OTU5NjEsImV4cCI6MjA4MzI3MTk2MX0.G1wG0UC6sF7r6tMxGdqLGvsHa_dxlVD1-j6QNEw32IM';
+        const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        let DONO_ID = null;    // bigint id from 'clientes' table (for ticket inserts)
+        let DONO_UUID = null;   // UUID from auth (for querying 'animais' by id_dono)
+        let allVets = [];       // Raw data from DB
+        let favoritosSet = new Set(); // Set of id_vet strings
+        let vetStatusMap = {};  // id_vet -> 'disponivel' | 'consulta' | 'ausente'
+        let showOnlyFavs = false;
+
+        // ── AUTH ──────────────────────────────────────────────
+        async function init() {
+            const { data: { session } } = await sb.auth.getSession();
+            if (!session) { window.location.href = 'login.html?role=dono'; return; }
+
+            DONO_UUID = session.user.id; // UUID — used for querying animais by id_dono
+
+            const { data: cliente } = await sb.from('clientes').select('id').eq('user_id', DONO_UUID).single();
+            if (!cliente) { await sb.auth.signOut(); window.location.href = 'login.html?role=dono'; return; }
+            DONO_ID = cliente.id; // bigint — used for ticket inserts (id_dono in tickets)
+
+            await Promise.all([loadFavoritos(), loadVets()]);
+        }
+
+        // ── LOAD ALL ACTIVE VETS ──────────────────────────────
+        async function loadVets() {
+            const { data, error } = await sb
+                .from('veterinarios')
+                .select('user_id, nome, especialidade, clinica, foto_url, tem_servico_24h, contacto_24h, modo_ferias')
+                .eq('status', 'ativo')
+                .order('nome');
+
+            if (error || !data) {
+                document.getElementById('vetsGrid').innerHTML = `<div class="empty-state"><i class="fa-solid fa-circle-exclamation"></i><p>Erro ao carregar veterinários.</p></div>`;
+                return;
+            }
+
+            allVets = data;
+
+            // Populate specialty filter
+            const specs = [...new Set(data.map(v => v.especialidade).filter(Boolean))].sort();
+            const sel = document.getElementById('filterEspecialidade');
+            specs.forEach(s => {
+                const o = document.createElement('option');
+                o.value = s; o.textContent = s;
+                sel.appendChild(o);
+            });
+
+            // Calculate dynamic statuses for all vets
+            await computeStatuses(data);
+
+            filterAndRender();
+        }
+
+        // ── COMPUTE REAL-TIME STATUS ──────────────────────────
+        async function computeStatuses(vets) {
+            const now = new Date();
+            const nowIso = now.toISOString();
+
+            // Get all tickets with active/ongoing status (marcado + within time range)
+            const { data: activeTickets } = await sb
+                .from('tickets')
+                .select('id_veterinario, data_agendada, hr_agendada')
+                .eq('estado', 'marcado');
+
+            const busyVets = new Set();
+
+            (activeTickets || []).forEach(tk => {
+                if (!tk.data_agendada || !tk.hr_agendada) return;
+                const start = new Date(`${tk.data_agendada}T${tk.hr_agendada}`);
+                const end = new Date(start.getTime() + 30 * 60 * 1000);
+                if (now >= start && now <= end) {
+                    busyVets.add(tk.id_veterinario);
+                }
+            });
+
+            vets.forEach(v => {
+                if (v.modo_ferias) {
+                    vetStatusMap[v.user_id] = 'ausente';
+                } else if (busyVets.has(v.user_id)) {
+                    vetStatusMap[v.user_id] = 'consulta';
+                } else {
+                    vetStatusMap[v.user_id] = 'disponivel';
+                }
+            });
+        }
+
+        // ── LOAD FAVOURITES ───────────────────────────────────
+        async function loadFavoritos() {
+            const { data } = await sb.from('favoritos').select('id_vet').eq('id_dono', DONO_ID);
+            favoritosSet = new Set((data || []).map(f => f.id_vet));
+        }
+
+        // ── TOGGLE FAVOURITE ──────────────────────────────────
+        async function toggleFav(vetId, btn) {
+            const isFav = favoritosSet.has(vetId);
+
+            // Optimistic UI update
+            btn.classList.toggle('active', !isFav);
+            btn.disabled = true;
+
+            try {
+                if (isFav) {
+                    // Remove from favourites
+                    const { error } = await sb
+                        .from('favoritos')
+                        .delete()
+                        .eq('id_dono', DONO_ID)
+                        .eq('id_vet', vetId);
+
+                    if (error) throw error;
+                    favoritosSet.delete(vetId);
+                } else {
+                    // Add to favourites
+                    const { error } = await sb
+                        .from('favoritos')
+                        .insert({ id_dono: DONO_ID, id_vet: vetId });
+
+                    if (error) throw error;
+                    favoritosSet.add(vetId);
+                }
+
+                // Re-render if in favourites-only view
+                if (showOnlyFavs) filterAndRender();
+
+            } catch (err) {
+                console.error('Erro ao guardar favorito:', err);
+
+                // Revert optimistic update
+                btn.classList.toggle('active', isFav);
+
+                // Show user-friendly message
+                const msg = err?.message || 'Erro desconhecido';
+                alert(`Não foi possível guardar o favorito.\n${msg}\n\nVerifica se o SQL da tabela "favoritos" foi executado no Supabase.`);
+            } finally {
+                btn.disabled = false;
+            }
+        }
+
+        // ── FILTER TOGGLE ─────────────────────────────────────
+        function setFavFilter(onlyFavs, pill) {
+            showOnlyFavs = onlyFavs;
+            document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+            pill.classList.add('active');
+            filterAndRender();
+        }
+
+        // ── FILTER + RENDER ───────────────────────────────────
+        function filterAndRender() {
+            const query = document.getElementById('searchVetInput').value.toLowerCase();
+            const spec = document.getElementById('filterEspecialidade').value;
+            const statusF = document.getElementById('filterStatus').value;
+
+            let filtered = allVets.filter(v => {
+                const matchSearch = !query || v.nome?.toLowerCase().includes(query) || v.clinica?.toLowerCase().includes(query);
+                const matchSpec = !spec || v.especialidade === spec;
+                const matchStatus = !statusF || vetStatusMap[v.user_id] === statusF;
+                const matchFav = !showOnlyFavs || favoritosSet.has(v.user_id);
+                return matchSearch && matchSpec && matchStatus && matchFav;
+            });
+
+            renderVets(filtered);
+        }
+
+        // ── RENDER CARDS ──────────────────────────────────────
+        function renderVets(vets) {
+            const grid = document.getElementById('vetsGrid');
+            grid.innerHTML = '';
+
+            if (vets.length === 0) {
+                grid.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fa-solid fa-user-doctor"></i>
+                        <h4 class="fw-bold mb-2">Nenhum veterinário encontrado</h4>
+                        <p>Experimenta ajustar os filtros ou pesquisar por outro nome.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            vets.forEach(v => {
+                const status = vetStatusMap[v.user_id] || 'disponivel';
+                const isFav = favoritosSet.has(v.user_id);
+
+                let statusHtml = '';
+                if (status === 'disponivel') {
+                    statusHtml = `<span class="status-light status-disponivel"><span class="dot"></span> Disponível</span>`;
+                } else if (status === 'consulta') {
+                    statusHtml = `<span class="status-light status-consulta"><span class="dot"></span> Em Consulta</span>`;
+                } else {
+                    statusHtml = `<span class="status-light status-ausente"><span class="dot"></span> Ausente / Férias</span>`;
+                }
+
+                const avatarHtml = v.foto_url
+                    ? `<img src="${v.foto_url}" alt="${v.nome}" class="vet-avatar">`
+                    : `<div class="vet-avatar-placeholder">${(v.nome || '?').charAt(0).toUpperCase()}</div>`;
+
+                const badge24h = v.tem_servico_24h
+                    ? `<span class="badge-24h"><i class="fa-solid fa-clock"></i> Urgências 24h</span>`
+                    : '';
+
+                const btnDisabled = status === 'ausente' ? 'disabled' : '';
+                const btnTitle = status === 'ausente' ? 'Indisponível' : 'Marcar Consulta';
+
+                const card = document.createElement('div');
+                card.className = 'vet-card';
+                card.setAttribute('data-vet-id', v.id);
+                card.innerHTML = `
+                    <div class="vet-card-top">
+                        ${avatarHtml}
+                        <div class="vet-info">
+                            <div class="vet-name">${v.nome || '—'}</div>
+                            <div class="vet-spec">${v.especialidade || 'Medicina Geral'}</div>
+                            <div class="vet-clinic"><i class="fa-solid fa-location-dot" style="font-size:0.75rem; color:var(--primary);"></i> ${v.clinica || '—'}</div>
+                        </div>
+                        <button class="btn-fav ${isFav ? 'active' : ''}" title="Favorito" onclick="toggleFav('${v.user_id}', this)">
+                            <i class="fa-solid fa-heart"></i>
+                        </button>
+                    </div>
+
+                    <div class="d-flex align-items-center gap-2 flex-wrap mb-2">
+                        ${statusHtml}
+                        ${badge24h}
+                    </div>
+
+                    ${v.tem_servico_24h && v.contacto_24h ? `
+                    <div style="font-size:0.78rem; color:var(--text-sec); margin-bottom:10px;">
+                        <i class="fa-solid fa-phone-volume me-1" style="color:var(--danger);"></i>
+                        Emergência: <strong>${v.contacto_24h}</strong>
+                    </div>` : ''}
+
+                    <div class="vet-card-footer">
+                        <button class="btn-marcar" ${btnDisabled} onclick="marcarConsulta('${v.user_id}', '${(v.nome || '').replace(/'/g, "\\'")}')">
+                            <i class="fa-solid fa-calendar-plus me-1"></i> ${btnTitle}
+                        </button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // ── TICKET MODAL LOGIC (identical to meus_animais.html) ───────────
+
+        // Opens the ticket modal.
+        // If vetId is provided, the vet selector is locked to that vet.
+        // If null, the user can freely choose from favourites.
+        function openTicketModal(vetId, vetNome) {
+            document.getElementById('ticketForm').reset();
+            document.getElementById('evidencePreview').innerHTML = '';
+            const now = new Date(); now.setSeconds(0, 0);
+            document.getElementById('ticketDataSugerida').min = now.toISOString().slice(0, 16);
+
+            const locked = document.getElementById('vetLockedDisplay');
+            const sel = document.getElementById('ticketVeterinario');
+
+            if (vetId) {
+                // Locked to a specific vet (came from a card button)
+                locked.textContent = '🩺 ' + (vetNome || vetId);
+                locked.style.display = 'block';
+                sel.style.display = 'none';
+                sel.required = false;
+                // Store vet ID in select so it's submitted correctly
+                sel.innerHTML = `<option value="${vetId}" selected>${vetNome || vetId}</option>`;
+            } else {
+                locked.style.display = 'none';
+                sel.style.display = 'block';
+                sel.required = true;
+            }
+
+            preparePetSelector();
+            loadVeterinarios(vetId); // pass vetId to skip reload if locked
+        }
+
+        // Called from vet card button — locked to that vet
+        function marcarConsulta(vetId, vetNome) {
+            openTicketModal(vetId, vetNome);
+            new bootstrap.Modal(document.getElementById('addTicketModal')).show();
+        }
+
+        // Load this dono's pets as photo-circles (same as meus_animais.html)
+        async function preparePetSelector() {
+            try {
+                // animais.id_dono = bigint (clientes.id), same as meus_animais.html uses ID_DONO = cliente.id
+                const { data } = await sb.from('animais').select('*').eq('id_dono', DONO_ID);
+                const selector = document.getElementById('petSelectorList');
+                selector.innerHTML = '';
+                if (!data || data.length === 0) {
+                    selector.innerHTML = '<span class="text-secondary">Sem animais. <a href="meus_animais.html">Adicionar animal</a></span>';
+                    return;
+                }
+                data.forEach(pet => {
+                    const div = document.createElement('div');
+                    div.className = 'pet-select-item';
+                    div.dataset.id = pet.id;
+
+                    let emoji = '🐾';
+                    if (pet.tipo_animal && pet.tipo_animal.toLowerCase().includes('cão')) emoji = '🐶';
+                    if (pet.tipo_animal && pet.tipo_animal.toLowerCase().includes('gato')) emoji = '🐱';
+
+                    let imgHtml = `<div class="pet-select-emoji">${emoji}</div>`;
+                    if (pet.foto_url) {
+                        imgHtml = `<img src="${pet.foto_url}" class="pet-select-img" alt="${emoji}">`;
+                    }
+                    div.innerHTML = `${imgHtml}<div class="small fw-bold">${pet.nome}</div>`;
+                    div.onclick = () => {
+                        document.querySelectorAll('.pet-select-item').forEach(i => i.classList.remove('selected'));
+                        div.classList.add('selected');
+                        document.getElementById('ticketPetId').value = pet.id;
+                    };
+                    selector.appendChild(div);
+                });
+            } catch (e) { console.error('Erro ao carregar pets:', e); }
+        }
+
+        // Load favourite vets into the select (identical to meus_animais.html)
+        async function loadVeterinarios(skipIfLockedId) {
+            if (skipIfLockedId) return; // already set by openTicketModal
+            const sel = document.getElementById('ticketVeterinario');
+            sel.innerHTML = '<option value="">A carregar...</option>';
+            try {
+                const { data: favs } = await sb.from('favoritos').select('id_vet').eq('id_dono', DONO_ID);
+                const favIds = (favs || []).map(f => f.id_vet);
+
+                const oldHint = document.getElementById('vetFavHint');
+                if (oldHint) oldHint.remove();
+
+                if (favIds.length === 0) {
+                    sel.innerHTML = '<option value="" disabled selected>Sem veterinários favoritos</option>';
+                    const hint = document.createElement('small');
+                    hint.id = 'vetFavHint';
+                    hint.style.cssText = 'display:block; margin-top:6px; font-weight:600;';
+                    hint.innerHTML = '<i class="fa-solid fa-heart me-1" style="color:#e74c3c;"></i> <a href="veterinarios.html" style="color:var(--primary,#3D8B3D); text-decoration:none;">Guarda veterinários favoritos</a> para poder marcar consultas.';
+                    sel.parentElement.appendChild(hint);
+                    return;
+                }
+
+                const { data, error } = await sb.from('veterinarios')
+                    .select('user_id, nome, clinica, especialidade')
+                    .eq('status', 'ativo')
+                    .in('user_id', favIds)
+                    .order('nome');
+
+                sel.innerHTML = '<option value="">Selecione um veterinário...</option>';
+                if (error || !data || data.length === 0) { sel.innerHTML = '<option value="">Nenhum veterinário disponível</option>'; return; }
+
+                data.forEach(vet => {
+                    const opt = document.createElement('option');
+                    opt.value = vet.user_id;
+                    const clinica = vet.clinica ? ` — ${vet.clinica}` : '';
+                    const esp = vet.especialidade ? ` • ${vet.especialidade}` : '';
+                    opt.textContent = `${vet.nome}${clinica}${esp}`;
+                    sel.appendChild(opt);
+                });
+            } catch (e) { console.error('Erro ao carregar veterinários:', e); }
+        }
+
+        // Evidence file preview
+        document.addEventListener('DOMContentLoaded', () => {
+            const input = document.getElementById('ticketEvidenceInput');
+            if (input) {
+                input.addEventListener('change', function (e) {
+                    const preview = document.getElementById('evidencePreview');
+                    preview.innerHTML = '';
+                    Array.from(e.target.files).forEach(file => {
+                        const reader = new FileReader();
+                        reader.onload = (ev) => {
+                            const img = document.createElement('img');
+                            img.src = ev.target.result;
+                            img.style.cssText = 'width:60px;height:60px;object-fit:cover;border-radius:8px;';
+                            preview.appendChild(img);
+                        };
+                        reader.readAsDataURL(file);
+                    });
+                });
+            }
+        });
+
+        // Form submit (identical logic to meus_animais.html)
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('ticketForm');
+            if (!form) return;
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const btn = document.getElementById('btnEnviarTicket');
+                btn.disabled = true; btn.textContent = 'Enviando...';
+
+                const id_animal = document.getElementById('ticketPetId').value;
+                const motivo = document.getElementById('ticketMotivo').value;
+                const descricao = document.getElementById('ticketDescricao').value;
+                const data_sugerida = document.getElementById('ticketDataSugerida').value;
+                const files = document.getElementById('ticketEvidenceInput').files;
+                const vetSelect = document.getElementById('ticketVeterinario');
+                const id_veterinario = vetSelect.value;
+
+                if (!id_animal) { alert('Por favor, selecione um pet.'); btn.disabled = false; btn.textContent = 'Enviar Pedido de Consulta'; return; }
+                if (!id_veterinario) { alert('Por favor, selecione um veterinário.'); btn.disabled = false; btn.textContent = 'Enviar Pedido de Consulta'; return; }
+
+                let uploadedUrls = [];
+                for (let i = 0; i < files.length; i++) {
+                    const file = files[i];
+                    const ext = file.name.split('.').pop();
+                    const fName = `ticket_${Date.now()}_${i}.${ext}`;
+                    const { error: upErr } = await sb.storage.from('tickets').upload(fName, file);
+                    if (!upErr) {
+                        const { data: pubData } = sb.storage.from('tickets').getPublicUrl(fName);
+                        uploadedUrls.push(pubData.publicUrl);
+                    }
+                }
+
+                const { error } = await sb.from('tickets').insert([{
+                    id_dono: DONO_ID,
+                    id_animal,
+                    motivo,
+                    descricao,
+                    evidencias_url: uploadedUrls.join(','),
+                    data_sugerida: data_sugerida || null,
+                    estado: 'pendente',
+                    id_veterinario
+                }]);
+
+                if (error) {
+                    console.error(error);
+                    alert('Erro ao enviar ticket.');
+                } else {
+                    bootstrap.Modal.getInstance(document.getElementById('addTicketModal')).hide();
+                    // Success toast
+                    const toast = document.createElement('div');
+                    toast.style.cssText = 'position:fixed;bottom:24px;right:24px;z-index:9999;background:#00B894;color:#fff;padding:14px 22px;border-radius:14px;font-family:Outfit,sans-serif;font-weight:700;box-shadow:0 6px 24px rgba(0,0,0,.15);';
+                    toast.innerHTML = '<i class="fa-solid fa-circle-check me-2"></i> Ticket enviado com sucesso!';
+                    document.body.appendChild(toast);
+                    setTimeout(() => toast.remove(), 3500);
+                }
+                btn.disabled = false; btn.textContent = 'Enviar Pedido de Consulta';
+            });
+        });
+
+        // ── INIT ──────────────────────────────────────────────
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedLang = localStorage.getItem('zooni-lang') || 'pt';
+            if (typeof ZOONI_I18N !== 'undefined') ZOONI_I18N.apply(savedLang, false);
+            init();
+        });
+
+        // Auto-refresh status every 2 minutes
+        setInterval(async () => {
+            if (allVets.length > 0) {
+                await computeStatuses(allVets);
+                filterAndRender();
+            }
+        }, 120000);
+    </script>
+</body>
+
+</html>

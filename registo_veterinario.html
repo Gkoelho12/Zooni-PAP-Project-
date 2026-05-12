@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html lang="pt">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zooni — Registo de Veterinário</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="assets/js/theme.js"></script>
+    <link rel="stylesheet" href="assets/css/theme.css">
+    <style>
+        :root {
+            --primary: #3D8B3D;
+            --primary-dark: #1E4D1E;
+            --primary-light: #5CB85C;
+            --bg: #F2F8F2;
+            --text-sec: #5a7a5a;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: var(--bg);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+
+        .reg-wrapper {
+            display: flex;
+            width: 100%;
+            max-width: 960px;
+            background: white;
+            border-radius: 28px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(61, 139, 61, 0.15);
+            min-height: 600px;
+        }
+
+        /* Left panel */
+        .reg-side {
+            flex: 0.9;
+            background: linear-gradient(145deg, #3D8B3D, #1E4D1E);
+            padding: 3rem 2.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            color: white;
+        }
+
+        .reg-side img {
+            max-width: 150px;
+            margin-bottom: 2.5rem;
+            filter: brightness(0) invert(1);
+        }
+
+        .reg-side .role-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 20px;
+            padding: 6px 14px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            width: fit-content;
+        }
+
+        .reg-side h2 {
+            font-size: 1.6rem;
+            font-weight: 800;
+            margin-bottom: 0.75rem;
+            line-height: 1.3;
+        }
+
+        .reg-side p {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            line-height: 1.6;
+        }
+
+        .steps-list {
+            margin-top: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .step-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            font-size: 0.85rem;
+            opacity: 0.85;
+        }
+
+        .step-num {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: 700;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        /* Right panel */
+        .reg-form-panel {
+            flex: 1.1;
+            padding: 2.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            overflow-y: auto;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--text-sec);
+            font-size: 0.85rem;
+            text-decoration: none;
+            margin-bottom: 1.5rem;
+            transition: color 0.2s;
+        }
+
+        .back-link:hover {
+            color: var(--primary);
+        }
+
+        .form-title {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--primary-dark);
+            margin-bottom: 0.3rem;
+        }
+
+        .form-subtitle {
+            font-size: 0.88rem;
+            color: var(--text-sec);
+            margin-bottom: 1.6rem;
+        }
+
+        /* Section divider */
+        .section-divider {
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--text-sec);
+            border-bottom: 1px solid #e0ede0;
+            padding-bottom: 6px;
+            margin: 1.2rem 0 1rem;
+        }
+
+        /* Inputs */
+        .input-group-custom {
+            position: relative;
+            margin-bottom: 0.85rem;
+        }
+
+        .input-group-custom i {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #b2bec3;
+            font-size: 0.9rem;
+        }
+
+        .input-group-custom input {
+            width: 100%;
+            padding: 11px 14px 11px 40px;
+            border: 1.5px solid #c8e6c8;
+            border-radius: 12px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.92rem;
+            color: #2D3436;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .input-group-custom input:focus {
+            border-color: var(--primary);
+        }
+
+        /* File Upload */
+        .upload-area {
+            border: 2px dashed #c8e6c8;
+            border-radius: 14px;
+            padding: 1.2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: 0.85rem;
+            position: relative;
+        }
+
+        .upload-area:hover,
+        .upload-area.drag-over {
+            border-color: var(--primary);
+            background: #f0fdf4;
+        }
+
+        .upload-area input[type="file"] {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+            width: 100%;
+            height: 100%;
+        }
+
+        .upload-area .upload-icon {
+            font-size: 1.6rem;
+            color: var(--primary);
+            margin-bottom: 0.4rem;
+        }
+
+        .upload-area .upload-text {
+            font-size: 0.88rem;
+            color: var(--text-sec);
+        }
+
+        .upload-area .upload-text strong {
+            color: var(--primary);
+        }
+
+        .upload-area .file-info {
+            display: none;
+            align-items: center;
+            gap: 8px;
+            justify-content: center;
+            font-size: 0.85rem;
+            color: var(--primary-dark);
+            font-weight: 600;
+        }
+
+        .upload-area.has-file .upload-default {
+            display: none;
+        }
+
+        .upload-area.has-file .file-info {
+            display: flex;
+        }
+
+        /* Terms */
+        .terms-check {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 1.2rem;
+            margin-top: 0.5rem;
+        }
+
+        .terms-check input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            flex-shrink: 0;
+            margin-top: 2px;
+            accent-color: var(--primary);
+            cursor: pointer;
+        }
+
+        .terms-check label {
+            font-size: 0.88rem;
+            color: #2d3436;
+            font-weight: 500;
+            line-height: 1.5;
+            cursor: pointer;
+        }
+
+        .terms-check label a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        /* Button */
+        .btn-registo {
+            width: 100%;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 13px;
+            border-radius: 12px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-registo:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        .btn-registo:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .error-msg {
+            background: #ffeaea;
+            color: #d63031;
+            border-radius: 10px;
+            padding: 10px 14px;
+            font-size: 0.85rem;
+            margin-top: 0.8rem;
+            display: none;
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 1rem;
+            font-size: 0.85rem;
+            color: var(--text-sec);
+        }
+
+        .login-link a {
+            color: var(--primary);
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        /* Google Maps Places autocomplete override */
+        .pac-container {
+            font-family: 'Outfit', sans-serif;
+            border-radius: 12px;
+            border: 1.5px solid #c8e6c8;
+            box-shadow: 0 8px 24px rgba(61, 139, 61, 0.12);
+            margin-top: 4px;
+            overflow: hidden;
+        }
+
+        .pac-item {
+            padding: 8px 14px;
+            font-size: 0.88rem;
+            cursor: pointer;
+        }
+
+        .pac-item:hover {
+            background: #f0fdf4;
+        }
+
+        .pac-item-query {
+            color: var(--primary-dark);
+            font-weight: 600;
+        }
+
+        /* ── Serviço 24h Toggle ─────────────────────────── */
+        .toggle-24h-wrapper {
+            background: #f6fdf6;
+            border: 1.5px solid #c8e6c8;
+            border-radius: 14px;
+            padding: 14px 16px;
+            margin-bottom: 0.85rem;
+            transition: border-color 0.2s, background 0.2s;
+        }
+
+        .toggle-24h-wrapper.active {
+            border-color: var(--primary);
+            background: #e8f5e8;
+        }
+
+        .toggle-24h-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .toggle-24h-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.92rem;
+            font-weight: 600;
+            color: #2D3436;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .toggle-24h-label i {
+            color: var(--primary);
+            font-size: 1rem;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 46px;
+            height: 24px;
+            flex-shrink: 0;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            inset: 0;
+            background: #ccc;
+            border-radius: 24px;
+            cursor: pointer;
+            transition: background 0.25s;
+        }
+
+        .toggle-slider::before {
+            content: '';
+            position: absolute;
+            left: 3px;
+            top: 3px;
+            width: 18px;
+            height: 18px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.25s;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+
+        input:checked + .toggle-slider {
+            background: var(--primary);
+        }
+
+        input:checked + .toggle-slider::before {
+            transform: translateX(22px);
+        }
+
+        .contacto-24h-field {
+            overflow: hidden;
+            max-height: 0;
+            opacity: 0;
+            transition: max-height 0.35s ease, opacity 0.3s ease, margin-top 0.3s ease;
+            margin-top: 0;
+        }
+
+        .contacto-24h-field.expanded {
+            max-height: 80px;
+            opacity: 1;
+            margin-top: 12px;
+        }
+
+        @media (max-width: 700px) {
+            .reg-side {
+                display: none;
+            }
+
+            .reg-wrapper {
+                max-width: 480px;
+            }
+        }
+    </style>
+    <!-- Nominatim Autocomplete (OpenStreetMap — sem chave de API) -->
+    <script>
+        let nominatimTimeout = null;
+        let nominatimList = null;
+
+        function initClinicaAutocomplete() {
+            const input = document.getElementById('regClinica');
+            if (!input) return;
+
+            // Create dropdown container
+            nominatimList = document.createElement('ul');
+            nominatimList.id = 'nominatimDropdown';
+            nominatimList.style.cssText = 'position:absolute; z-index:9999; background:#fff; border:1.5px solid #c8e6c8; border-radius:12px; box-shadow:0 8px 24px rgba(61,139,61,0.12); list-style:none; padding:6px 0; margin:4px 0 0; width:100%; max-height:220px; overflow-y:auto; display:none;';
+            input.parentElement.style.position = 'relative';
+            input.parentElement.appendChild(nominatimList);
+
+            input.addEventListener('input', () => {
+                clearTimeout(nominatimTimeout);
+                const q = input.value.trim();
+                if (q.length < 3) { nominatimList.style.display = 'none'; return; }
+                nominatimTimeout = setTimeout(() => fetchNominatim(q), 350);
+            });
+
+            input.addEventListener('blur', () => {
+                setTimeout(() => { nominatimList.style.display = 'none'; }, 200);
+            });
+
+            document.getElementById('mapsNotReady').innerHTML =
+                '<i class="fa-solid fa-magnifying-glass" style="color:var(--primary)"></i> Pesquisa o nome ou morada da clínica acima.';
+        }
+
+        async function fetchNominatim(query) {
+            try {
+                const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&addressdetails=1&limit=6&countrycodes=pt,br`;
+                const res = await fetch(url, { headers: { 'Accept-Language': 'pt' } });
+                const results = await res.json();
+
+                nominatimList.innerHTML = '';
+                if (!results.length) { nominatimList.style.display = 'none'; return; }
+
+                results.forEach(r => {
+                    const li = document.createElement('li');
+                    li.style.cssText = 'padding:9px 14px; font-size:.875rem; cursor:pointer; font-family:Outfit,sans-serif; border-bottom:1px solid #f0fdf4; color:#1a2e1a;';
+                    li.textContent = r.display_name;
+                    li.onmousedown = () => {
+                        document.getElementById('regClinica').value = r.display_name;
+                        nominatimList.style.display = 'none';
+                        document.getElementById('mapsNotReady').innerHTML =
+                            '<i class="fa-solid fa-circle-check" style="color:var(--primary)"></i> Localização confirmada.';
+                    };
+                    li.onmouseover = () => li.style.background = '#f0fdf4';
+                    li.onmouseout  = () => li.style.background = '';
+                    nominatimList.appendChild(li);
+                });
+                nominatimList.style.display = 'block';
+            } catch(e) {
+                nominatimList.style.display = 'none';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', initClinicaAutocomplete);
+    </script>
+
+    <!-- Zooni Data (Especialidades & Raças) -->
+    <script src="assets/js/animais_data.js"></script>
+</head>
+
+<body>
+    <div class="reg-wrapper">
+        <!-- Left Side -->
+        <div class="reg-side">
+            <img src="assets/logo.png" alt="Zooni Logo">
+            <div class="role-badge">
+                <i class="fa-solid fa-user-doctor"></i> Veterinário
+            </div>
+            <h2>Junte-se à nossa rede de veterinários.</h2>
+            <p>Preenche os dados e envia a tua documentação. A nossa equipa irá validar o teu registo em breve.</p>
+
+            <div class="steps-list">
+                <div class="step-item">
+                    <div class="step-num">1</div>
+                    <div>Preenche os dados pessoais e a tua cédula profissional (OMV/CRMV).</div>
+                </div>
+                <div class="step-item">
+                    <div class="step-num">2</div>
+                    <div>Faz upload da tua carteira profissional ou documento equivalente.</div>
+                </div>
+                <div class="step-item">
+                    <div class="step-num">3</div>
+                    <div>A nossa equipa analisa e ativa a tua conta. Receberás um email de confirmação.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Side: Form -->
+        <div class="reg-form-panel">
+            <a href="login.html?role=veterinario" class="back-link">
+                <i class="fa-solid fa-arrow-left"></i> Já tenho conta — Entrar
+            </a>
+
+            <div class="form-title">Criar conta de Veterinário</div>
+            <div class="form-subtitle">Todos os campos com * são obrigatórios</div>
+
+            <form id="registoForm">
+                <!-- Dados Pessoais -->
+                <div class="section-divider">Dados Pessoais</div>
+
+                <div class="input-group-custom">
+                    <i class="fa-regular fa-user"></i>
+                    <input type="text" id="regNome" placeholder="Nome completo *" required>
+                </div>
+
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.6rem;">
+                    <div class="input-group-custom" style="margin-bottom:0;">
+                        <i class="fa-regular fa-envelope"></i>
+                        <input type="email" id="regEmail" placeholder="Email *" required autocomplete="email">
+                    </div>
+                    <div class="input-group-custom" style="margin-bottom:0;">
+                        <i class="fa-solid fa-lock"></i>
+                        <input type="password" id="regPassword" placeholder="Password * (mín. 6)" required
+                            autocomplete="new-password">
+                    </div>
+                </div>
+
+                <div style="height:0.85rem;"></div>
+
+                <!-- Dados Profissionais -->
+                <div class="section-divider">Dados Profissionais</div>
+
+                <!-- Row: Cedula + Telefone -->
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.6rem; margin-bottom:0.85rem;">
+                    <div class="input-group-custom" style="margin-bottom:0;">
+                        <i class="fa-solid fa-id-card"></i>
+                        <input type="text" id="regCedula" placeholder="Nº Cédula (OMV / CRMV) *" required>
+                    </div>
+                    <div class="input-group-custom" style="margin-bottom:0;">
+                        <i class="fa-solid fa-phone"></i>
+                        <input type="tel" id="regTelefone" placeholder="Nº Telemovel *" required>
+                    </div>
+                </div>
+
+                <!-- Especialidades (multi-select com chips) -->
+                <div style="margin-bottom:1rem;">
+                    <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+                        <i class="fa-solid fa-stethoscope" style="color:var(--text-sec);"></i>
+                        <span style="font-weight:600; font-size:.9rem;">Especialidades *</span>
+                        <span id="specCount" style="font-size:.78rem; color:var(--text-sec); margin-left:auto;">0 selecionadas</span>
+                    </div>
+                    <div id="specChipsContainer"
+                        style="display:flex; flex-wrap:wrap; gap:7px; padding:10px; border-radius:12px; border:1.5px solid #d1e8d1; background:#fff; min-height:52px;">
+                        <!-- Chips rendered by JS -->
+                    </div>
+                    <input type="hidden" id="regEspecialidade">
+                    <small style="color:var(--text-sec); font-size:.75rem; margin-top:4px; display:block;">Clica nas especialidades que praticas (pós podes selecionar várias).</small>
+                </div>
+
+                <!-- Clínica com Google Maps -->
+                <div class="input-group-custom" style="margin-bottom:0.4rem;">
+                    <i class="fa-solid fa-location-dot"></i>
+                    <input type="text" id="regClinica" placeholder="Clínica / Morada (pesquisa pelo Maps) *"
+                        autocomplete="off" required>
+                </div>
+                <div id="mapsNotReady"
+                    style="font-size:0.75rem; color:var(--text-sec); margin-bottom:0.85rem; padding-left:4px;">
+                    <i class="fa-solid fa-circle-info"></i> Pesquisa a morada da clínica no campo acima.
+                </div>
+
+                <!-- Serviço 24h -->
+                <div class="toggle-24h-wrapper" id="toggle24hWrapper">
+                    <div class="toggle-24h-row">
+                        <label class="toggle-24h-label" for="toggle24h">
+                            <i class="fa-solid fa-clock"></i>
+                            Disponibiliza Serviço de Urgências 24h?
+                        </label>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="toggle24h" onchange="on24hToggle(this)">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="contacto-24h-field" id="contacto24hField">
+                        <div class="input-group-custom" style="margin-bottom:0;">
+                            <i class="fa-solid fa-phone-volume"></i>
+                            <input type="tel" id="regContacto24h" placeholder="Contacto de Emergência (ex: +351 912 345 678)">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Upload de Documento -->
+                <div class="section-divider">Documento Comprovativo</div>
+
+                <div class="upload-area" id="uploadArea">
+                    <input type="file" id="docFile" accept=".pdf,.jpg,.jpeg,.png" onchange="onFileSelected(this)">
+                    <div class="upload-default">
+                        <div class="upload-icon"><i class="fa-solid fa-cloud-arrow-up"></i></div>
+                        <div class="upload-text">
+                            <strong>Clica ou arrasta</strong> para fazer upload<br>
+                            <span style="font-size:0.78rem; opacity:0.7;">PDF, JPG ou PNG — máx. 5 MB</span>
+                        </div>
+                    </div>
+                    <div class="file-info">
+                        <i class="fa-solid fa-file-circle-check" style="color:var(--primary); font-size:1.2rem;"></i>
+                        <span id="fileName">—</span>
+                        <span style="font-size:0.78rem; color:var(--text-sec);" id="fileSize"></span>
+                    </div>
+                </div>
+
+                <!-- Termos -->
+                <div class="terms-check">
+                    <input type="checkbox" id="termsCheck" required>
+                    <label for="termsCheck">
+                        Li e aceito os <a href="#" onclick="return false;">Termos de Serviço</a> e a
+                        <a href="#" onclick="return false;">Política de Privacidade</a> do Zooni.
+                        Confirmo que os dados e documentos submetidos são verdadeiros.
+                    </label>
+                </div>
+
+                <button type="submit" class="btn-registo" id="btnRegisto">
+                    <i class="fa-solid fa-paper-plane"></i> Enviar Pedido de Registo
+                </button>
+            </form>
+
+            <div class="error-msg" id="errorMsg"></div>
+
+            <div class="login-link">
+                Já tens conta? <a href="login.html?role=veterinario">Entrar</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <script>
+        const SUPABASE_URL = 'https://xqtbtggmwejnkhckduti.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhxdGJ0Z2dtd2VqbmtoY2tkdXRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc2OTU5NjEsImV4cCI6MjA4MzI3MTk2MX0.G1wG0UC6sF7r6tMxGdqLGvsHa_dxlVD1-j6QNEw32IM';
+        const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        let selectedFile = null;
+
+        // If already logged in, redirect appropriately
+        sb.auth.getSession().then(async ({ data: { session } }) => {
+            if (session) {
+                const { data: vet } = await sb.from('veterinarios').select('status').eq('user_id', session.user.id).single();
+                if (vet?.status === 'ativo') window.location.href = 'dashboard_veterinario.html';
+                else if (vet) window.location.href = 'pendente_veterinario.html';
+            }
+        });
+
+        function onFileSelected(input) {
+            const file = input.files[0];
+            if (!file) return;
+
+            if (file.size > 5 * 1024 * 1024) {
+                showError('O ficheiro é demasiado grande. O limite é 5 MB.');
+                input.value = '';
+                return;
+            }
+
+            selectedFile = file;
+            const area = document.getElementById('uploadArea');
+            area.classList.add('has-file');
+            document.getElementById('fileName').textContent = file.name;
+            document.getElementById('fileSize').textContent = '(' + (file.size / 1024).toFixed(0) + ' KB)';
+        }
+
+        // Drag & drop
+        const uploadArea = document.getElementById('uploadArea');
+        uploadArea.addEventListener('dragover', e => { e.preventDefault(); uploadArea.classList.add('drag-over'); });
+        uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('drag-over'));
+        uploadArea.addEventListener('drop', e => {
+            e.preventDefault();
+            uploadArea.classList.remove('drag-over');
+            const file = e.dataTransfer.files[0];
+            if (file) {
+                const fileInput = document.getElementById('docFile');
+                const dt = new DataTransfer();
+                dt.items.add(file);
+                fileInput.files = dt.files;
+                onFileSelected(fileInput);
+            }
+        });
+
+        function showError(msg) {
+            const el = document.getElementById('errorMsg');
+            el.textContent = msg;
+            el.style.display = 'block';
+            el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        function hideError() {
+            document.getElementById('errorMsg').style.display = 'none';
+        }
+
+        document.getElementById('registoForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            hideError();
+
+            const btn = document.getElementById('btnRegisto');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> A processar...';
+
+            const nome = document.getElementById('regNome').value.trim();
+            const email = document.getElementById('regEmail').value.trim();
+            const password = document.getElementById('regPassword').value;
+            const cedula = document.getElementById('regCedula').value.trim();
+            const telefone = document.getElementById('regTelefone').value.trim();
+            const especialidade = document.getElementById('regEspecialidade').value.trim();
+            const clinica = document.getElementById('regClinica').value.trim();
+            const termos = document.getElementById('termsCheck').checked;
+            const tem_servico_24h = document.getElementById('toggle24h').checked;
+            const contacto_24h = document.getElementById('regContacto24h').value.trim() || null;
+
+            // Validation
+            if (!nome || !email || !password || !cedula || !telefone || !clinica) {
+                showError('Por favor preenche todos os campos obrigatórios.');
+                btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Enviar Pedido de Registo';
+                return;
+            }
+            if (!especialidade) {
+                showError('Por favor seleciona pelo menos uma especialidade.');
+                btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Enviar Pedido de Registo';
+                return;
+            }
+
+            // Validate 24h contact if toggle is on
+            if (tem_servico_24h && !contacto_24h) {
+                showError('Se disponibilizas urgências 24h, deves indicar o Contacto de Emergência.');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Enviar Pedido de Registo';
+                return;
+            }
+
+            if (password.length < 6) {
+                showError('A password deve ter pelo menos 6 caracteres.');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Enviar Pedido de Registo';
+                return;
+            }
+
+            if (!termos) {
+                showError('Deves aceitar a Política de Privacidade e Termos de Serviço.');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Enviar Pedido de Registo';
+                return;
+            }
+
+            if (!selectedFile) {
+                showError('Por favor anexa o documento comprovativo (Carteira Profissional).');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Enviar Pedido de Registo';
+                return;
+            }
+
+            try {
+                // 1. Upload Document FIRST (before auth, using anon key with public bucket policy)
+                let documento_url = null;
+                if (selectedFile) {
+                    const fileExt = selectedFile.name.split('.').pop();
+                    const fileName = `pendente_${Date.now()}_${Math.random().toString(36).slice(2)}.${fileExt}`;
+
+                    const { data: uploadData, error: uploadError } = await sb.storage
+                        .from('vet-docs')
+                        .upload(fileName, selectedFile, { upsert: false });
+
+                    if (uploadError) {
+                        console.error('Falha de upload detalhada:', JSON.stringify(uploadError));
+                        showError('Erro ao enviar documento: ' + (uploadError.message || 'Verifica as permissões do bucket "vet-docs" no Supabase Storage.'));
+                        btn.disabled = false;
+                        btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Enviar Pedido de Registo';
+                        return;
+                    }
+
+                    const { data: publicUrlData } = sb.storage.from('vet-docs').getPublicUrl(fileName);
+                    documento_url = publicUrlData.publicUrl;
+                }
+
+                // 2. Create auth user
+                const { data: authData, error: authError } = await sb.auth.signUp({ email, password });
+
+                if (authError) {
+                    if (authError.message.toLowerCase().includes('already')) {
+                        showError('Este email já está registado. Se já tens conta, faz login.');
+                    } else {
+                        showError('Erro ao criar conta: ' + authError.message);
+                    }
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Enviar Pedido de Registo';
+                    return;
+                }
+
+                const userId = authData.user?.id;
+                if (!userId) {
+                    showError('Erro inesperado ao obter ID do utilizador. Tenta novamente.');
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Enviar Pedido de Registo';
+                    return;
+                }
+
+                // 3. Create profile in veterinarios table (id is auto-generated bigint — do NOT include it)
+                const { error: dbError } = await sb.from('veterinarios').insert([{
+                    user_id: userId,
+                    nome,
+                    email,
+                    telefone,
+                    especialidade,
+                    clinica,
+                    cedula_profissional: cedula,
+                    documento_url,
+                    status: 'pendente',
+                    tem_servico_24h,
+                    contacto_24h
+                }]);
+
+                if (dbError) {
+                    console.error('DB error:', dbError);
+                    showError('Erro ao guardar perfil: ' + dbError.message);
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Enviar Pedido de Registo';
+                    return;
+                }
+
+                // 4. Redirect to pending screen
+                window.location.href = 'pendente_veterinario.html';
+
+            } catch (err) {
+                showError('Erro inesperado. Tenta novamente.');
+                console.error(err);
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Enviar Pedido de Registo';
+            }
+        });
+
+        function on24hToggle(checkbox) {
+            const field = document.getElementById('contacto24hField');
+            const wrapper = document.getElementById('toggle24hWrapper');
+            const input = document.getElementById('regContacto24h');
+
+            if (checkbox.checked) {
+                field.classList.add('expanded');
+                wrapper.classList.add('active');
+                input.required = true;
+            } else {
+                field.classList.remove('expanded');
+                wrapper.classList.remove('active');
+                input.required = false;
+                input.value = '';
+            }
+        }
+    </script>
+
+    <script>
+        // Init Especialidades chips from ZooniData
+        document.addEventListener('DOMContentLoaded', () => {
+            const container = document.getElementById('specChipsContainer');
+            const hiddenInput = document.getElementById('regEspecialidade');
+            const countEl = document.getElementById('specCount');
+            const selected = new Set();
+
+            if (!container || typeof ZooniData === 'undefined') return;
+
+            ZooniData.especialidades.forEach(esp => {
+                const chip = document.createElement('span');
+                chip.textContent = esp;
+                chip.style.cssText = 'display:inline-flex; align-items:center; padding:5px 13px; border-radius:20px; border:1.5px solid #c8e6c8; font-size:.82rem; font-weight:600; cursor:pointer; transition:all .18s; background:#fff; color:#3D8B3D; user-select:none;';
+                chip.title = esp;
+
+                chip.addEventListener('click', () => {
+                    if (selected.has(esp)) {
+                        selected.delete(esp);
+                        chip.style.background = '#fff';
+                        chip.style.color = '#3D8B3D';
+                        chip.style.borderColor = '#c8e6c8';
+                    } else {
+                        selected.add(esp);
+                        chip.style.background = '#3D8B3D';
+                        chip.style.color = '#fff';
+                        chip.style.borderColor = '#3D8B3D';
+                    }
+                    hiddenInput.value = [...selected].join(', ');
+                    countEl.textContent = selected.size + ' selecionada' + (selected.size !== 1 ? 's' : '');
+                });
+
+                container.appendChild(chip);
+            });
+        });
+    </script>
+</body>
+
+</html>
+

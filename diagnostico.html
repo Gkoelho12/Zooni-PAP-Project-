@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <title>Zooni — Diagnóstico</title>
+    <style>
+        body { font-family: monospace; padding: 20px; background: #111; color: #0f0; }
+        .ok { color: #0f0; } .err { color: #f55; } .warn { color: #fa0; }
+        .box { background: #1a1a1a; border: 1px solid #333; padding: 12px; margin: 10px 0; border-radius: 6px; }
+        h2 { color: #fff; border-bottom: 1px solid #333; padding-bottom: 8px; }
+        pre { white-space: pre-wrap; word-break: break-all; margin: 0; }
+        button { background: #3D8B3D; color: #fff; border: none; padding: 8px 16px; cursor: pointer; border-radius: 4px; margin: 4px; }
+    </style>
+</head>
+<body>
+<h2>🔬 Zooni — Diagnóstico de Conexão</h2>
+<div id="log"></div>
+
+<div style="margin-top:20px;">
+    <button onclick="runDiagnostic()">▶ Executar Diagnóstico</button>
+    <button onclick="clearSession()">🗑 Limpar Sessão</button>
+    <button onclick="window.location.href='login.html'">← Voltar ao Login</button>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<script>
+const SUPABASE_URL = 'https://xqtbtggmwejnkhckduti.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhxdGJ0Z2dtd2VqbmtoY2tkdXRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc2OTU5NjEsImV4cCI6MjA4MzI3MTk2MX0.G1wG0UC6sF7r6tMxGdqLGvsHa_dxlVD1-j6QNEw32IM';
+const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+function log(msg, type='ok') {
+    const d = document.getElementById('log');
+    const ts = new Date().toLocaleTimeString();
+    d.innerHTML += `<div class="box ${type}"><pre>[${ts}] ${msg}</pre></div>`;
+}
+
+async function clearSession() {
+    localStorage.removeItem('zooni-remember');
+    await db.auth.signOut();
+    log('✅ Sessão limpa. Redireciona para login...', 'ok');
+    setTimeout(() => window.location.href = 'login.html?logout=1', 1500);
+}
+
+async function runDiagnostic() {
+    document.getElementById('log').innerHTML = '';
+    log('🔌 A testar conexão ao Supabase...', 'ok');
+
+    // 1. Test basic connectivity
+    const { data: pingData, error: pingErr } = await db.from('clientes').select('id').limit(1);
+    if (pingErr) {
+        log('❌ FALHA NA CONEXÃO: ' + JSON.stringify(pingErr), 'err');
+        log('   Verifica se o Supabase URL e KEY estão correctos.', 'err');
+        return;
+    }
+    log('✅ Conexão ao Supabase OK', 'ok');
+
+    // 2. Check session
+    log('🔑 A verificar sessão activa...', 'ok');
+    let { data: { session } } = await db.auth.getSession();
+    if (!session) {
+        const { data: refreshed } = await db.auth.refreshSession();
+        session = refreshed?.session;
+    }
+
+    if (!session) {
+        log('⚠️ NENHUMA SESSÃO ACTIVA — O utilizador não está autenticado!', 'warn');
+        log('   → Vai ao login e entra com as credenciais da conta.', 'warn');
+        return;
+    }
+
+    log(`✅ Sessão activa:\n   Auth User ID: ${session.user.id}\n   Email: ${session.user.email}`, 'ok');
+
+    // 3. Check clientes table
+    log('👤 A procurar perfil na tabela clientes...', 'ok');
+    const { data: cliente, error: clienteErr } = await db
+        .from('clientes')
+        .select('*')
+        .eq('user_id', session.user.id)
+        .single();
+
+    if (clienteErr) {
+        log('❌ ERRO ao buscar cliente: ' + JSON.stringify(clienteErr), 'err');
+        if (clienteErr.code === 'PGRST116') {
+            log('   → Nenhum registo encontrado na tabela "clientes" para este user_id!\n   → O utilizador existe no Auth mas não tem perfil na BD.', 'err');
+        }
+    } else {
+        log(`✅ Perfil encontrado:\n   ID interno: ${cliente.id}\n   Nome: ${cliente.nome}\n   Email: ${cliente.email}`, 'ok');
+
+        // 4. Check animals
+        log(`🐾 A procurar animais com id_dono = ${cliente.id}...`, 'ok');
+        const { data: animais, error: animaisErr } = await db
+            .from('animais')
+            .select('id, nome, tipo_animal')
+            .eq('id_dono', cliente.id);
+
+        if (animaisErr) {
+            log('❌ ERRO ao buscar animais: ' + JSON.stringify(animaisErr), 'err');
+            if (animaisErr.message?.includes('RLS') || animaisErr.code === '42501') {
+                log('   → PROBLEMA DE PERMISSÕES (RLS)! A tabela "animais" não permite leitura.', 'err');
+            }
+        } else if (!animais || animais.length === 0) {
+            log('⚠️ Nenhum animal encontrado para este dono.\n   → O utilizador não tem animais registados.', 'warn');
+        } else {
+            log(`✅ ${animais.length} animal(is) encontrado(s):\n${animais.map(a => `   • ${a.nome} (${a.tipo_animal})`).join('\n')}`, 'ok');
+        }
+
+        // 5. Check tickets
+        log(`🎫 A procurar tickets com id_dono = ${cliente.id}...`, 'ok');
+        const { data: tickets, error: ticketsErr } = await db
+            .from('tickets')
+            .select('id, motivo, estado')
+            .eq('id_dono', cliente.id);
+
+        if (ticketsErr) {
+            log('❌ ERRO ao buscar tickets: ' + JSON.stringify(ticketsErr), 'err');
+        } else if (!tickets || tickets.length === 0) {
+            log('⚠️ Nenhum ticket encontrado para este dono.', 'warn');
+        } else {
+            log(`✅ ${tickets.length} ticket(s) encontrado(s):\n${tickets.map(t => `   • [${t.estado}] ${t.motivo}`).join('\n')}`, 'ok');
+        }
+    }
+
+    // 6. Check localStorage
+    log('💾 Estado do localStorage:', 'ok');
+    log(`   zooni-remember: ${localStorage.getItem('zooni-remember') ?? 'não definido'}\n   zooni-theme: ${localStorage.getItem('zooni-theme') ?? 'não definido'}`, 'ok');
+
+    log('🏁 Diagnóstico concluído!', 'ok');
+}
+
+// Auto-run on load
+runDiagnostic();
+</script>
+</body>
+</html>

@@ -1,0 +1,2210 @@
+<!DOCTYPE html>
+<html lang="pt">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minha Agenda - Zooni</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- FullCalendar CSS -->
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
+    <script src="assets/js/i18n.js"></script>
+    <script src="assets/js/theme.js"></script>
+    <link rel="stylesheet" href="assets/css/theme.css">
+
+    <style>
+        :root {
+            --primary: #3D8B3D;
+            --primary-dark: #1E4D1E;
+            --primary-light: #5CB85C;
+            --bg-color: #F2F8F2;
+            --text-main: #1a2e1a;
+            --text-sec: #5a7a5a;
+            --card-bg: #ffffff;
+            --border-color: #e8f0e8;
+            --lavender: #81C784;
+            --mint: #00B894;
+            --orange: #FF7675;
+            --danger: #d63031;
+
+            /* Zooni Event Colors (Adapted to Dashboard theme) */
+            --event-vacina: var(--danger);
+            --event-desparasitacao: var(--orange);
+            --event-consulta: #0984e3;
+            --event-medicacao: var(--mint);
+            --event-rotina: var(--primary-light);
+        }
+
+        [data-theme="dark"] {
+            /* Fundo Principal */
+            --bg-color: #121212;
+            /* Textos */
+            --text-main: #E4E4E7;
+            --text-sec: #A1A1AA;
+            /* Fundos de Cartões e Janelas */
+            --card-bg: #242424;
+            --card-hover: #333333;
+            /* Bordas */
+            --border-color: rgba(255, 255, 255, 0.1);
+            --border: rgba(255, 255, 255, 0.1);
+            /* Inputs */
+            --input-bg: #09090B;
+            --input-border: #52525B;
+            /* Cores de Destaque Desaturadas para Dark Mode */
+            --primary: #34D399;
+            /* Zooni Green suave */
+            --danger: #F87171;
+            /* Vermelho suave */
+        }
+
+        [data-theme="dark"] body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+        }
+
+        [data-theme="dark"] .card-panel,
+        [data-theme="dark"] .pet-card,
+        [data-theme="dark"] .pet-card-wide,
+        [data-theme="dark"] .ticket-item,
+        [data-theme="dark"] .glass-card,
+        [data-theme="dark"] .settings-card,
+        [data-theme="dark"] .settings-nav,
+        [data-theme="dark"] .checklist-panel {
+            background-color: var(--card-bg) !important;
+            border-color: var(--border-color) !important;
+            color: var(--text-main) !important;
+        }
+
+        [data-theme="dark"] .bg-white,
+        [data-theme="dark"] .bg-light {
+            background-color: var(--card-bg) !important;
+        }
+
+        [data-theme="dark"] .text-dark,
+        [data-theme="dark"] .text-muted,
+        [data-theme="dark"] small,
+        [data-theme="dark"] .text-secondary {
+            color: var(--text-sec) !important;
+        }
+
+        /* Formulários / Inputs */
+        [data-theme="dark"] .form-control,
+        [data-theme="dark"] .form-select,
+        [data-theme="dark"] input:not([type="checkbox"]):not([type="radio"]),
+        [data-theme="dark"] textarea,
+        [data-theme="dark"] .input-group-text,
+        [data-theme="dark"] select {
+            background-color: var(--input-bg) !important;
+            color: var(--text-main) !important;
+            border: 1px solid var(--input-border) !important;
+        }
+
+        [data-theme="dark"] .form-control:focus,
+        [data-theme="dark"] .form-select:focus,
+        [data-theme="dark"] textarea:focus {
+            border-color: var(--primary) !important;
+            box-shadow: 0 0 0 0.25rem rgba(52, 211, 153, 0.25) !important;
+        }
+
+        [data-theme="dark"] input::placeholder,
+        [data-theme="dark"] textarea::placeholder,
+        [data-theme="dark"] .form-control::placeholder {
+            color: var(--text-sec) !important;
+            opacity: 1;
+        }
+
+        [data-theme="dark"] label,
+        [data-theme="dark"] .form-label {
+            color: var(--text-main) !important;
+        }
+
+        /* Dropdowns & Menus Suspensos / Notificações / Modal */
+        [data-theme="dark"] .dropdown-menu,
+        [data-theme="dark"] .notification-dropdown,
+        [data-theme="dark"] .modal-content,
+        [data-theme="dark"] .profile-dropdown {
+            background-color: var(--card-bg) !important;
+            border: 1px solid #333 !important;
+            box-shadow: none !important;
+            color: var(--text-main) !important;
+        }
+
+        [data-theme="dark"] .dropdown-item {
+            color: var(--text-main);
+        }
+
+        [data-theme="dark"] .dropdown-item:hover {
+            background-color: var(--card-hover);
+            color: white;
+        }
+
+        [data-theme="dark"] .notification-item {
+            border-color: var(--border-color);
+        }
+
+        [data-theme="dark"] .notification-item:hover {
+            background-color: var(--card-hover);
+        }
+
+        [data-theme="dark"] .notification-item.unread {
+            background-color: rgba(52, 211, 153, 0.05);
+            border-left-color: var(--primary);
+        }
+
+        /* Toggles / Switches (Definições) */
+        [data-theme="dark"] .form-check-input[type="checkbox"][role="switch"] {
+            background-color: #3F3F46 !important;
+            border-color: #3F3F46 !important;
+        }
+
+        [data-theme="dark"] .form-check-input[type="checkbox"][role="switch"]:checked {
+            background-color: var(--primary) !important;
+            border-color: var(--primary) !important;
+        }
+
+        /* Settings specific nav */
+        [data-theme="dark"] .settings-nav-item {
+            color: var(--text-sec);
+        }
+
+        [data-theme="dark"] .settings-nav-item.active {
+            color: var(--primary);
+        }
+
+        [data-theme="dark"] .settings-nav-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-main);
+        }
+
+        /* Fullcalendar overrides (Agenda) */
+        [data-theme="dark"] .fc {
+            color: var(--text-main);
+        }
+
+        [data-theme="dark"] .fc table,
+        [data-theme="dark"] .fc th,
+        [data-theme="dark"] .fc td {
+            border-color: var(--border-color);
+            background-color: var(--card-bg);
+        }
+
+        [data-theme="dark"] .fc-toolbar-title,
+        [data-theme="dark"] .fc-col-header-cell-cushion,
+        [data-theme="dark"] .fc-daygrid-day-number {
+            color: var(--text-main);
+        }
+
+        [data-theme="dark"] .fc-button {
+            background-color: var(--primary);
+            border-color: rgba(255, 255, 255, 0.1);
+            color: #121212 !important;
+        }
+
+        [data-theme="dark"] .fc-day-today {
+            background-color: rgba(52, 211, 153, 0.1) !important;
+        }
+
+        /* Bordas genéricas e Diversos */
+        [data-theme="dark"] .border,
+        [data-theme="dark"] .border-bottom,
+        [data-theme="dark"] .border-top {
+            border-color: var(--border-color) !important;
+        }
+
+        [data-theme="dark"] .header-area,
+        [data-theme="dark"] .alert {
+            background-color: transparent !important;
+            color: var(--text-main) !important;
+        }
+
+        [data-theme="dark"] .shadow-sm,
+        [data-theme="dark"] .shadow {
+            box-shadow: none !important;
+        }
+
+        [data-theme="dark"] .rounded.border {
+            background-color: var(--card-bg);
+        }
+
+        [data-theme="dark"] .filter-pill {
+            background-color: var(--card-bg);
+            color: var(--text-sec);
+            border-color: var(--border-color);
+        }
+
+        [data-theme="dark"] .filter-pill.active {
+            background-color: var(--primary);
+            color: #121212;
+        }
+
+        [data-theme="dark"] .status-badge {
+            background-color: rgba(255, 255, 255, 0.08);
+        }
+
+        body {
+            background-color: var(--bg-color);
+            font-family: 'Outfit', sans-serif;
+            color: var(--text-main);
+            overflow-x: hidden;
+        }
+
+        /* Layout */
+        .app-container {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            min-height: 100vh;
+        }
+
+        /* ── SIDEBAR STYLES (DONO) ── */
+        .sidebar {
+            background-color: var(--primary);
+            color: white;
+            padding: 2rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+        }
+
+        .logo-container {
+            margin-bottom: 3rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .logo-img-sidebar {
+            max-width: 180px;
+            filter: brightness(0) invert(1);
+        }
+
+        .nav-links {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            flex-grow: 1;
+        }
+
+        .nav-item {
+            margin: 0;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 15px;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            border-radius: 12px;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        .nav-link.active {
+            border-left: 4px solid #fff;
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        .nav-link i {
+            width: 24px;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+
+        .nav-link.text-danger {
+            color: #ff6b6b !important;
+        }
+
+        .nav-link.text-danger:hover {
+            background-color: rgba(255, 107, 107, 0.15);
+            color: #ff6b6b !important;
+        }
+
+        .nav-line-break {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin: 15px 0;
+        }
+
+        .btn-sidebar-cta {
+            background-color: white;
+            color: var(--primary);
+            border: none;
+            border-radius: 12px;
+            padding: 12px;
+            font-weight: 700;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            transition: transform 0.2s;
+            cursor: pointer;
+        }
+
+        .btn-sidebar-cta:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 2.5rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* Header Area */
+        .header-area {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .profile-dropdown {
+            width: 280px;
+            border-radius: 16px;
+            padding: 0;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border: 1px solid #f1f2f6;
+            margin-top: 10px;
+        }
+
+        .profile-pic {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Layout Grid */
+        .agenda-layout {
+            display: block;
+        }
+
+        /* Cards */
+        .glass-card {
+            background: white;
+            border-radius: 24px;
+            padding: 1.5rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+        }
+
+        /* FullCalendar Customization */
+        .fc {
+            font-family: var(--font-family);
+        }
+
+        .fc-theme-standard td,
+        .fc-theme-standard th,
+        .fc-theme-standard .fc-scrollgrid {
+            border-color: #f1f2f6;
+        }
+
+        .fc .fc-toolbar-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        .fc .fc-button-primary {
+            background-color: white;
+            color: var(--dark);
+            border: 1px solid #dfe6e9;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
+            text-transform: capitalize;
+        }
+
+        .fc .fc-button-primary:hover {
+            background-color: #f8f9fa;
+            color: var(--primary);
+            border-color: #dfe6e9;
+        }
+
+        .fc .fc-button-primary:not(:disabled).fc-button-active,
+        .fc .fc-button-primary:not(:disabled):active {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .fc-event {
+            border: none;
+            cursor: pointer;
+            color: #ffffff !important;
+        }
+
+        .fc-daygrid-event {
+            border-radius: 4px !important;
+            padding: 3px 4px !important;
+            font-weight: 500;
+            font-size: 0.75rem !important;
+            line-height: 1.3 !important;
+            white-space: nowrap !important;
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
+            display: block !important;
+        }
+
+        .fc-timegrid-event {
+            border-radius: 4px !important;
+            font-weight: 500;
+            font-size: 0.75rem !important;
+        }
+
+        .fc-event-main {
+            color: #ffffff !important;
+        }
+
+        /* Timeline List */
+        .timeline-header {
+            font-weight: 800;
+            font-size: 1.25rem;
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: var(--text-main);
+        }
+
+        .btn-add-event {
+            background-color: #0d6efd;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            padding: 8px 24px;
+            font-weight: 600;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            line-height: 1.2;
+            transition: all 0.2s;
+            box-shadow: 0 4px 10px rgba(13, 110, 253, 0.3);
+            text-decoration: none;
+        }
+
+        .btn-add-event:hover {
+            background-color: #0b5ed7;
+            transform: translateY(-2px);
+            color: white;
+        }
+
+        .btn-add-event i {
+            font-size: 1rem;
+            margin-bottom: 2px;
+        }
+
+        .timeline-item {
+            display: flex;
+            padding: 1rem;
+            border-radius: 16px;
+            background: #fff;
+            border: 1px solid #f1f2f6;
+            margin-bottom: 12px;
+            transition: all 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .timeline-item:hover {
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.03);
+            transform: translateY(-2px);
+        }
+
+        .timeline-item.done {
+            opacity: 0.6;
+        }
+
+        .timeline-item.done .timeline-title {
+            text-decoration: line-through;
+        }
+
+        .timeline-color-strip {
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 5px;
+        }
+
+        .timeline-content {
+            flex-grow: 1;
+            padding-left: 10px;
+        }
+
+        .timeline-title {
+            font-weight: 700;
+            font-size: 0.95rem;
+            margin-bottom: 4px;
+            color: var(--dark);
+        }
+
+        .timeline-meta {
+            font-size: 0.8rem;
+            color: #636e72;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .pet-mini-avatar {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        /* Filter Pills */
+        .filter-pill {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: 1px solid #dfe6e9;
+            background: white;
+            color: var(--dark);
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .filter-pill.active {
+            background: #f1f2f6;
+            border-color: transparent;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        /* Checkbox styling */
+        .custom-check {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 2px solid #dfe6e9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: white;
+        }
+
+        .custom-check i {
+            display: none;
+            color: white;
+            font-size: 0.75rem;
+        }
+
+        .custom-check.checked {
+            background: var(--success);
+            border-color: var(--success);
+        }
+
+        .custom-check.checked i {
+            display: block;
+        }
+
+        .custom-check.late {
+            border-color: var(--danger);
+            background: #fff0f0;
+        }
+
+        /* Responsive */
+        @media (max-width: 991px) {
+            .agenda-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                position: fixed !important;
+                top: 0;
+                left: 0;
+                bottom: 0;
+                width: 260px !important;
+                background: white;
+                transform: translateX(-100%);
+                transition: transform 0.3s ease-in-out;
+                z-index: 1050 !important;
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 1rem;
+            }
+
+            .header-area {
+                padding: 1rem 0;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+
+            .user-profile {
+                position: absolute;
+                right: 0;
+                top: 1rem;
+            }
+
+            .filter-pill {
+                margin-bottom: 8px;
+            }
+        }
+
+        /* Ticket Evidence Upload Styling & Modals */
+        .evidence-upload-container {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .evidence-btn {
+            flex: 1;
+            padding: 15px;
+            border-radius: 12px;
+            border: 2px dashed #dfe6e9;
+            background: #FAFAFB;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: var(--text-sec);
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .evidence-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: rgba(108, 92, 231, 0.05);
+        }
+
+        .pet-select-item {
+            cursor: pointer;
+            border: 2px solid transparent;
+            border-radius: 12px;
+            padding: 10px;
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+        .pet-select-item:hover {
+            background: rgba(108, 92, 231, 0.05);
+        }
+
+        .pet-select-item.selected {
+            border-color: var(--primary);
+            background: rgba(61, 139, 61, 0.1);
+        }
+
+        .pet-select-img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 5px;
+        }
+
+        .pet-select-emoji {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #f1f2f6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 5px auto;
+            font-size: 1.5rem;
+        }
+
+        .btn-primary-modal {
+            background: var(--primary);
+            color: white;
+            border: none;
+            width: 100%;
+            border-radius: 10px;
+            padding: 10px;
+            font-weight: 600;
+        }
+    </style>
+    <!-- i18n -->
+    <script src="assets/js/i18n.js"></script>
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="logo-container d-flex justify-content-between align-items-center w-100">
+                <img src="assets/logo.png" alt="Zooni Logo" class="logo-img-sidebar">
+                <button class="btn text-white d-md-none fs-4 p-0" onclick="document.querySelector('.sidebar').classList.remove('active')" style="background:transparent; border:none;">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <ul class="nav-links">
+                <li class="nav-item">
+                    <a href="dashboard_dono.html" class="nav-link "><i class="fa-solid fa-house"></i> <span
+                            data-i18n="nav_home">Início</span></a>
+                </li>
+                <li class="nav-item">
+                    <a href="meus_animais.html" class="nav-link "><i class="fa-solid fa-dog"></i> <span
+                            data-i18n="nav_animals">Os Meus Animais</span></a>
+                </li>
+                <li class="nav-item">
+                    <a href="agenda_dono.html" class="nav-link active"><i class="fa-solid fa-calendar"></i> <span
+                            data-i18n="nav_calendar">Calendário</span></a>
+                </li>
+                <li class="nav-item">
+                    <a href="chat_dono.html" class="nav-link "><i class="fa-solid fa-comments"></i> <span
+                            data-i18n="nav_chat">Chat da Clínica</span></a>
+                </li>
+                <li class="nav-item">
+                    <a href="veterinarios.html" class="nav-link "><i class="fa-solid fa-user-doctor"></i>
+                        <span>Veterinários</span></a>
+                </li>
+            </ul>
+
+            <div class="nav-line-break"></div>
+            <a href="definicoes_dono.html" class="nav-link "><i class="fa-solid fa-gear"></i> <span
+                    data-i18n="nav_settings">Configurações</span></a>
+            <a href="index.html" class="nav-link text-danger"><i class="fa-solid fa-arrow-right-from-bracket"></i> <span
+                    data-i18n="nav_logout">Sair</span></a>
+
+            <button class="btn-sidebar-cta mt-auto" data-bs-toggle="modal" data-bs-target="#novoTicketModal">
+                <i class="fa-solid fa-plus"></i> <span data-i18n="nav_new_ticket">Novo Pedido</span>
+            </button>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="main-content">
+            <!-- Header -->
+            <div class="header-area">
+                <div class="d-flex align-items-center gap-3">
+                    <button class="btn btn-light d-md-none"
+                        onclick="document.querySelector('.sidebar').classList.toggle('active')"><i
+                            class="fa-solid fa-bars"></i></button>
+                    <div>
+                        <h2 class="fw-bold mb-1" data-i18n="agenda_title">A Nossa Agenda 📅</h2>
+                        <p class="text-secondary m-0" data-i18n="agenda_subtitle">Organize vacinas, desparasitações e
+                            rotinas sem esquecimentos.</p>
+                    </div>
+                </div>
+                <div class="user-profile">
+                    <!-- Profile Dropdown -->
+                    <div class="dropdown">
+                        <img src="https://ui-avatars.com/api/?name=User&background=6C5CE7&color=fff" alt="Profile"
+                            class="profile-pic" id="headerProfilePic" data-bs-toggle="dropdown" aria-expanded="false"
+                            style="cursor: pointer;">
+
+                        <div class="dropdown-menu dropdown-menu-end profile-dropdown">
+                            <!-- Header -->
+                            <div class="p-3 border-bottom text-center bg-light" style="border-radius: 16px 16px 0 0;">
+                                <h6 class="mb-0 fw-bold text-dark" id="dropdownUserName">Carregando...</h6>
+                                <span class="badge bg-secondary mb-1">Tutor</span>
+                                <div class="small text-muted" id="dropdownUserEmail" style="font-size: 0.75rem;">
+                                    carregando...</div>
+                            </div>
+
+                            <!-- Actons -->
+                            <div class="p-2">
+                                <a class="dropdown-item py-2" href="definicoes_dono.html">
+                                    <i class="fa-regular fa-user me-2 text-primary"></i> O Meu Perfil
+                                </a>
+                                <a class="dropdown-item py-2" href="meus_animais.html">
+                                    <i class="fa-solid fa-paw me-2 text-primary"></i> Gerir Animais
+                                </a>
+                                <a class="dropdown-item py-2" href="#">
+                                    <i class="fa-regular fa-credit-card me-2 text-primary"></i> Pagamentos / Faturação
+                                </a>
+                                <a class="dropdown-item py-2" href="#">
+                                    <i class="fa-solid fa-gear me-2 text-primary"></i> <span
+                                        data-i18n="common_settings">Definições</span>
+                                </a>
+                            </div>
+
+                            <!-- Help & Logout -->
+                            <div class="p-2 border-top">
+                                <a class="dropdown-item py-2" href="#">
+                                    <i class="fa-regular fa-circle-question me-2 text-muted"></i> <span
+                                        data-i18n="common_help">Ajuda / Suporte</span>
+                                </a>
+                                <a class="dropdown-item py-2 text-danger" href="#"
+                                    onclick="supabaseClient.auth.signOut().then(() => window.location.href='login.html');">
+                                    <i class="fa-solid fa-arrow-right-from-bracket me-2"></i> <span
+                                        data-i18n="common_sign_out">Terminar Sessão</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filters & Actions -->
+            <div class="mb-4 d-flex flex-wrap align-items-center justify-content-between gap-2">
+                <div class="d-flex flex-wrap gap-2">
+                    <div class="filter-pill active" onclick="toggleFilter(this, 'all')" data-i18n="agenda_filter_all">
+                        Todas</div>
+                    <div class="filter-pill" onclick="toggleFilter(this, 'vacina')"><span class="dot"
+                            style="background:var(--event-vacina);"></span> <span
+                            data-i18n="agenda_filter_vaccines">Vacinas</span></div>
+                    <div class="filter-pill" onclick="toggleFilter(this, 'desparasitacao')"><span class="dot"
+                            style="background:var(--event-desparasitacao);"></span> <span
+                            data-i18n="agenda_filter_deworming">Desparasitação</span></div>
+                    <div class="filter-pill" onclick="toggleFilter(this, 'medicacao')"><span class="dot"
+                            style="background:var(--event-medicacao);"></span> <span
+                            data-i18n="agenda_filter_medication">Medicação</span></div>
+                    <div class="filter-pill" onclick="toggleFilter(this, 'consulta')"><span class="dot"
+                            style="background:var(--event-consulta);"></span> <span
+                            data-i18n="agenda_filter_appointments">Consultas / Tickets</span></div>
+                    <div class="filter-pill" onclick="toggleFilter(this, 'rotina')"><span class="dot"
+                            style="background:var(--event-rotina);"></span> <span
+                            data-i18n="agenda_filter_routine">Rotina</span></div>
+                </div>
+
+                <button class="btn btn-primary rounded-pill px-4 fw-bold shadow-sm" data-bs-toggle="modal"
+                    data-bs-target="#eventModal">
+                    <i class="fa-solid fa-plus me-1"></i> <span data-i18n="agenda_add_event">Adicionar Evento</span>
+                </button>
+            </div>
+
+            <!-- Main Layout -->
+            <div class="agenda-layout">
+                <!-- Left: FullCalendar -->
+                <div class="glass-card">
+                    <div id="calendar"></div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- MODAL: ADD/EDIT EVENT -->
+    <div class="modal fade" id="eventModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 rounded-4 shadow-lg">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold" data-i18n="modal_event_title">Criar Evento Saude</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <form id="eventForm">
+                        <input type="hidden" id="eventId">
+
+                        <div class="mb-3">
+                            <label class="small text-muted fw-bold" data-i18n="modal_event_which_pet">Para qual
+                                Pet?</label>
+                            <select class="form-select form-select-lg" id="eventPet" required>
+                                <option value="" data-i18n="modal_loading_pets">A carregar pets...</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="small text-muted fw-bold" data-i18n="modal_event_type">Tipo de Evento</label>
+                            <select class="form-select" id="eventType" required>
+                                <option value="vacina" data-i18n="event_type_vaccine">🔴 Vacina (Urgente)</option>
+                                <option value="desparasitacao" data-i18n="event_type_deworming">🟠 Desparasitação
+                                    (Atenção)</option>
+                                <option value="medicacao" data-i18n="event_type_medication">🟢 Medicação (Tratamento)
+                                </option>
+                                <option value="rotina" data-i18n="event_type_routine">🟣 Rotina / Banhos</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="small text-muted fw-bold" data-i18n="modal_event_name">Título do
+                                Evento</label>
+                            <input type="text" class="form-control" id="eventTitle"
+                                data-i18n-placeholder="modal_event_name_ph"
+                                placeholder="Ex: Vacina da Raiva, Bravecto..." required>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-6">
+                                <label class="small text-muted fw-bold" data-i18n="modal_event_start_date">Data de
+                                    Início</label>
+                                <input type="date" class="form-control" id="eventDate" required>
+                            </div>
+                            <div class="col-6">
+                                <label class="small text-muted fw-bold" data-i18n="modal_event_time">Hora
+                                    (Opcional)</label>
+                                <input type="time" class="form-control" id="eventTime">
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="small text-muted fw-bold" data-i18n="modal_event_recurrence">Repetição
+                                Automática</label>
+                            <select class="form-select" id="eventRecurrence">
+                                <option value="" data-i18n="recurrence_none">Apenas uma vez (Não repete)</option>
+                                <option value="daily" data-i18n="recurrence_daily">Repetir todos os dias</option>
+                                <option value="weekly" data-i18n="recurrence_weekly">Repetir todas as semanas</option>
+                                <option value="monthly" data-i18n="recurrence_monthly">Repetir a cada mês (ex:
+                                    desparasitante)</option>
+                                <option value="yearly" data-i18n="recurrence_yearly">Repetir todos os anos (ex: vacinas
+                                    anuais)</option>
+                            </select>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100 rounded-pill py-2 fw-bold shadow-sm"
+                            id="btnSaveEvent" data-i18n="btn_save_event">
+                            Guardar na Agenda
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: EVENT DETAILS -->
+    <div class="modal fade" id="eventDetailsModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 rounded-4 shadow-lg">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold" id="detailModalTitle">Detalhes da Marcação</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <input type="hidden" id="detailModalEventId">
+                    <div class="mb-3" id="detailVetRow">
+                        <label class="small text-muted fw-bold">Veterinário</label>
+                        <div id="detailModalVet" class="fw-bold fs-6 text-dark"><i
+                                class="fa-solid fa-user-doctor text-primary me-2"></i><span></span></div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="small text-muted fw-bold">Animal</label>
+                        <div id="detailModalPet" class="fw-bold fs-5"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="small text-muted fw-bold">Data e Hora</label>
+                        <div id="detailModalDate" class="text-dark"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="small text-muted fw-bold">Repetição</label>
+                        <div id="detailModalRecurrence" class="text-dark small"></div>
+                    </div>
+                    <div class="mb-4">
+                        <label class="small text-muted fw-bold">Estado</label>
+                        <div id="detailModalStatus" class="fw-bold text-primary"></div>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-outline-primary flex-fill rounded-pill py-2 fw-bold"
+                            onclick="openEditEvent()">
+                            <i class="fa-solid fa-pen me-1"></i> Editar
+                        </button>
+                        <button type="button" class="btn btn-outline-danger flex-fill rounded-pill py-2 fw-bold"
+                            onclick="deleteEvent()">
+                            <i class="fa-solid fa-trash me-1"></i> Apagar
+                        </button>
+                    </div>
+                    <button type="button" class="btn btn-light w-100 rounded-pill py-2 mt-2 fw-bold"
+                        data-bs-dismiss="modal">
+                        Fechar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: EVENTOS DO DIA -->
+    <div class="modal fade" id="dayEventsModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 rounded-4 shadow-lg">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold" id="dayEventsModalTitle">Eventos do Dia</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div id="dayEventsList" class="d-flex flex-column gap-2 mb-4">
+                        <!-- Events populated by JS -->
+                    </div>
+
+                    <button type="button" class="btn btn-primary w-100 rounded-pill py-2 fw-bold shadow-sm"
+                        data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#eventModal">
+                        <i class="fa-solid fa-plus me-1"></i> Adicionar Evento Neste Dia
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Nova Consulta (Phase 1) -->
+    <div class="modal fade" id="addTicketModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold" data-i18n="modal_ticket_title">Nova Consulta</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="ticketForm">
+                        <div class="mb-4">
+                            <label class="small text-muted fw-bold mb-3 d-block" data-i18n="modal_ticket_which_pet">Qual
+                                pet precisa de ajuda hoje?</label>
+                            <div id="petSelectorList" class="d-flex gap-3 overflow-x-auto pb-2">
+                                <!-- Pets will be loaded here -->
+                            </div>
+                            <input type="hidden" id="ticketPetId" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="small text-muted fw-bold" data-i18n="modal_ticket_reason">Motivo
+                                Principal</label>
+                            <select class="form-select" id="ticketMotivo" required>
+                                <option value="" data-i18n="ticket_reason_select">Selecione um motivo...</option>
+                                <option value="Vómitos" data-i18n="ticket_reason_vomit">Vómitos</option>
+                                <option value="Problema de Pele" data-i18n="ticket_reason_skin">Problema de Pele
+                                </option>
+                                <option value="Vacinação" data-i18n="ticket_reason_vaccine">Vacinação</option>
+                                <option value="Rotina" data-i18n="ticket_reason_routine">Rotina</option>
+                                <option value="Outro" data-i18n="ticket_reason_other">Outro</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="small text-muted fw-bold" data-i18n="modal_ticket_desc_label">Descreva o que
+                                se passa com o máximo de detalhes.</label>
+                            <textarea class="form-control" id="ticketDescricao" rows="4"
+                                data-i18n-placeholder="modal_ticket_desc_ph"
+                                placeholder="Ex: Quando começou? Mudou a alimentação? Está apático?..."
+                                required></textarea>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="small text-muted fw-bold" data-i18n="modal_ticket_media_label">Mostre-nos o
+                                problema (Fotos/Vídeos)</label>
+                            <div class="evidence-upload-container">
+                                <div class="evidence-btn"
+                                    onclick="document.getElementById('ticketEvidenceInput').click()">
+                                    <i class="fa-solid fa-camera fa-2x mb-2"></i>
+                                    <span data-i18n="modal_ticket_attach">Anexar Média</span>
+                                </div>
+                            </div>
+                            <input type="file" id="ticketEvidenceInput" class="d-none" accept="image/*,video/*"
+                                multiple>
+                            <div id="evidencePreview" class="mt-2 d-flex gap-2 flex-wrap"></div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="small text-muted fw-bold" data-i18n="modal_ticket_date_suggest">Quando
+                                preferia ser atendido? (Sugestão)</label>
+                            <input type="datetime-local" class="form-control" id="ticketDataSugerida" required>
+                            <small class="text-secondary mt-1 d-block"><i class="fa-solid fa-circle-info"></i> <span
+                                    data-i18n="modal_ticket_date_info">Este horário é uma sugestão e necessita de
+                                    confirmação da clínica.</span></small>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="small text-muted fw-bold" data-i18n="modal_ticket_vet">Escolha o
+                                Veterinário</label>
+                            <select class="form-select mt-1" id="ticketVeterinario" required>
+                                <option value="" data-i18n="modal_loading_vets">A carregar veterinários...</option>
+                            </select>
+                            <input type="hidden" id="ticketVetId">
+                        </div>
+
+                        <button type="submit" class="btn-primary-modal py-3" id="btnEnviarTicket"
+                            data-i18n="btn_send_ticket">Enviar Pedido de Consulta</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Editar Perfil do Dono -->
+    <div class="modal fade" id="editProfileModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-4">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold"><i class="fa-regular fa-user me-2 text-primary"></i>Meu Perfil</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="profileForm">
+                        <div class="mb-3">
+                            <label class="small text-muted fw-bold">Nome Completo</label>
+                            <input type="text" class="form-control mt-1" id="profileNome" required
+                                placeholder="O seu nome">
+                        </div>
+                        <div class="mb-4">
+                            <label class="small text-muted fw-bold">Número de Telefone</label>
+                            <input type="tel" class="form-control mt-1" id="profileTelefone"
+                                placeholder="Ex: 912 345 678">
+                        </div>
+                        <div id="profileSaveMsg" class="alert alert-success py-2 small d-none">
+                            <i class="fa-solid fa-circle-check me-1"></i> Perfil actualizado com sucesso!
+                        </div>
+                        <button type="submit" class="btn w-100 py-2 fw-bold text-white rounded-3" id="btnSalvarPerfil"
+                            style="background: var(--primary);">
+                            <i class="fa-solid fa-floppy-disk me-1"></i> Guardar Alterações
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+
+    <script>
+        const SUPABASE_URL = 'https://xqtbtggmwejnkhckduti.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhxdGJ0Z2dtd2VqbmtoY2tkdXRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc2OTU5NjEsImV4cCI6MjA4MzI3MTk2MX0.G1wG0UC6sF7r6tMxGdqLGvsHa_dxlVD1-j6QNEw32IM';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        let ID_DONO = null;
+        let calendar = null;
+        let allEvents = [];
+        let currentFilter = 'all';
+
+        // ── CATEGORY COLORS PRESET ───────────────────────────────────────
+        // Using direct hex values — FullCalendar can't resolve nested CSS vars in inline styles
+        const CategoryColors = {
+            'vacina': '#d63031', // vermelho
+            'desparasitacao': '#e17055', // laranja
+            'medicacao': '#00b894', // verde
+            'consulta': '#0984e3', // azul
+            'rotina': '#a29bfe'  // roxo
+        };
+
+        const CategoryNames = {
+            'vacina': 'Vacina',
+            'desparasitacao': 'Desparasitação',
+            'medicacao': 'Medicação',
+            'consulta': 'Consulta',
+            'rotina': 'Rotina'
+        };
+
+        // ── INIT & AUTH ──────────────────────────────────────────────────
+        document.addEventListener('DOMContentLoaded', () => {
+            initAuth();
+
+            // Setup Event Listener for Form
+            document.getElementById('eventForm').addEventListener('submit', saveEvent);
+
+            // Set minimum date to today when the event modal opens
+            document.getElementById('eventModal').addEventListener('show.bs.modal', () => {
+                const today = new Date().toISOString().split('T')[0];
+                document.getElementById('eventDate').min = today;
+            });
+        });
+
+        async function initAuth() {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (!session) {
+                window.location.href = 'login.html?role=dono';
+                return;
+            }
+
+            const { data: cliente, error } = await supabaseClient
+                .from('clientes')
+                .select('id, nome, foto_url')
+                .eq('user_id', session.user.id)
+                .single();
+
+            if (error || !cliente) {
+                await supabaseClient.auth.signOut();
+                window.location.href = 'login.html?role=dono';
+                return;
+            }
+
+            ID_DONO = cliente.id;
+
+            // Sincronizar preferências
+            try {
+                const { data: prefs } = await supabaseClient
+                    .from('preferencias_dono')
+                    .select('tema, idioma')
+                    .eq('user_id', session.user.id)
+                    .single();
+                if (prefs) {
+                    if (prefs.tema) {
+                        if (localStorage.getItem('zooni-theme') !== prefs.tema) localStorage.setItem('zooni-theme', prefs.tema);
+                        if (typeof window.applyZooniTheme === 'function') window.applyZooniTheme(prefs.tema);
+                    }
+                    if (prefs.idioma && localStorage.getItem('zooni-lang') !== prefs.idioma) {
+                        localStorage.setItem('zooni-lang', prefs.idioma);
+                        if (typeof ZOONI_I18N !== 'undefined') ZOONI_I18N.apply(prefs.idioma, true);
+                    }
+                }
+            } catch (e) {
+                console.error('Erro ao sincronizar preferências:', e);
+            }
+
+            // Set Header Name
+            const primeiroNome = cliente.nome.split(' ')[0];
+            const defaultAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(cliente.nome)}&background=3D8B3D&color=fff`;
+            document.getElementById('headerProfilePic').src = cliente.foto_url || defaultAvatar;
+
+            // Populate Dropdown logic
+            const dropdownNameEl = document.getElementById('dropdownUserName');
+            const dropdownEmailEl = document.getElementById('dropdownUserEmail');
+            if (dropdownNameEl) dropdownNameEl.textContent = cliente.nome;
+            if (dropdownEmailEl) dropdownEmailEl.textContent = session.user.email;
+
+            // Boot logic
+            await loadPetsForModal();
+            initCalendar();
+            await loadEvents();
+            await loadNotifications(); // Carregar Mural de Notificações
+        }
+
+        // ── LOAD PETS ──────────────────────────────────────────────────
+        async function loadPetsForModal() {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('animais')
+                    .select('id, nome, foto_url')
+                    .eq('id_dono', ID_DONO);
+
+                const selectInfo = document.getElementById('eventPet');
+                selectInfo.innerHTML = '<option value="" data-i18n="modal_event_pet_select">' + (ZOONI_I18N.t('modal_event_pet_select') || 'Selecione o pet...') + '</option>';
+
+                if (data && data.length > 0) {
+                    data.forEach(pet => {
+                        selectInfo.innerHTML += `<option value="${pet.id}">${pet.nome}</option>`;
+                    });
+                } else {
+                    selectInfo.innerHTML = '<option value="">Sem pets registados.</option>';
+                }
+            } catch (err) {
+                console.error('Erro Pets:', err);
+            }
+        }
+
+        // ── FULLCALENDAR SETUP ───────────────────────────────────────────
+        function initCalendar() {
+            const calendarEl = document.getElementById('calendar');
+            const localeStr = (typeof ZOONI_I18N !== 'undefined' && ZOONI_I18N.currentLang) ? ZOONI_I18N.currentLang : 'pt';
+
+            calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                locale: localeStr,
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek'
+                },
+                buttonText: {
+                    today: typeof ZOONI_I18N !== 'undefined' ? (ZOONI_I18N.t('common_today') || 'Hoje') : 'Hoje',
+                    month: localeStr === 'en' ? 'Month' : (localeStr === 'es' ? 'Mes' : 'Mês'),
+                    week: localeStr === 'en' ? 'Week' : (localeStr === 'es' ? 'Semana' : 'Semana'),
+                    day: typeof ZOONI_I18N !== 'undefined' ? (ZOONI_I18N.t('common_today') || 'Hoje') : 'Hoje'
+                },
+                height: 600,
+                timeZone: 'local', // Treat all datetime strings as local time, not UTC
+                dayMaxEvents: true, // Allow "more" link when too many events
+                displayEventTime: true,
+                displayEventEnd: false,
+                eventDisplay: 'block', // Keep it inside its day box instead of stretching
+                defaultTimedEventDuration: '00:05:00', // Previne que eventos tarde (ex: 23:50) passem para o dia seguinte
+                nextDayThreshold: '24:00:00',
+                events: [],
+                eventClick: function (info) {
+                    // Extract the REAL base event ID (strip _R_ suffixes from recurring copies)
+                    const rawId = info.event.id;
+                    const baseId = String(rawId).includes('_R_') ? String(rawId).split('_R_')[0] : rawId;
+                    document.getElementById('detailModalEventId').value = baseId;
+
+                    // Populate modal fields
+                    document.getElementById('detailModalTitle').textContent = info.event.title;
+                    document.getElementById('detailModalPet').textContent = info.event.extendedProps.petName || 'N/A';
+
+                    const vetElement = document.querySelector('#detailModalVet span');
+                    if (info.event.extendedProps.vetName) {
+                        vetElement.textContent = info.event.extendedProps.vetName;
+                        document.getElementById('detailVetRow').style.display = 'block';
+                    } else {
+                        document.getElementById('detailVetRow').style.display = 'none';
+                    }
+
+                    // Recurrence label
+                    const recurrenceLabels = { daily: 'Todos os dias', weekly: 'Todas as semanas', monthly: 'Todos os meses', yearly: 'Todos os anos', '': 'Sem repetição', null: 'Sem repetição' };
+                    const rec = info.event.extendedProps.recorrencia;
+                    document.getElementById('detailModalRecurrence').textContent = recurrenceLabels[rec] || 'Sem repetição';
+
+                    // Format date nicely
+                    let dateStr = info.event.start.toLocaleDateString('pt-PT');
+                    if (!info.event.allDay) {
+                        dateStr += ' às ' + info.event.start.toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' });
+                    }
+                    document.getElementById('detailModalDate').textContent = dateStr;
+
+                    document.getElementById('detailModalStatus').textContent = (info.event.extendedProps.status || 'Agendado').toUpperCase();
+
+                    // Show/hide Edit button depending on whether the event is in the past
+                    const isPast = info.event.start < new Date();
+                    const editBtn = document.querySelector('#eventDetailsModal button[onclick="openEditEvent()"]');
+                    if (editBtn) {
+                        editBtn.style.display = isPast ? 'none' : '';
+                    }
+
+                    // Show the modal
+                    const detailsModal = new bootstrap.Modal(document.getElementById('eventDetailsModal'));
+                    detailsModal.show();
+                },
+                dateClick: function (info) {
+                    const clickedDateStr = info.dateStr;
+
+                    // Filter FullCalendar events for exactly this day
+                    const eventsOnDay = calendar.getEvents().filter(evt => {
+                        const eventDateStr = evt.start.toISOString().split('T')[0];
+                        return eventDateStr === clickedDateStr;
+                    });
+
+                    // Format Title: YYYY-MM-DD to DD/MM/YYYY
+                    const parts = clickedDateStr.split('-');
+                    document.getElementById('dayEventsModalTitle').textContent = `Marcações para ${parts[2]}/${parts[1]}/${parts[0]}`;
+
+                    // Preset Quick-add Event date
+                    const eventDateInput = document.getElementById('eventDate');
+                    if (eventDateInput) eventDateInput.value = clickedDateStr;
+
+                    const listContainer = document.getElementById('dayEventsList');
+                    listContainer.innerHTML = '';
+
+                    if (eventsOnDay.length === 0) {
+                        listContainer.innerHTML = '<div class="text-center text-muted p-3 small">Nenhum evento agendado neste dia.</div>';
+                    } else {
+                        eventsOnDay.forEach(evt => {
+                            let timeText = evt.allDay ? 'Dia Todo' : evt.start.toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' });
+                            const petName = evt.extendedProps.petName || 'Animal não def.';
+                            const vetName = evt.extendedProps.vetName ? `<span class="badge bg-light text-dark ms-2 border"><i class="fa-solid fa-user-doctor text-primary me-1"></i>${evt.extendedProps.vetName}</span>` : '';
+                            const badgeColor = evt.backgroundColor || 'var(--primary)';
+
+                            listContainer.innerHTML += `
+                                <div class="p-3 border rounded-3 position-relative overflow-hidden mb-2 shadow-sm" style="background-color: #fff; border-left: 5px solid ${badgeColor} !important;">
+                                    <div class="fw-bold mb-1 d-flex gap-2 align-items-center">
+                                        <span class="badge" style="background-color: ${badgeColor};">${timeText}</span>
+                                        <span style="color: #000; font-size: 0.95rem;">${evt.title}</span>
+                                    </div>
+                                    <div class="small d-flex justify-content-between align-items-center mt-2">
+                                        <div class="d-flex align-items-center">
+                                          <span class="text-muted"><i class="fa-solid fa-paw me-1"></i> ${petName}</span>
+                                          ${vetName}
+                                        </div>
+                                        <span class="text-muted fw-semibold" style="font-size: 0.75rem;">${(evt.extendedProps.status || '').toUpperCase()}</span>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                    }
+
+                    const dayModal = new bootstrap.Modal(document.getElementById('dayEventsModal'));
+                    dayModal.show();
+                }
+            });
+            calendar.render();
+        }
+
+        // ── LOAD & RENDER EVENTS ─────────────────────────────────────────
+        async function loadEvents() {
+            try {
+                // Fetch events from agenda_eventos
+                const { data: agendaData, error: agendaError } = await supabaseClient
+                    .from('agenda_eventos')
+                    .select('*, animais(nome, foto_url)')
+                    .eq('dono_id', ID_DONO)
+                    .order('data_inicio', { ascending: true });
+
+                if (agendaError && !agendaError.message.includes('relation "public.agenda_eventos" does not exist')) {
+                    throw agendaError;
+                }
+
+                // Fetch PENDING, CONFIRMED and ARCHIVED tickets to show on agenda
+                const { data: ticketsData, error: ticketsError } = await supabaseClient
+                    .from('tickets')
+                    .select('*, animais(nome)')
+                    .eq('id_dono', ID_DONO)
+                    .in('estado', ['pendente', 'marcado', 'arquivado']);
+
+                if (ticketsError) console.error("Erro a carregar tickets para agenda:", ticketsError);
+
+                // Fetch vet names separately (id_veterinario stores user_id, not the table PK)
+                let vetNomeMap = {};
+                if (ticketsData && ticketsData.length > 0) {
+                    const vetUserIds = [...new Set(ticketsData.map(t => t.id_veterinario).filter(Boolean))];
+                    if (vetUserIds.length > 0) {
+                        const { data: vets } = await supabaseClient
+                            .from('veterinarios')
+                            .select('user_id, nome')
+                            .in('user_id', vetUserIds);
+                        vets?.forEach(v => vetNomeMap[v.user_id] = v.nome);
+                    }
+                }
+
+                let allItems = [];
+
+                // Process agenda events
+                if (agendaData) {
+                    allItems = [...agendaData];
+                }
+
+                // Process tickets as agenda events (pendente + marcado + arquivado)
+                if (ticketsData) {
+                    const ticketEvents = ticketsData.map(t => {
+                        const isPending = t.estado === 'pendente';
+                        const isArchived = t.estado === 'arquivado';
+                        let titulo;
+                        if (isPending) titulo = `⏳ A aguardar confirmação: ${t.motivo}`;
+                        else if (isArchived) titulo = `🗄️ Arquivada: ${t.motivo}`;
+                        else titulo = `✅ Consulta Aceite: ${t.motivo}`;
+                        return {
+                            id: `ticket_${t.id}`,
+                            titulo,
+                            tipo_evento: 'consulta',
+                            data_inicio: t.data_sugerida,
+                            status: t.estado,
+                            animais: t.animais,
+                            vetName: vetNomeMap[t.id_veterinario] || null,
+                            allDay: false,
+                            _pendente: isPending,
+                            _arquivado: isArchived
+                        };
+                    }).filter(t => t.data_inicio);
+
+                    allItems = [...allItems, ...ticketEvents];
+                }
+
+                console.log("Final allItems before render:", allItems);
+                allEvents = allItems;
+                renderEvents();
+
+            } catch (err) {
+                console.error("Erro a carregar agenda: ", err);
+                if (err.message && err.message.includes('relation "public.agenda_eventos" does not exist')) {
+                    document.getElementById('timelineList').innerHTML = '<div class="alert alert-warning m-3 small"><i class="fa-solid fa-triangle-exclamation"></i> Tabela agenda_eventos não encontrada. Executou o script SQL?</div>';
+                }
+            }
+        }
+
+        function toggleFilter(btnRef, type) {
+            document.querySelectorAll('.filter-pill').forEach(btn => btn.classList.remove('active'));
+            btnRef.classList.add('active');
+            currentFilter = type;
+            renderEvents();
+        }
+
+        function renderEvents() {
+            if (!calendar) return;
+
+            // 1. Filter Events
+            const filtered = currentFilter === 'all'
+                ? allEvents
+                : allEvents.filter(e => e.tipo_evento === currentFilter);
+
+            // 2. Render Calendar
+            calendar.removeAllEvents();
+
+            let expandedEvents = [];
+
+            filtered.forEach(e => {
+                // Use Date object to check isAllDay correctly regardless of UTC offset in string
+                let isAllDay = true;
+                if (e.data_inicio && e.data_inicio.includes('T')) {
+                    const checkDt = new Date(e.data_inicio);
+                    // All-day = midnight local (hours and minutes == 0)
+                    if (checkDt.getHours() !== 0 || checkDt.getMinutes() !== 0) {
+                        isAllDay = false;
+                    }
+                }
+
+                const isPending = e._pendente === true;
+                const isArchived = e._arquivado === true;
+                const bgColor = isArchived ? '#b2bec3'
+                    : isPending ? '#f39c12'
+                        : (CategoryColors[e.tipo_evento] || 'var(--primary)');
+                const baseEvent = {
+                    id: e.id,
+                    title: e.titulo,
+                    start: e.data_inicio,
+                    end: e.data_fim || null,
+                    allDay: e.allDay !== undefined ? e.allDay : isAllDay,
+                    backgroundColor: bgColor,
+                    borderColor: bgColor,
+                    extendedProps: {
+                        petName: e.animais?.nome || 'Pet',
+                        status: e.status,
+                        vetName: e.vetName || null,
+                        recorrencia: e.recorrencia || 'none'
+                    }
+                };
+
+                expandedEvents.push(baseEvent);
+            });
+
+            console.log("calEvents about to be rendered:", expandedEvents);
+            calendar.addEventSource(expandedEvents);
+
+            // 3. Render Timeline (Upcoming)
+            renderTimeline(filtered);
+        }
+
+        function renderTimeline(events) {
+            // Function preserved for compatibility if needed, but the timeline UI is removed.
+            return;
+        }
+
+
+
+        // ── SAVE NEW EVENT ───────────────────────────────────────────────
+        async function saveEvent(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btnSaveEvent');
+            btn.disabled = true; btn.textContent = 'A gravar...';
+
+            const eventId = document.getElementById('eventId').value; // set if editing
+
+            const payload = {
+                dono_id: ID_DONO,
+                animal_id: document.getElementById('eventPet').value,
+                tipo_evento: document.getElementById('eventType').value,
+                titulo: document.getElementById('eventTitle').value,
+                recorrencia: document.getElementById('eventRecurrence').value || null,
+                status: 'marcado' // Eventos do dono não precisam de aprovação
+            };
+
+            const dateVal = document.getElementById('eventDate').value;
+            const timeVal = document.getElementById('eventTime').value;
+
+            // Build datetime correctly: use local Date constructor so JS handles
+            // the UTC offset automatically when calling .toISOString()
+            if (dateVal) {
+                if (timeVal) {
+                    const [year, month, day] = dateVal.split('-').map(Number);
+                    const [hour, min] = timeVal.split(':').map(Number);
+                    // new Date(year, month-1, day, hour, min) creates a LOCAL datetime
+                    // .toISOString() returns the correct UTC equivalent
+                    const localDt = new Date(year, month - 1, day, hour, min, 0);
+                    payload.data_inicio = localDt.toISOString();
+                } else {
+                    // All-day: store as midnight local = midnight UTC string (no offset)
+                    payload.data_inicio = `${dateVal}T00:00:00`;
+                }
+
+                // Validation: compare the local datetime with now
+                let eventMs;
+                if (timeVal) {
+                    const [year, month, day] = dateVal.split('-').map(Number);
+                    const [hour, min] = timeVal.split(':').map(Number);
+                    eventMs = new Date(year, month - 1, day, hour, min, 0).getTime();
+                } else {
+                    eventMs = new Date(dateVal).getTime();
+                }
+                if (eventMs < Date.now() - 60000) {
+                    alert('Erro: A data e hora de início não pode ser estabelecida no passado.');
+                    btn.disabled = false; btn.textContent = isEditing ? 'Guardar Alterações' : 'Guardar na Agenda';
+                    return;
+                }
+            }
+
+            const isEditing = !!eventId;
+
+            try {
+                let error;
+                if (isEditing) {
+                    // Se for edição, assume-se atualização individual da instãncia
+                    const { dono_id, ...updatePayload } = payload;
+                    ({ error } = await supabaseClient
+                        .from('agenda_eventos')
+                        .update(updatePayload)
+                        .eq('id', eventId)
+                        .eq('dono_id', ID_DONO));
+                } else {
+                    // INSERT new event (logic applied directly for array generation)
+                    let payloadsArray = [];
+
+                    if (payload.recorrencia && payload.recorrencia !== 'none') {
+                        // Limite até 1 ano exato a partir da data planeada:
+                        let endDateLimit = new Date();
+                        endDateLimit.setFullYear(endDateLimit.getFullYear() + 1);
+
+                        let currentDt = new Date(payload.data_inicio);
+
+                        while (currentDt <= endDateLimit) {
+                            // Criação Independente do Evento Duplicado
+                            let duplicatePayload = { ...payload };
+
+                            // Em js, localDates recriadas com toISOString() geram formatos offset correctos (e evitam bugs textuais).
+                            let y = currentDt.getFullYear();
+                            let m = String(currentDt.getMonth() + 1).padStart(2, '0');
+                            let d = String(currentDt.getDate()).padStart(2, '0');
+                            let hh = String(currentDt.getHours()).padStart(2, '0');
+                            let mm = String(currentDt.getMinutes()).padStart(2, '0');
+
+                            if (timeVal) {
+                                duplicatePayload.data_inicio = `${y}-${m}-${d}T${hh}:${mm}:00`;
+                            } else {
+                                duplicatePayload.data_inicio = `${y}-${m}-${d}T00:00:00`;
+                            }
+
+                            payloadsArray.push(duplicatePayload);
+
+                            // Avançar relógio JavaScript para gerar data da Próxima Repetição Real:
+                            if (payload.recorrencia === 'diaria') {
+                                currentDt.setDate(currentDt.getDate() + 1);
+                            } else if (payload.recorrencia === 'semanal') {
+                                currentDt.setDate(currentDt.getDate() + 7);
+                            } else if (payload.recorrencia === 'mensal') {
+                                currentDt.setMonth(currentDt.getMonth() + 1);
+                            } else if (payload.recorrencia === 'anual') {
+                                currentDt.setFullYear(currentDt.getFullYear() + 1);
+                            } else {
+                                break;
+                            }
+                        }
+                    } else {
+                        // Evento Único Simples
+                        let y = new Date(payload.data_inicio).getFullYear();
+                        let m = String(new Date(payload.data_inicio).getMonth() + 1).padStart(2, '0');
+                        let d = String(new Date(payload.data_inicio).getDate()).padStart(2, '0');
+                        let currH = new Date(payload.data_inicio).getHours();
+                        let currM = new Date(payload.data_inicio).getMinutes();
+                        if (!timeVal) {
+                            payload.data_inicio = `${y}-${m}-${d}T00:00:00`;
+                        } else {
+                            payload.data_inicio = `${y}-${m}-${d}T${String(currH).padStart(2, '0')}:${String(currM).padStart(2, '0')}:00`;
+                        }
+                        payloadsArray = [payload];
+                    }
+
+                    ({ error } = await supabaseClient.from('agenda_eventos').insert(payloadsArray));
+                }
+
+                if (error) throw error;
+
+                // Success — reset modal title
+                document.querySelector('#eventModal .modal-title').textContent = 'Criar Evento Saúde';
+                document.getElementById('btnSaveEvent').textContent = 'Guardar na Agenda';
+                bootstrap.Modal.getInstance(document.getElementById('eventModal')).hide();
+                document.getElementById('eventForm').reset();
+                document.getElementById('eventId').value = '';
+                await loadEvents();
+            } catch (e) {
+                console.error("Erro a guardar evento", e);
+                alert("Erro a guardar evento: " + e.message);
+            }
+
+            btn.disabled = false; btn.textContent = isEditing ? 'Guardar Alterações' : 'Guardar na Agenda';
+        }
+
+        // ── DELETE EVENT ──────────────────────────────────────────────────
+        async function deleteEvent() {
+            const id = document.getElementById('detailModalEventId').value;
+            if (!id) return;
+
+            const confirmed = confirm('Apagar este evento? Se for recorrente, TODAS as repetições serão removidas.');
+            if (!confirmed) return;
+
+            // Close details modal first
+            bootstrap.Modal.getInstance(document.getElementById('eventDetailsModal'))?.hide();
+
+            try {
+                const { error } = await supabaseClient
+                    .from('agenda_eventos')
+                    .delete()
+                    .eq('id', id)
+                    .eq('dono_id', ID_DONO); // safety: only delete own events
+
+                if (error) throw error;
+
+                await loadEvents(); // Refresh calendar — recurring copies vanish automatically
+            } catch (err) {
+                console.error('Erro ao apagar evento:', err);
+                alert('Erro ao apagar: ' + err.message);
+            }
+        }
+
+        // ── OPEN EDIT EVENT ───────────────────────────────────────────────
+        async function openEditEvent() {
+            const id = document.getElementById('detailModalEventId').value;
+            if (!id) return;
+
+            // Close details modal
+            bootstrap.Modal.getInstance(document.getElementById('eventDetailsModal'))?.hide();
+
+            try {
+                const { data, error } = await supabaseClient
+                    .from('agenda_eventos')
+                    .select('*')
+                    .eq('id', id)
+                    .single();
+
+                if (error || !data) throw error || new Error('Evento não encontrado');
+
+                // Pre-fill the event form
+                document.getElementById('eventId').value = data.id;
+                document.getElementById('eventPet').value = data.animal_id || '';
+                document.getElementById('eventType').value = data.tipo_evento || '';
+                document.getElementById('eventTitle').value = data.titulo || '';
+                document.getElementById('eventRecurrence').value = data.recorrencia || '';
+
+                if (data.data_inicio) {
+                    // Use Date object so local timezone offset is handled correctly
+                    const dt = new Date(data.data_inicio);
+
+                    // Date field: use local date parts to avoid day boundary issues near midnight
+                    const y = dt.getFullYear();
+                    const mo = String(dt.getMonth() + 1).padStart(2, '0');
+                    const d = String(dt.getDate()).padStart(2, '0');
+                    document.getElementById('eventDate').value = `${y}-${mo}-${d}`;
+
+                    // All-day: local hours and minutes are both 0 (midnight local)
+                    const isAllDay = dt.getHours() === 0 && dt.getMinutes() === 0;
+                    if (!isAllDay) {
+                        const hh = String(dt.getHours()).padStart(2, '0');
+                        const mm = String(dt.getMinutes()).padStart(2, '0');
+                        document.getElementById('eventTime').value = `${hh}:${mm}`;
+                    } else {
+                        document.getElementById('eventTime').value = '';
+                    }
+                }
+
+                // Change modal title to 'Editar Evento'
+                document.querySelector('#eventModal .modal-title').textContent = 'Editar Evento';
+                document.getElementById('btnSaveEvent').textContent = 'Guardar Alterações';
+
+                new bootstrap.Modal(document.getElementById('eventModal')).show();
+            } catch (err) {
+                console.error('Erro ao carregar evento para edição:', err);
+                alert('Erro ao abrir edição: ' + err.message);
+            }
+        }
+
+        // ── TOGGLE EVENT STATUS ──────────────────────────────────────────
+        async function toggleStatus(id, el) {
+            // Optimistic UI update
+            const isCurrentlyChecked = el.classList.contains('checked');
+            const newStatus = isCurrentlyChecked ? 'pendente' : 'concluido';
+
+            el.classList.toggle('checked');
+            const card = document.getElementById(`eventCard-${id}`);
+            if (card) card.classList.toggle('done');
+
+            try {
+                await supabaseClient.from('agenda_eventos').update({ status: newStatus }).eq('id', id);
+                // Also update local array
+                const ev = allEvents.find(x => x.id == id);
+                if (ev) ev.status = newStatus;
+            } catch (err) {
+                console.error(err);
+                // Revert on failure
+                el.classList.toggle('checked');
+                if (card) card.classList.toggle('done');
+            }
+        }
+
+        // ── LOAD TICKETS VETERINÁRIOS E PETS MODAL ─────────────────────────
+        async function loadVeterinarios() {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('veterinarios')
+                    .select('user_id, nome, clinica, especialidade, status')
+                    .eq('status', 'ativo')
+                    .order('nome');
+
+                const sel = document.getElementById('ticketVeterinario');
+                sel.innerHTML = '<option value="">Selecione um veterinário...</option>';
+
+                if (error || !data || data.length === 0) {
+                    sel.innerHTML = '<option value="">Nenhum veterinário disponível</option>';
+                    return;
+                }
+
+                data.forEach(vet => {
+                    const opt = document.createElement('option');
+                    opt.value = vet.user_id;
+                    const clinica = vet.clinica ? ` — ${vet.clinica} ` : '';
+                    const esp = vet.especialidade ? ` • ${vet.especialidade} ` : '';
+                    opt.textContent = `${vet.nome}${clinica}${esp} `;
+                    sel.appendChild(opt);
+                });
+            } catch (e) { console.error('Erro ao carregar veterinários:', e); }
+        }
+
+        // Needed for pet photos
+        function getPetImageUrl(urlOrPath) {
+            if (!urlOrPath) return null;
+            if (urlOrPath.startsWith('http')) return urlOrPath;
+            const { data } = supabaseClient.storage.from('Animais').getPublicUrl(urlOrPath);
+            return data.publicUrl;
+        }
+
+        async function preparePetSelector() {
+            try {
+                const { data } = await supabaseClient.from('animais').select('*').eq('id_dono', ID_DONO);
+                const selector = document.getElementById('petSelectorList');
+                selector.innerHTML = '';
+                data?.forEach(pet => {
+                    const div = document.createElement('div');
+                    div.className = 'pet-select-item';
+                    div.dataset.id = pet.id;
+
+                    let emoji = '🐾';
+                    if (pet.tipo_animal && pet.tipo_animal.toLowerCase().includes('cão')) emoji = '🐶';
+                    if (pet.tipo_animal && pet.tipo_animal.toLowerCase().includes('gato')) emoji = '🐱';
+
+                    let imgHtml = `<div class="pet-select-emoji">${emoji}</div>`;
+                    const fullUrl = getPetImageUrl(pet.foto_url);
+                    if (fullUrl) {
+                        imgHtml = `<img src="${fullUrl}" class="pet-select-img" alt="${emoji}">`;
+                    }
+
+                    div.innerHTML = `
+                        ${imgHtml}
+                    <div class="small fw-bold">${pet.nome}</div>
+                    `;
+                    div.onclick = () => {
+                        document.querySelectorAll('.pet-select-item').forEach(i => i.classList.remove('selected'));
+                        div.classList.add('selected');
+                        document.getElementById('ticketPetId').value = pet.id;
+                    };
+                    selector.appendChild(div);
+                });
+            } catch (e) { }
+        }
+
+        const ticketModalBtn = document.querySelector('[data-bs-target="#addTicketModal"]');
+        if (ticketModalBtn) {
+            ticketModalBtn.addEventListener('click', () => {
+                document.getElementById('ticketForm').reset();
+                document.getElementById('evidencePreview').innerHTML = '';
+                const now = new Date();
+                now.setSeconds(0, 0);
+                document.getElementById('ticketDataSugerida').min = now.toISOString().slice(0, 16);
+                preparePetSelector();
+                loadVeterinarios();
+            });
+        }
+
+        document.getElementById('ticketEvidenceInput').addEventListener('change', function (e) {
+            const preview = document.getElementById('evidencePreview');
+            preview.innerHTML = '';
+            Array.from(e.target.files).forEach(file => {
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    const img = document.createElement('img');
+                    img.src = ev.target.result;
+                    img.style.width = '60px'; img.style.height = '60px'; img.style.objectFit = 'cover';
+                    img.style.borderRadius = '8px';
+                    preview.appendChild(img);
+                };
+                reader.readAsDataURL(file);
+            });
+        });
+
+        document.getElementById('ticketForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btnEnviarTicket'); btn.disabled = true; btn.textContent = 'Enviando...';
+
+            const id_animal = document.getElementById('ticketPetId').value;
+            const motivo = document.getElementById('ticketMotivo').value;
+            const descricao = document.getElementById('ticketDescricao').value;
+            const data_sugerida = document.getElementById('ticketDataSugerida').value;
+            const files = document.getElementById('ticketEvidenceInput').files;
+            const vetSelect = document.getElementById('ticketVeterinario');
+            const id_veterinario_user = vetSelect.value;
+            const vet_nome = vetSelect.options[vetSelect.selectedIndex]?.text || '';
+
+            if (!id_animal) { alert('Por favor, selecione um pet.'); btn.disabled = false; btn.textContent = 'Enviar Pedido de Consulta'; return; }
+            if (!id_veterinario_user) { alert('Por favor, selecione um veterinário.'); btn.disabled = false; btn.textContent = 'Enviar Pedido de Consulta'; return; }
+
+            let uploadedUrls = [];
+            if (files.length > 0) {
+                for (let i = 0; i < files.length; i++) {
+                    const file = files[i];
+                    const ext = file.name.split('.').pop();
+                    const fName = `ticket_${Date.now()}_${i}.${ext} `;
+
+                    let targetBucket = 'tickets';
+                    let { error: upErr } = await supabaseClient.storage.from(targetBucket).upload(fName, file);
+
+                    if (upErr) {
+                        const { error: upErrLower } = await supabaseClient.storage.from('tickets').upload(fName, file);
+                        if (!upErrLower) {
+                            upErr = null;
+                            targetBucket = 'tickets';
+                        }
+                    }
+
+                    if (!upErr) {
+                        const { data: pubData } = supabaseClient.storage.from(targetBucket).getPublicUrl(fName);
+                        uploadedUrls.push(pubData.publicUrl);
+                    } else {
+                        console.error('Upload Error:', upErr);
+                        alert(`Erro no upload da imagem ${i + 1}: ${upErr.message || 'Erro desconhecido'} \nBucket tentado: ${targetBucket} \nFicheiro: ${file.name} `);
+                    }
+                }
+            }
+            const evidencia_url = uploadedUrls.join(',');
+
+            const { data: insertedTicket, error } = await supabaseClient.from('tickets').insert([{
+                id_dono: ID_DONO,
+                id_animal,
+                motivo,
+                descricao,
+                evidencias_url: evidencia_url,
+                data_sugerida: data_sugerida || null,
+                estado: 'pendente',
+                id_veterinario: id_veterinario_user || null
+            }]).select();
+
+            if (error) {
+                console.error(error);
+                alert('Erro ao enviar ticket.');
+            } else {
+                if (data_sugerida) {
+                    try {
+                        let tituloAgenda = `Consulta Pendente: ${motivo}`;
+                        const { data: petData } = await supabaseClient.from('animais').select('nome').eq('id', id_animal).single();
+                        if (petData && petData.nome) tituloAgenda += ` - ${petData.nome}`;
+
+                        const { error: errorAgenda } = await supabaseClient.from('agenda_eventos').insert([{
+                            dono_id: ID_DONO,
+                            animal_id: id_animal,
+                            titulo: tituloAgenda,
+                            tipo_evento: 'consulta',
+                            data_inicio: data_sugerida,
+                            status: 'pendente'
+                        }]);
+
+                        // We also need to reload events!
+                        loadEvents();
+                    } catch (e) {
+                        console.error('Falha ao sincronizar com agenda', e);
+                    }
+                }
+
+                bootstrap.Modal.getInstance(document.getElementById('addTicketModal')).hide();
+                document.getElementById('ticketForm').reset();
+            }
+            btn.disabled = false; btn.textContent = 'Enviar Pedido de Consulta';
+        });
+
+        // ── PERFIL DO DONO ───────────────────────────────────────────
+        async function openProfileModal() {
+            if (!ID_DONO) { alert('Sessão não iniciada.'); return; }
+            const { data, error } = await supabaseClient
+                .from('clientes')
+                .select('nome, telefone')
+                .eq('id', ID_DONO)
+                .single();
+            if (error || !data) { alert('Erro ao carregar perfil.'); return; }
+
+            document.getElementById('profileNome').value = data.nome || '';
+            document.getElementById('profileTelefone').value = data.telefone || '';
+            document.getElementById('profileSaveMsg').classList.add('d-none');
+            new bootstrap.Modal(document.getElementById('editProfileModal')).show();
+        }
+
+        document.addEventListener('submit', async function (e) {
+            if (!e.target || e.target.id !== 'profileForm') return;
+            e.preventDefault();
+            const btn = document.getElementById('btnSalvarPerfil');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> A guardar...';
+
+            const nome = document.getElementById('profileNome').value.trim();
+            const telefone = document.getElementById('profileTelefone').value.trim();
+
+            const { error } = await supabaseClient
+                .from('clientes')
+                .update({ nome, telefone })
+                .eq('id', ID_DONO);
+
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fa-solid fa-floppy-disk me-1"></i> Guardar Alterações';
+
+            if (error) {
+                alert('Erro ao guardar: ' + error.message);
+            } else {
+                document.getElementById('profileSaveMsg').classList.remove('d-none');
+                setTimeout(() => document.getElementById('profileSaveMsg').classList.add('d-none'), 3000);
+            }
+        });
+
+        // ── LOAD NOTIFICATIONS ─────────────────────────────────────────
+        async function loadNotifications() {
+            try {
+                const { data: dbNotifs, error } = await supabaseClient
+                    .from('notificacoes')
+                    .select('*')
+                    .eq('user_id', ID_DONO)
+                    .order('criado_em', { ascending: false })
+                    .limit(5);
+
+                // Catch a wide 3-day net from API so Supabase timezone conversions don't hide events
+                const refDate = new Date();
+                const year = refDate.getFullYear();
+                const month = String(refDate.getMonth() + 1).padStart(2, '0');
+                const day = String(refDate.getDate()).padStart(2, '0');
+                const todayDateStr = `${year}-${month}-${day}`;
+
+                refDate.setHours(0, 0, 0, 0);
+                const fetchStart = new Date(refDate.getTime() - 86400000).toISOString();
+                const fetchEnd = new Date(refDate.getTime() + 172800000).toISOString();
+
+                const { data: rawEvents } = await supabaseClient
+                    .from('agenda_eventos')
+                    .select('id, titulo, tipo_evento, data_inicio, data_fim, status')
+                    .eq('dono_id', ID_DONO)
+                    .gte('data_inicio', fetchStart)
+                    .lte('data_inicio', fetchEnd);
+
+                const todayEvents = (rawEvents || []).filter(e => {
+                    if (!e.data_inicio) return false;
+                    const evDate = new Date(e.data_inicio);
+                    return evDate.getFullYear() === refDate.getFullYear() &&
+                        evDate.getMonth() === refDate.getMonth() &&
+                        evDate.getDate() === refDate.getDate();
+                });
+
+                const { data: todayTickets } = await supabaseClient
+                    .from('tickets')
+                    .select('id, motivo, data_agendada, hr_agendada, animais(nome)')
+                    .eq('id_dono', ID_DONO)
+                    .eq('estado', 'marcado')
+                    .eq('data_agendada', todayDateStr);
+
+                const listEl = document.getElementById('notificationList');
+                const badgeEl = document.getElementById('notifBadge');
+
+                if (error) throw error;
+
+                const data = dbNotifs || [];
+                const events = todayEvents || [];
+                const tickets = todayTickets || [];
+
+                const unreadCount = data.filter(n => !n.lida).length + events.length + tickets.length;
+                if (unreadCount > 0) {
+                    badgeEl.textContent = unreadCount;
+                    badgeEl.classList.remove('d-none');
+                } else {
+                    badgeEl.classList.add('d-none');
+                }
+
+                let html = '';
+
+                tickets.forEach(tk => {
+                    const nomePet = tk.animais ? tk.animais.nome : 'o seu animal';
+                    html += `
+                        <div class="notification-item unread">
+                            <div class="notification-icon ticket">
+                                <i class="fa-solid fa-stethoscope"></i>
+                            </div>
+                            <div class="notification-content">
+                                <div class="notification-text"><strong><span data-i18n="common_today_consult">Consulta Hoje</span>:</strong> ${tk.motivo} (${nomePet})</div>
+                                <div class="notification-time"><i class="fa-regular fa-clock me-1"></i>${tk.hr_agendada?.substring(0, 5) || 'Hoje'}</div>
+                            </div>
+                        </div>`;
+                });
+
+                const eventIcons = { vacina: 'fa-syringe', desparasitacao: 'fa-shield-heart', consulta: 'fa-stethoscope', medicacao: 'fa-pills', rotina: 'fa-dog', banho: 'fa-shower', passeio: 'fa-person-walking-with-cane', tosquia: 'fa-scissors', treino: 'fa-bullseye', outro: 'fa-calendar-day' };
+                events.forEach(ev => {
+                    const timeStr = ev.data_inicio ? new Date(ev.data_inicio).toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' }) : '';
+                    const icon = eventIcons[ev.tipo_evento] || 'fa-calendar-day';
+                    html += `
+                        <div class="notification-item unread">
+                            <div class="notification-icon sistema">
+                                <i class="fa-solid ${icon}"></i>
+                            </div>
+                            <div class="notification-content">
+                                <div class="notification-text"><strong><span data-i18n="common_today">Hoje</span>:</strong> ${ev.titulo}</div>
+                                <div class="notification-time"><i class="fa-regular fa-clock me-1"></i>${timeStr || 'Hoje'}</div>
+                            </div>
+                        </div>`;
+                });
+
+                if (data.length === 0 && events.length === 0 && tickets.length === 0) {
+                    badgeEl.classList.add('d-none');
+                    listEl.innerHTML = '<div class="text-center p-4 text-muted small"><i class="fa-regular fa-bell-slash mb-2 d-block fa-2x opacity-50"></i>Sem notificações recentes.</div>';
+                    return;
+                }
+
+                html += data.map(n => {
+                    let icon = 'fa-info';
+                    let bgClass = 'sistema';
+                    if (n.tipo === 'saude') { icon = 'fa-heart-pulse'; bgClass = 'saude'; }
+                    if (n.tipo === 'ticket') { icon = 'fa-stethoscope'; bgClass = 'ticket'; }
+
+                    const timeAgo = formatTimeAgo(new Date(n.criado_em));
+                    const unreadClass = n.lida ? '' : 'unread';
+                    const actionFn = `markNotificationRead(${n.id}, '${n.link_destino || '#'}')`;
+
+                    return `
+                        <div class="notification-item ${unreadClass}" onclick="${actionFn}">
+                            <div class="notification-icon ${bgClass}">
+                                <i class="fa-solid ${icon}"></i>
+                            </div>
+                            <div class="notification-content">
+                                <div class="notification-text">${n.mensagem}</div>
+                                <div class="notification-time"><i class="fa-regular fa-clock me-1"></i>${timeAgo}</div>
+                            </div>
+                            ${!n.lida ? '<div class="notification-dot"></div>' : ''}
+                        </div>
+                    `;
+                }).join('');
+
+                listEl.innerHTML = html;
+            } catch (e) {
+                console.error('Erro ao carregar notificações:', e);
+            }
+        }
+
+        function formatTimeAgo(date) {
+            const now = new Date();
+            const diffMs = now - date;
+            const diffMins = Math.floor(diffMs / 60000);
+            if (diffMins < 60) return `Há ${diffMins} min`;
+            const diffHrs = Math.floor(diffMins / 60);
+            if (diffHrs < 24) return `Há ${diffHrs}h`;
+            const diffDays = Math.floor(diffHrs / 24);
+            return `Há ${diffDays}d`;
+        }
+
+        async function markNotificationRead(id, link) {
+            await supabaseClient.from('notificacoes').update({ lida: true }).eq('id', id);
+            if (link && link !== '#') window.location.href = link;
+            else loadNotifications();
+        }
+    </script>
+</body>
+
+</html>
