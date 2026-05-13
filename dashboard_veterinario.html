@@ -1403,7 +1403,7 @@
             // Update modal for archive context
             document.querySelector('#confirmarConsultaModal .modal-title').innerHTML = '<i class="fa-solid fa-box-archive me-2"></i>Finalizar e Arquivar';
             document.querySelector('#confirmarConsultaModal .modal-title').className = 'modal-title fw-bold text-dark fs-5';
-            document.querySelector('#confirmarConsultaModal p').innerHTML = 'Pode <strong>anexar a fatura</strong> antes de arquivar. (Opcional)';
+            document.querySelector('#confirmarConsultaModal p').innerHTML = 'Deve <strong>anexar a fatura</strong> antes de arquivar a consulta.';
             const confirmBtn = document.getElementById('btnConfirmarConsultaDash');
             confirmBtn.innerHTML = '<i class="fa-solid fa-box-archive me-1"></i> Arquivar Consulta';
             confirmBtn.className = 'btn btn-dark rounded-pill px-4 fw-bold flex-grow-1';
@@ -1415,6 +1415,13 @@
                 try {
                     let faturaUrl = null;
                     const file = document.getElementById('faturaInputDash').files[0];
+                    if (!file) {
+                        alert('Por favor, anexe a fatura antes de finalizar.');
+                        confirmBtn.disabled = false;
+                        confirmBtn.innerHTML = '<i class="fa-solid fa-box-archive me-1"></i> Arquivar Consulta';
+                        return;
+                    }
+
                     if (file) {
                         const ext = file.name.split('.').pop();
                         const fileName = `fatura_${capturedId}_${Date.now()}.${ext}`;
@@ -1763,7 +1770,7 @@
                 </div>
                 <div class="modal-body px-4 pb-2">
                     <p class="text-dark mb-4" style="font-size:0.95rem;">
-                        Ao confirmar esta consulta, pode <strong>anexar a fatura</strong> para o histórico do dono.
+                        Deve <strong>anexar a fatura</strong> para o histórico do dono antes de arquivar a consulta.
                     </p>
 
                     <!-- Upload Zone — label nativo para garantir que abre sempre o file picker -->
@@ -1775,7 +1782,7 @@
                                 Clique para selecionar a fatura
                             </p>
                             <p class="text-muted mb-0" style="font-size:0.82rem;">
-                                PDF, PNG ou JPG &bull; Opcional
+                                PDF, PNG ou JPG &bull; Obrigatório
                             </p>
                         </div>
                         <div id="faturaPreviewDash" class="d-none">

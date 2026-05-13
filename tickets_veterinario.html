@@ -672,6 +672,55 @@
         </div>
     </div>
 
+    <!-- Modal Confirmar Consulta + Fatura -->
+    <div class="modal fade" id="confirmarConsultaModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-4 bg-white">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold text-success fs-5">
+                        <i class="fa-solid fa-calendar-check me-2"></i>Finalizar e Arquivar
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body px-4 pb-2">
+                    <p class="text-dark mb-4" style="font-size:0.95rem;">
+                        Deve <strong>anexar a fatura</strong> para o histórico do dono antes de arquivar a consulta.
+                    </p>
+
+                    <!-- Upload Zone -->
+                    <label for="faturaInput" class="border rounded-3 p-4 text-center d-block"
+                           style="border-style:dashed!important;cursor:pointer;background:#f8f9fa;user-select:none;">
+                        <div id="faturaPlaceholder">
+                            <i class="fa-solid fa-file-invoice fa-3x text-primary mb-3"></i>
+                            <p class="fw-bold text-dark mb-1" style="font-size:0.95rem;">
+                                Clique para selecionar a fatura
+                            </p>
+                            <p class="text-muted mb-0" style="font-size:0.82rem;">
+                                PDF, PNG ou JPG &bull; Obrigatório
+                            </p>
+                        </div>
+                        <div id="faturaPreview" class="d-none">
+                            <i class="fa-solid fa-file-check fa-3x text-success mb-3"></i>
+                            <p class="fw-bold text-success mb-1" id="faturaFileName" style="font-size:0.95rem;word-break:break-all;"></p>
+                            <p class="text-muted mb-0" style="font-size:0.82rem;">Clique para trocar o ficheiro</p>
+                        </div>
+                    </label>
+                    <input type="file" id="faturaInput" class="d-none" accept=".pdf,image/*">
+
+                </div>
+                <div class="modal-footer border-0 pt-2 px-4 pb-4 gap-2">
+                    <button type="button" class="btn btn-light rounded-pill px-4 fw-bold"
+                            data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-success rounded-pill px-4 fw-bold flex-grow-1"
+                            id="btnConfirmarFinalizar">
+                        <i class="fa-solid fa-box-archive me-1"></i> Arquivar Consulta
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
     <!-- Modal para Motivo de Recusa -->
     <div class="modal fade force-light-theme" id="refuseReasonModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
@@ -1354,40 +1403,95 @@
             }
         };
 
-        // Finalize ticket
-        document.getElementById('btnFinalizar').onclick = async () => {
+        // Finalize ticket flow with invoice
+        document.getElementById('btnFinalizar').onclick = () => {
             if (!currentTicketId) return;
             const notes = document.getElementById('clinicalNotes').value;
-            const feedback = document.getElementById('publicFeedback').value;
-            const btn = document.getElementById('btnFinalizar');
-
             if (!notes.trim()) {
                 alert('Por favor, adicione as notas clínicas antes de finalizar.');
                 return;
             }
 
-            btn.disabled = true;
-            btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Finalizando...';
+            // Reset modal
+            document.getElementById('faturaInput').value = '';
+            document.getElementById('faturaPlaceholder').classList.remove('d-none');
+            document.getElementById('faturaPreview').classList.add('d-none');
+            
+            // Show modal
+            const modal = new bootstrap.Modal(document.getElementById('confirmarConsultaModal'));
+            modal.show();
+        };
 
-            const { error } = await supabaseClient
-                .from('tickets')
-                .update({
-                    estado: 'arquivado',
-                    notas_privadas: notes,
-                    feedback_publico: feedback
-                })
-                .eq('id', currentTicketId);
-
-            if (!error) {
-                const modalElement = document.getElementById('ticketDetailModal');
-                bootstrap.Modal.getInstance(modalElement).hide();
-                loadTickets();
-                console.log('Ticket arquivado com sucesso!');
-            } else {
-                alert('Erro ao finalizar consulta: ' + error.message);
+        // File preview handler
+        document.getElementById('faturaInput').onchange = function() {
+            if (this.files && this.files[0]) {
+                document.getElementById('faturaFileName').textContent = this.files[0].name;
+                document.getElementById('faturaPlaceholder').classList.add('d-none');
+                document.getElementById('faturaPreview').classList.remove('d-none');
             }
-            btn.disabled = false;
-            btn.textContent = 'Finalizar e Arquivar Consulta';
+        };
+
+        // Confirm finalization and upload
+        document.getElementById('btnConfirmarFinalizar').onclick = async () => {
+            const btn = document.getElementById('btnConfirmarFinalizar');
+            const file = document.getElementById('faturaInput').files[0];
+
+            if (!file) {
+                alert('Por favor, anexe a fatura antes de finalizar.');
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Processando...';
+
+            try {
+                // 1. Upload Invoice
+                const ext = file.name.split('.').pop();
+                const fileName = `fatura_${currentTicketId}_${Date.now()}.${ext}`;
+                const { error: upErr } = await supabaseClient.storage
+                    .from('tickets')
+                    .upload(fileName, file, { upsert: true });
+
+                if (upErr) throw upErr;
+
+                const { data: { publicUrl } } = supabaseClient.storage
+                    .from('tickets')
+                    .getPublicUrl(fileName);
+
+                // 2. Update Ticket
+                const notes = document.getElementById('clinicalNotes').value;
+                const feedback = document.getElementById('publicFeedback').value;
+
+                const { error: updateErr } = await supabaseClient
+                    .from('tickets')
+                    .update({
+                        estado: 'arquivado',
+                        notas_privadas: notes,
+                        feedback_publico: feedback,
+                        fatura_url: publicUrl
+                    })
+                    .eq('id', currentTicketId);
+
+                if (updateErr) throw updateErr;
+
+                // 3. Success
+                bootstrap.Modal.getInstance(document.getElementById('confirmarConsultaModal')).hide();
+                bootstrap.Modal.getInstance(document.getElementById('ticketDetailModal')).hide();
+                loadTickets();
+                
+                // Success Toast
+                const toast = document.createElement('div');
+                toast.style.cssText = 'position:fixed;bottom:24px;right:24px;z-index:9999;background:#00B894;color:#fff;padding:14px 22px;border-radius:14px;font-weight:700;box-shadow:0 6px 24px rgba(0,0,0,.15);';
+                toast.innerHTML = '<i class="fa-solid fa-circle-check me-2"></i>Consulta finalizada e fatura enviada!';
+                document.body.appendChild(toast);
+                setTimeout(() => toast.remove(), 3500);
+
+            } catch (err) {
+                alert('Erro ao finalizar consulta: ' + err.message);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa-solid fa-box-archive me-1"></i> Arquivar Consulta';
+            }
         };
 
         // Initialize

@@ -2208,6 +2208,11 @@
 
         document.querySelector('[data-bs-target="#addTicketModal"]').addEventListener('click', () => {
             document.getElementById('ticketForm').reset();
+            const btn = document.getElementById('btnEnviarTicket');
+            if (btn) {
+                btn.disabled = false;
+                btn.textContent = 'Enviar Pedido de Consulta';
+            }
             document.getElementById('evidencePreview').innerHTML = '';
             // Consultation date must be in the future
             const now = new Date();
@@ -2237,68 +2242,76 @@
             e.preventDefault();
             const btn = document.getElementById('btnEnviarTicket'); btn.disabled = true; btn.textContent = 'Enviando...';
 
-            const id_animal = document.getElementById('ticketPetId').value;
-            const motivo = document.getElementById('ticketMotivo').value;
-            const descricao = document.getElementById('ticketDescricao').value;
-            const data_sugerida = document.getElementById('ticketDataSugerida').value;
-            const files = document.getElementById('ticketEvidenceInput').files;
-            const vetSelect = document.getElementById('ticketVeterinario');
-            const id_veterinario_user = vetSelect.value;
-            const vet_nome = vetSelect.options[vetSelect.selectedIndex]?.text || '';
+            try {
+                const id_animal = document.getElementById('ticketPetId').value;
+                const motivo = document.getElementById('ticketMotivo').value;
+                const descricao = document.getElementById('ticketDescricao').value;
+                const data_sugerida = document.getElementById('ticketDataSugerida').value;
+                const files = document.getElementById('ticketEvidenceInput').files;
+                const vetSelect = document.getElementById('ticketVeterinario');
+                const id_veterinario_user = vetSelect.value;
+                const vet_nome = vetSelect.options[vetSelect.selectedIndex]?.text || '';
 
-            if (!id_animal) { alert('Por favor, selecione um pet.'); btn.disabled = false; btn.textContent = 'Enviar Pedido de Consulta'; return; }
-            if (!id_veterinario_user) { alert('Por favor, selecione um veterinário.'); btn.disabled = false; btn.textContent = 'Enviar Pedido de Consulta'; return; }
+                if (!id_animal) { alert('Por favor, selecione um pet.'); return; }
+                if (!id_veterinario_user) { alert('Por favor, selecione um veterinário.'); return; }
 
-            let uploadedUrls = [];
-            if (files.length > 0) {
-                for (let i = 0; i < files.length; i++) {
-                    const file = files[i];
-                    // Clean filename: timestamp_index.ext
-                    const ext = file.name.split('.').pop();
-                    const fName = `ticket_${Date.now()}_${i}.${ext}`;
+                let uploadedUrls = [];
+                if (files.length > 0) {
+                    for (let i = 0; i < files.length; i++) {
+                        const file = files[i];
+                        // Clean filename: timestamp_index.ext
+                        const ext = file.name.split('.').pop();
+                        const fName = `ticket_${Date.now()}_${i}.${ext}`;
 
-                    let targetBucket = 'tickets'; // Changed to 'tickets' bucket
-                    let { error: upErr } = await supabaseClient.storage.from(targetBucket).upload(fName, file);
+                        let targetBucket = 'tickets'; // Changed to 'tickets' bucket
+                        let { error: upErr } = await supabaseClient.storage.from(targetBucket).upload(fName, file);
 
-                    // Fallback to lowercase bucket
-                    if (upErr) {
-                        const { error: upErrLower } = await supabaseClient.storage.from('tickets').upload(fName, file); // Ensure lowercase 'tickets'
-                        if (!upErrLower) {
-                            upErr = null;
-                            targetBucket = 'tickets';
+                        // Fallback to lowercase bucket
+                        if (upErr) {
+                            const { error: upErrLower } = await supabaseClient.storage.from('tickets').upload(fName, file); // Ensure lowercase 'tickets'
+                            if (!upErrLower) {
+                                upErr = null;
+                                targetBucket = 'tickets';
+                            }
+                        }
+
+                        if (!upErr) {
+                            const { data: pubData } = supabaseClient.storage.from(targetBucket).getPublicUrl(fName);
+                            uploadedUrls.push(pubData.publicUrl);
+                        } else {
+                            console.error('Upload Error:', upErr);
+                            alert(`Erro no upload da imagem ${i + 1}: ${upErr.message || 'Erro desconhecido'}\nBucket tentado: ${targetBucket}\nFicheiro: ${file.name}`);
                         }
                     }
-
-                    if (!upErr) {
-                        const { data: pubData } = supabaseClient.storage.from(targetBucket).getPublicUrl(fName);
-                        uploadedUrls.push(pubData.publicUrl);
-                    } else {
-                        console.error('Upload Error:', upErr);
-                        alert(`Erro no upload da imagem ${i + 1}: ${upErr.message || 'Erro desconhecido'}\nBucket tentado: ${targetBucket}\nFicheiro: ${file.name}`);
-                    }
                 }
-            }
-            const evidencia_url = uploadedUrls.join(',');
+                const evidencia_url = uploadedUrls.join(',');
 
-            const { error } = await supabaseClient.from('tickets').insert([{
-                id_dono: ID_DONO,
-                id_animal,
-                motivo,
-                descricao,
-                evidencias_url: evidencia_url,
-                data_sugerida: data_sugerida || null,
-                estado: 'pendente',
-                id_veterinario: id_veterinario_user || null
-            }]);
+                const { error } = await supabaseClient.from('tickets').insert([{
+                    id_dono: ID_DONO,
+                    id_animal,
+                    motivo,
+                    descricao,
+                    evidencias_url: evidencia_url,
+                    data_sugerida: data_sugerida || null,
+                    estado: 'pendente',
+                    id_veterinario: id_veterinario_user || null
+                }]);
 
-            if (error) {
-                console.error(error);
-                alert('Erro ao enviar ticket.');
-            } else {
-                bootstrap.Modal.getInstance(document.getElementById('addTicketModal')).hide();
-                loadTickets();
+                if (error) {
+                    console.error(error);
+                    alert('Erro ao enviar ticket.');
+                } else {
+                    bootstrap.Modal.getInstance(document.getElementById('addTicketModal')).hide();
+                    loadTickets();
+                    document.getElementById('ticketForm').reset();
+                }
+            } catch (err) {
+                console.error('Submission error:', err);
+                alert('Erro inesperado ao enviar pedido: ' + err.message);
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Enviar Pedido de Consulta';
             }
-            btn.disabled = false; btn.textContent = 'Enviar Pedido de Consulta';
         });
 
         async function deleteTicket(id) {
