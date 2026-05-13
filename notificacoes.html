@@ -259,10 +259,10 @@
 <body>
     <div class="app-container">
         <!-- SIDEBAR -->
-                <aside class="sidebar">
+        <aside class="sidebar">
             <div class="logo-container d-flex justify-content-between align-items-center w-100">
                 <img src="assets/logo.png" alt="Zooni Logo" class="logo-img-sidebar">
-                <button class="btn text-white d-md-none fs-4 p-0" onclick="document.querySelector('.sidebar').classList.remove('active')" style="background:transparent; border:none;">
+                <button class="mobile-menu-close" onclick="document.querySelector('.sidebar').classList.remove('active')" title="Fechar Menu">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
@@ -297,9 +297,14 @@
         <main class="main-content">
             
             <div class="notif-header">
-                <div>
-                    <h2 class="fw-bold mb-1">O Meu Histórico</h2>
-                    <p class="text-secondary m-0">Consulte o registo de todas as suas notificações e alertas.</p>
+                <div class="d-flex align-items-center gap-3">
+                    <button class="btn btn-icon-circle d-md-none" onclick="document.querySelector('.sidebar').classList.add('active')" title="Abrir Menu" style="flex-shrink: 0;">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+                    <div>
+                        <h2 class="fw-bold mb-1">O Meu Histórico</h2>
+                        <p class="text-secondary m-0">Consulte o registo de todas as suas notificações e alertas.</p>
+                    </div>
                 </div>
                 <div class="d-flex align-items-center gap-3">
                     <button class="btn btn-outline-primary fw-bold" onclick="markAllHistoryRead()" style="border-radius: 12px; border-color: var(--border-color); color: var(--text-main);">

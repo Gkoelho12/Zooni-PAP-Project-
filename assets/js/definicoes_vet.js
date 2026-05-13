@@ -24,7 +24,7 @@ async function initAuth() {
         document.getElementById('inputOMV').value = vet.numero_omv || '';
         document.getElementById('inputBio').value = vet.biografia || '';
         document.getElementById('inputMargem').value = vet.margem_minutos ?? 10;
-        currentTags = vet.especialidades || [];
+        currentTags = normalizeEspecialidades(vet.especialidades);
         renderTags();
         if (vet.foto_url) document.getElementById('avatarPreview').src = vet.foto_url;
         else {
@@ -36,7 +36,42 @@ async function initAuth() {
     await loadHorarios();
     await loadServicos();
     await loadNotifPrefs();
+    initVetPreferencesUI();
 }
+
+// ── APPEARANCE & LANGUAGE ─────────────────────────────────────
+function initVetPreferencesUI() {
+    // Theme
+    const savedTheme = localStorage.getItem('zooni-theme') || 'light';
+    const themeMap = { light: 'vet-theme-light', dark: 'vet-theme-dark', system: 'vet-theme-system' };
+    Object.entries(themeMap).forEach(([k, id]) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.classList.toggle('selected', k === savedTheme);
+    });
+
+    // Language
+    const savedLang = localStorage.getItem('zooni-lang') || 'pt';
+    const sel = document.getElementById('vetInputIdioma');
+    if (sel) sel.value = savedLang;
+}
+
+function setTheme(theme) {
+    localStorage.setItem('zooni-theme', theme);
+    if (window.applyZooniTheme) window.applyZooniTheme(theme);
+    initVetPreferencesUI();
+}
+
+function changeLanguage(lang) {
+    localStorage.setItem('zooni-lang', lang);
+    if (window.zooniI18n && typeof window.zooniI18n.setLanguage === 'function') {
+        window.zooniI18n.setLanguage(lang);
+    } else {
+        // Fallback: reload to apply
+        location.reload();
+    }
+}
+
 
 // ── SECTION SWITCHER ─────────────────────────────────────────
 function switchSection(id, btn) {
@@ -57,6 +92,14 @@ function showToast(msg, type = 'success') {
 }
 
 // ── TAGS ─────────────────────────────────────────────────────
+// Normaliza especialidades: aceita string CSV, array, ou nulo
+function normalizeEspecialidades(val) {
+    if (!val) return [];
+    if (Array.isArray(val)) return val.map(v => v.trim()).filter(Boolean);
+    if (typeof val === 'string') return val.split(',').map(v => v.trim()).filter(Boolean);
+    return [];
+}
+
 function renderTags() {
     const c = document.getElementById('tagsContainer');
     c.innerHTML = '';

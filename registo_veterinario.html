@@ -612,23 +612,46 @@
                     </div>
                     <div class="input-group-custom" style="margin-bottom:0;">
                         <i class="fa-solid fa-phone"></i>
-                        <input type="tel" id="regTelefone" placeholder="Nº Telemovel *" required>
+                        <input type="tel" id="regTelefone" placeholder="Nº Telemovel * (9 dígitos)" required
+                            pattern="[0-9]{9}" minlength="9" maxlength="9"
+                            oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,9)">
                     </div>
                 </div>
 
                 <!-- Especialidades (multi-select com chips) -->
                 <div style="margin-bottom:1rem;">
-                    <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
-                        <i class="fa-solid fa-stethoscope" style="color:var(--text-sec);"></i>
-                        <span style="font-weight:600; font-size:.9rem;">Especialidades *</span>
-                        <span id="specCount" style="font-size:.78rem; color:var(--text-sec); margin-left:auto;">0 selecionadas</span>
+                    <!-- Cabeçalho -->
+                    <div onclick="toggleEspecialidades()"
+                        style="display:flex; align-items:center; gap:8px; padding:11px 14px; border-radius:12px 12px 0 0; border:1.5px solid #d1e8d1; border-bottom:none; background:#f8fdf8; cursor:pointer; user-select:none; transition:background .2s;"
+                        onmouseover="this.style.background='#edf7ed'" onmouseout="this.style.background='#f8fdf8'"
+                        id="specToggleHeader">
+                        <i class="fa-solid fa-stethoscope" style="color:var(--primary); font-size:.95rem;"></i>
+                        <span style="font-weight:600; font-size:.9rem; flex:1;">Especialidades *</span>
+                        <span id="specCount" style="font-size:.78rem; color:var(--text-sec); margin-right:6px;">0 selecionadas</span>
+                        <i class="fa-solid fa-chevron-down" id="specChevron"
+                            style="color:var(--text-sec); font-size:.8rem; transition:transform .25s;"></i>
                     </div>
-                    <div id="specChipsContainer"
-                        style="display:flex; flex-wrap:wrap; gap:7px; padding:10px; border-radius:12px; border:1.5px solid #d1e8d1; background:#fff; min-height:52px;">
-                        <!-- Chips rendered by JS -->
+
+                    <!-- Container com altura dinâmica -->
+                    <div id="specPanel" style="overflow:hidden; max-height:0; transition:max-height .35s ease, opacity .25s ease; opacity:0;">
+                        <div id="specChipsContainer"
+                            id="specChipsInner"
+                            style="display:flex; flex-wrap:wrap; gap:7px; padding:12px 10px 10px; border:1.5px solid #d1e8d1; border-top:none; background:#fff; overflow:hidden; transition:max-height .3s ease; max-height:120px; min-height:52px;">
+                            <!-- Chips rendered by JS -->
+                        </div>
+                        <!-- Botão expandir/reduzir -->
+                        <div style="border:1.5px solid #d1e8d1; border-top:none; border-radius:0 0 12px 12px; background:#f8fdf8; padding:6px 12px; display:flex; justify-content:space-between; align-items:center;">
+                            <small style="color:var(--text-sec); font-size:.73rem;">Clica nas especialidades que praticas (podes selecionar várias).</small>
+                            <button type="button" id="specResizeBtn" onclick="resizeEspecialidades(event)"
+                                style="background:none; border:1.5px solid #d1e8d1; border-radius:8px; padding:3px 10px; font-size:.75rem; font-weight:600; color:var(--primary); cursor:pointer; display:flex; align-items:center; gap:5px; white-space:nowrap; transition:all .2s; flex-shrink:0;"
+                                onmouseover="this.style.background='#edf7ed'" onmouseout="this.style.background='none'">
+                                <i class="fa-solid fa-expand-alt" id="specResizeIcon"></i>
+                                <span id="specResizeLabel">Expandir</span>
+                            </button>
+                        </div>
                     </div>
+
                     <input type="hidden" id="regEspecialidade">
-                    <small style="color:var(--text-sec); font-size:.75rem; margin-top:4px; display:block;">Clica nas especialidades que praticas (pós podes selecionar várias).</small>
                 </div>
 
                 <!-- Clínica com Google Maps -->
@@ -791,6 +814,11 @@
                 btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Enviar Pedido de Registo';
                 return;
             }
+            if (!/^[0-9]{9}$/.test(telefone)) {
+                showError('O número de telemóvel deve ter exatamente 9 dígitos.');
+                btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Enviar Pedido de Registo';
+                return;
+            }
             if (!especialidade) {
                 showError('Por favor seleciona pelo menos uma especialidade.');
                 btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Enviar Pedido de Registo';
@@ -904,6 +932,54 @@
                 btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Enviar Pedido de Registo';
             }
         });
+
+        let specOpen = false;
+        let specExpanded = false;
+
+        function toggleEspecialidades() {
+            specOpen = !specOpen;
+            const panel = document.getElementById('specPanel');
+            const chevron = document.getElementById('specChevron');
+            const header = document.getElementById('specToggleHeader');
+
+            if (specOpen) {
+                panel.style.maxHeight = '800px';
+                panel.style.opacity = '1';
+                chevron.style.transform = 'rotate(180deg)';
+                header.style.borderColor = 'var(--primary)';
+                // Reset to collapsed state when reopening
+                specExpanded = false;
+                const inner = document.getElementById('specChipsContainer');
+                if (inner) inner.style.maxHeight = '120px';
+                const icon = document.getElementById('specResizeIcon');
+                const label = document.getElementById('specResizeLabel');
+                if (icon) icon.className = 'fa-solid fa-expand-alt';
+                if (label) label.textContent = 'Expandir';
+            } else {
+                panel.style.maxHeight = '0';
+                panel.style.opacity = '0';
+                chevron.style.transform = 'rotate(0deg)';
+                header.style.borderColor = '#d1e8d1';
+            }
+        }
+
+        function resizeEspecialidades(e) {
+            e.stopPropagation(); // Não acionar o toggle do painel
+            specExpanded = !specExpanded;
+            const inner = document.getElementById('specChipsContainer');
+            const icon = document.getElementById('specResizeIcon');
+            const label = document.getElementById('specResizeLabel');
+
+            if (specExpanded) {
+                inner.style.maxHeight = '600px';
+                icon.className = 'fa-solid fa-compress-alt';
+                label.textContent = 'Reduzir';
+            } else {
+                inner.style.maxHeight = '120px';
+                icon.className = 'fa-solid fa-expand-alt';
+                label.textContent = 'Expandir';
+            }
+        }
 
         function on24hToggle(checkbox) {
             const field = document.getElementById('contacto24hField');

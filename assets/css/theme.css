@@ -324,10 +324,9 @@ table {
     }
 
     .mobile-menu-close {
-        display: block !important;
-        position: absolute;
-        top: 20px;
-        right: 20px;
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
         background: transparent;
         border: none;
         color: white;
@@ -335,6 +334,8 @@ table {
         cursor: pointer;
         opacity: 0.8;
         transition: opacity 0.2s;
+        padding: 0;
+        flex-shrink: 0;
     }
 
     .mobile-menu-close:hover {

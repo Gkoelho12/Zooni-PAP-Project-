@@ -4,8 +4,8 @@
 // ═══════════════════════════════════════════════════════
 (function () {
     window.applyZooniTheme = function(theme) {
-        // Force light mode on veterinarian pages
-        if (window.location.pathname.includes('_veterinario')) {
+        // Admin pages always use light mode
+        if (window.location.pathname.includes('dashboard_admin')) {
             document.documentElement.removeAttribute('data-theme');
             return;
         }

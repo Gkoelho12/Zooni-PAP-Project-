@@ -24,27 +24,6 @@
             --orange: #FF7675;
         }
 
-        /* Force light mode — vet pages always use the light theme */
-        [data-theme="dark"] {
-            --bg-color: #F2F8F2 !important;
-            --text-main: #1a2e1a !important;
-            --text-sec: #5a7a5a !important;
-            --primary: #3D8B3D !important;
-            --card-bg: #ffffff !important;
-            --border: #e8f0e8 !important;
-            --border-color: #e8f0e8 !important;
-            --input-bg: #ffffff !important;
-            --input-border: #ced4da !important;
-            --card-hover: #f5f5f5 !important;
-        }
-        [data-theme="dark"] body { background-color: #F2F8F2 !important; color: #1a2e1a !important; }
-        [data-theme="dark"] .sidebar { background: linear-gradient(180deg, #3D8B3D 0%, #1E4D1E 100%) !important; }
-        [data-theme="dark"] .main-content,
-        [data-theme="dark"] .summary-card,
-        [data-theme="dark"] .calendar-panel,
-        [data-theme="dark"] .inbox-panel,
-        [data-theme="dark"] .ticket-card,
-        [data-theme="dark"] .modal-content { background: #fff !important; color: #1a2e1a !important; border-color: #f1f2f6 !important; }
 
         body {
             background-color: var(--bg-color);
@@ -1613,6 +1592,13 @@
             const clinica = document.getElementById('vetProfileClinica').value.trim();
             const especialidade = document.getElementById('vetProfileEspecialidade').value.trim();
 
+            if (telefone && !/^[0-9]{9}$/.test(telefone)) {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa-solid fa-floppy-disk me-1"></i> Guardar Alterações';
+                alert('O número de telemóvel deve ter exatamente 9 dígitos.');
+                return;
+            }
+
             const { error } = await supabaseClient
                 .from('veterinarios')
                 .update({ nome, telefone, clinica, especialidade })
@@ -1657,7 +1643,8 @@
                         <div class="mb-3">
                             <label class="small fw-bold" style="color:#5a7a5a !important;">Número de Telemóvel</label>
                             <input type="tel" class="form-control mt-1" id="vetProfileTelefone"
-                                placeholder="Ex: 912 345 678"
+                                placeholder="Ex: 912 345 678" minlength="9" maxlength="9"
+                                pattern="[0-9]{9}" oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,9)"
                                 style="background:#f8faf8 !important; color:#1a2e1a !important; border-color:#d1e8d1 !important;">
                         </div>
                         <div class="mb-3">
