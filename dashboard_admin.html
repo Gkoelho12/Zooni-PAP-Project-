@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Carrega o tema do admin antes do CSS (chave separada dos donos/vets) -->
     <script>
-        (function() {
+        (function () {
             var t = localStorage.getItem('zooni-admin-theme') || 'light';
             if (t === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
             else if (t === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)
@@ -41,63 +41,78 @@
             background-color: #0f1a0f !important;
             color: #e4e4e7 !important;
         }
+
         [data-theme="dark"] .topbar {
             background: #1a2a1a !important;
-            border-color: rgba(255,255,255,0.08) !important;
+            border-color: rgba(255, 255, 255, 0.08) !important;
         }
+
         [data-theme="dark"] .topbar h1,
         [data-theme="dark"] .panel-title {
             color: #e4e4e7 !important;
         }
+
         [data-theme="dark"] .panel {
             background: #1a2a1a !important;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.3) !important;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3) !important;
         }
+
         [data-theme="dark"] .panel-header {
-            border-color: rgba(255,255,255,0.08) !important;
+            border-color: rgba(255, 255, 255, 0.08) !important;
         }
+
         [data-theme="dark"] .stat-card {
             background: #1a2a1a !important;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.3) !important;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3) !important;
         }
+
         [data-theme="dark"] .stat-card .stat-value {
             color: #e4e4e7 !important;
         }
+
         [data-theme="dark"] .stat-card .stat-label {
             color: #a1a1aa !important;
         }
+
         [data-theme="dark"] .zooni-table th {
             background: #162216 !important;
             color: #a1a1aa !important;
-            border-color: rgba(255,255,255,0.08) !important;
+            border-color: rgba(255, 255, 255, 0.08) !important;
         }
+
         [data-theme="dark"] .zooni-table td {
-            border-color: rgba(255,255,255,0.05) !important;
+            border-color: rgba(255, 255, 255, 0.05) !important;
             color: #e4e4e7 !important;
         }
+
         [data-theme="dark"] .zooni-table tr:hover td {
             background: #1e2e1e !important;
         }
+
         [data-theme="dark"] .form-control,
         [data-theme="dark"] .form-select,
         [data-theme="dark"] .form-control-zooni {
             background: #0f1a0f !important;
             color: #e4e4e7 !important;
-            border-color: rgba(255,255,255,0.15) !important;
+            border-color: rgba(255, 255, 255, 0.15) !important;
         }
+
         [data-theme="dark"] .modal-content {
             background: #1a2a1a !important;
             color: #e4e4e7 !important;
         }
+
         [data-theme="dark"] .modal-header,
         [data-theme="dark"] .modal-footer {
-            border-color: rgba(255,255,255,0.08) !important;
+            border-color: rgba(255, 255, 255, 0.08) !important;
         }
+
         [data-theme="dark"] .text-muted {
             color: #a1a1aa !important;
         }
+
         [data-theme="dark"] .settings-item {
-            border-color: rgba(255,255,255,0.08) !important;
+            border-color: rgba(255, 255, 255, 0.08) !important;
         }
 
         * {
@@ -115,9 +130,10 @@
         }
 
         /* ─── SIDEBAR ─── */
+        /* ─── SIDEBAR ─── */
         .sidebar {
             width: var(--sidebar-w);
-            background: var(--primary-dark);
+            background: var(--primary); /* Verde padrão Zooni */
             color: white;
             display: flex;
             flex-direction: column;
@@ -127,34 +143,37 @@
             height: 100vh;
             overflow-y: auto;
             z-index: 100;
+            padding: 2rem 0;
         }
 
         .sidebar-logo {
             text-align: center;
-            padding: 1.5rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 0 1.5rem 2rem 1.5rem;
         }
 
         .sidebar-logo img {
-            max-width: 240px;
+            max-width: 180px; /* Alinhado com outros dashboards */
             filter: brightness(0) invert(1);
         }
 
         .sidebar-logo .admin-badge {
             display: inline-block;
-            background: rgba(255, 255, 255, 0.15);
+            background: rgba(255, 255, 255, 0.2);
             border-radius: 6px;
-            padding: 2px 8px;
+            padding: 2px 10px;
             font-size: 0.7rem;
-            font-weight: 700;
-            letter-spacing: 1px;
-            margin-top: 6px;
+            font-weight: 800;
+            letter-spacing: 1.5px;
+            margin-top: 8px;
             text-transform: uppercase;
         }
 
         .sidebar-nav {
             padding: 1rem 0;
             flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
         }
 
         .nav-item {
@@ -162,52 +181,57 @@
             align-items: center;
             gap: 12px;
             padding: 12px 1.5rem;
-            color: rgba(255, 255, 255, 0.75);
+            color: rgba(255, 255, 255, 0.85);
             text-decoration: none;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             font-weight: 500;
             cursor: pointer;
             transition: all 0.2s;
-            border-left: 3px solid transparent;
+            border-left: 4px solid transparent;
         }
 
         .nav-item:hover {
-            background: rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.1);
             color: white;
         }
 
         .nav-item.active {
-            background: rgba(255, 255, 255, 0.12);
+            background: rgba(255, 255, 255, 0.2);
             color: white;
-            border-left-color: var(--primary-light);
+            border-left-color: white;
+            font-weight: 600;
         }
 
         .nav-item i {
-            width: 18px;
+            width: 20px;
             text-align: center;
+            font-size: 1.1rem;
         }
 
         .sidebar-footer {
-            padding: 1rem 1.5rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 1.5rem;
+            margin-top: auto;
         }
 
         .btn-logout {
+            width: 100%;
             display: flex;
             align-items: center;
-            gap: 8px;
-            color: rgba(255, 255, 255, 0.6);
-            text-decoration: none;
-            font-size: 0.85rem;
+            gap: 12px;
+            padding: 12px 1.5rem;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.95rem;
+            font-weight: 600;
             cursor: pointer;
-            background: none;
+            background: rgba(255, 255, 255, 0.1);
             border: none;
-            transition: color 0.2s;
-            padding: 0;
+            border-radius: 12px;
+            transition: all 0.2s;
         }
 
         .btn-logout:hover {
-            color: #ff6b6b;
+            background: rgba(255, 71, 71, 0.2);
+            color: #ff8e8e;
         }
 
         /* ─── MAIN ─── */
@@ -216,18 +240,28 @@
             flex: 1;
             display: flex;
             flex-direction: column;
+            align-items: center; /* Centra o conteúdo horizontalmente no main */
+            background: var(--bg);
         }
 
         .topbar {
             background: white;
-            padding: 1rem 2rem;
             border-bottom: 1px solid #e0ede0;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
             position: sticky;
             top: 0;
             z-index: 50;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
+
+        .topbar-wrapper {
+            width: 100%;
+            max-width: 1200px;
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
         }
 
         .topbar h1 {
@@ -251,6 +285,11 @@
 
         .content {
             padding: 2rem;
+            width: 100%;
+            max-width: 1200px;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
         }
 
         /* ─── SECTIONS ─── */
@@ -265,9 +304,9 @@
         /* ─── STAT CARDS ─── */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1.2rem;
-            margin-bottom: 2rem;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 1rem;
         }
 
         .stat-card {
@@ -595,10 +634,12 @@
     <!-- MAIN -->
     <div class="main">
         <div class="topbar">
-            <h1 id="pageTitle">Visão Geral</h1>
-            <div class="d-flex align-items-center gap-3">
-                <span class="text-muted small" id="adminEmail"></span>
-                <div class="admin-avatar" id="adminAvatar">A</div>
+            <div class="topbar-wrapper">
+                <h1 id="pageTitle">Visão Geral</h1>
+                <div class="d-flex align-items-center gap-3">
+                    <span class="text-muted small" id="adminEmail"></span>
+                    <div class="admin-avatar" id="adminAvatar">A</div>
+                </div>
             </div>
         </div>
 
@@ -681,9 +722,7 @@
                     <div class="panel-header">
                         <span class="panel-title"><i
                                 class="fa-solid fa-user-doctor me-2 text-muted"></i>Veterinários</span>
-                        <button class="btn-primary-zooni" onclick="openAddVetModal()">
-                            <i class="fa-solid fa-plus"></i> Adicionar Veterinário
-                        </button>
+
                     </div>
                     <div class="panel-body p-0">
                         <table class="zooni-table">
@@ -879,20 +918,24 @@
                 <div class="col-12">
                     <div class="panel">
                         <div class="panel-header">
-                            <span class="panel-title"><i class="fa-solid fa-palette me-2 text-muted"></i>Aparência</span>
+                            <span class="panel-title"><i
+                                    class="fa-solid fa-palette me-2 text-muted"></i>Aparência</span>
                         </div>
                         <div class="panel-body">
                             <p class="text-muted small mb-3">Escolhe o tema visual do painel de administração.</p>
                             <div class="d-flex gap-3 flex-wrap" id="adminThemeOptions">
-                                <div id="adminThemeLight" onclick="setAdminThemePref('light')" style="border:2px solid #3D8B3D; border-radius:14px; padding:18px 28px; text-align:center; cursor:pointer; background:rgba(61,139,61,0.06);">
+                                <div id="adminThemeLight" onclick="setAdminThemePref('light')"
+                                    style="border:2px solid #3D8B3D; border-radius:14px; padding:18px 28px; text-align:center; cursor:pointer; background:rgba(61,139,61,0.06);">
                                     <span style="font-size:1.8rem; display:block; margin-bottom:6px;">☀️</span>
                                     <span style="font-weight:700; font-size:0.9rem; color:#3D8B3D;">Modo Claro</span>
                                 </div>
-                                <div id="adminThemeDark" onclick="setAdminThemePref('dark')" style="border:2px solid #e0ede0; border-radius:14px; padding:18px 28px; text-align:center; cursor:pointer;">
+                                <div id="adminThemeDark" onclick="setAdminThemePref('dark')"
+                                    style="border:2px solid #e0ede0; border-radius:14px; padding:18px 28px; text-align:center; cursor:pointer;">
                                     <span style="font-size:1.8rem; display:block; margin-bottom:6px;">🌙</span>
                                     <span style="font-weight:700; font-size:0.9rem; color:#5a7a5a;">Modo Escuro</span>
                                 </div>
-                                <div id="adminThemeSystem" onclick="setAdminThemePref('system')" style="border:2px solid #e0ede0; border-radius:14px; padding:18px 28px; text-align:center; cursor:pointer;">
+                                <div id="adminThemeSystem" onclick="setAdminThemePref('system')"
+                                    style="border:2px solid #e0ede0; border-radius:14px; padding:18px 28px; text-align:center; cursor:pointer;">
                                     <span style="font-size:1.8rem; display:block; margin-bottom:6px;">⚙️</span>
                                     <span style="font-weight:700; font-size:0.9rem; color:#5a7a5a;">Automático</span>
                                 </div>
@@ -945,8 +988,8 @@
                             <div class="col-md-6">
                                 <label class="form-label-zooni">Telefone</label>
                                 <input type="tel" class="form-control-zooni" id="vetTelefone"
-                                    placeholder="Ex: 912 345 678" minlength="9" maxlength="9"
-                                    pattern="[0-9]{9}" oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,9)">
+                                    placeholder="Ex: 912 345 678" minlength="9" maxlength="9" pattern="[0-9]{9}"
+                                    oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,9)">
                             </div>
                             <div id="vetPasswordGroup" class="col-12">
                                 <label class="form-label-zooni">Password Temporária *</label>
@@ -1117,6 +1160,15 @@
         let currentItemType = '';
         let currentVets = []; // To store vets for editing
 
+        function escAttr(str) {
+            if (str == null || str === '') return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;');
+        }
+
         // ─── AUTH GUARD ───
         async function initAdmin() {
             const { data: { session } } = await sb.auth.getSession();
@@ -1210,13 +1262,19 @@
             document.getElementById('statPets').textContent = pets ?? '—';
             document.getElementById('statTickets').textContent = tickets ?? '—';
 
-            // Pending vets count
-            const { count: pending } = await sb.from('veterinarios').select('*', { count: 'exact', head: true }).eq('status', 'pendente');
-            document.getElementById('statPending').textContent = pending ?? '0';
+            // Pending vets count (using same logic as loadApprovals to avoid mismatch)
+            const { data: pendingData } = await sbAdmin.from('veterinarios').select('id').eq('status', 'pendente');
+            const pending = pendingData ? pendingData.length : 0;
+
+            document.getElementById('statPending').textContent = pending;
             // Show badge on sidebar
             const badge = document.getElementById('pendingBadge');
-            if (pending && pending > 0) { badge.textContent = pending; badge.style.display = 'inline'; }
-            else { badge.style.display = 'none'; }
+            if (pending > 0) {
+                badge.textContent = pending;
+                badge.style.display = 'inline';
+            } else {
+                badge.style.display = 'none';
+            }
         }
 
         async function loadRecentTickets() {
@@ -1421,12 +1479,10 @@
                     <td>${badgeVetStatus(v.status)}</td>
                     <td>
                         <div class="d-flex gap-1 flex-wrap">
-                            <button class="btn-action btn-edit" onclick="editVet('${v.user_id}')"><i class="fa-solid fa-pen-to-square"></i> Editar</button>
                             ${v.status === 'suspenso'
                     ? `<button class="btn-action btn-view" onclick="changeVetStatus('${v.user_id}','ativo')"><i class="fa-solid fa-circle-check"></i> Ativar</button>`
                     : `<button class="btn-action btn-suspend" onclick="changeVetStatus('${v.user_id}','suspenso')"><i class="fa-solid fa-ban"></i> Suspender</button>`
                 }
-                            ${v.user_id ? `<button class="btn-action btn-suspend" style="background:#fef08a; color:#854d0e" onclick="openResetPasswordModal('${v.user_id}', '${v.nome.replace(/'/g, "\\'")}')" ><i class="fa-solid fa-key"></i> Passe</button>` : ''}
                         </div>
                     </td>
                 </tr>`).join('');
@@ -1608,10 +1664,33 @@
 
         // ─── TICKETS ───
         async function loadTickets() {
-            const { data } = await sb.from('tickets')
-                .select('id, motivo, estado, criado_em, animais(nome), clientes(nome)')
+            const { data, error } = await sb.from('tickets')
+                .select('id, motivo, estado, criado_em, id_veterinario, animais(nome), clientes(nome)')
                 .order('criado_em', { ascending: false });
-            allTickets = data || [];
+            if (error) {
+                console.error('loadTickets:', error);
+                allTickets = [];
+                renderTickets(allTickets);
+                return;
+            }
+            const tickets = data || [];
+            // id_veterinario guarda o user_id (auth) do veterinário — resolver nome na tabela veterinarios
+            const vetUserIds = [...new Set(tickets.map(t => t.id_veterinario).filter(Boolean))];
+            const vetMap = new Map();
+            if (vetUserIds.length > 0) {
+                const { data: vets, error: vErr } = await sbAdmin
+                    .from('veterinarios')
+                    .select('user_id, nome')
+                    .in('user_id', vetUserIds);
+                if (vErr) console.error('loadTickets vets:', vErr);
+                (vets || []).forEach(v => {
+                    if (v.user_id) vetMap.set(v.user_id, v.nome || '—');
+                });
+            }
+            allTickets = tickets.map(t => ({
+                ...t,
+                vet_nome: t.id_veterinario ? (vetMap.get(t.id_veterinario) || null) : null
+            }));
             renderTickets(allTickets);
         }
 
@@ -1622,16 +1701,26 @@
                 tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted py-4">Sem tickets.</td></tr>';
                 return;
             }
-            tbody.innerHTML = tickets.map(t => `
+            tbody.innerHTML = tickets.map(t => {
+                let vetCell;
+                if (t.vet_nome) {
+                    vetCell = `<strong>Dr/a. ${escAttr(t.vet_nome)}</strong>`;
+                } else if (t.id_veterinario) {
+                    vetCell = '<span class="text-muted">Desconhecido</span>';
+                } else {
+                    vetCell = '<span class="text-muted">—</span>';
+                }
+                return `
                 <tr>
                     <td><strong>#${t.id}</strong></td>
-                    <td>${t.motivo}</td>
-                    <td>${t.clientes?.nome || '—'}</td>
-                    <td>${t.animais?.nome || '—'}</td>
-                    <td><span class="text-muted">Desconhecido</span></td>
+                    <td>${escAttr(t.motivo)}</td>
+                    <td>${escAttr(t.clientes?.nome) || '—'}</td>
+                    <td>${escAttr(t.animais?.nome) || '—'}</td>
+                    <td>${vetCell}</td>
                     <td>${badgeEstado(t.estado)}</td>
                     <td class="text-muted small">${new Date(t.criado_em).toLocaleDateString('pt-PT')}</td>
-                </tr>`).join('');
+                </tr>`;
+            }).join('');
         }
 
         function filterTickets(estado, btn) {
@@ -1643,16 +1732,18 @@
 
         // ─── SETTINGS ───
         async function loadSettings() {
-            // Especialidades (from vets table distinct)
-            const { data: vets } = await sb.from('veterinarios').select('especialidade').not('especialidade', 'is', null);
-            const especialidades = [...new Set(vets?.map(v => v.especialidade).filter(Boolean))];
+            // Especialidades (from dedicated table)
+            const { data: espData } = await sbAdmin.from('especialidades').select('*').order('nome');
             const espList = document.getElementById('especialidadesList');
-            espList.innerHTML = especialidades.length
-                ? especialidades.map(e => `<div class="settings-item"><span class="settings-item-name">${e}</span></div>`).join('')
-                : '<p class="text-muted small">Sem especialidades ainda.</p>';
+            espList.innerHTML = espData?.length
+                ? espData.map(e => `<div class="settings-item">
+                    <span class="settings-item-name">${e.nome}</span>
+                    <button class="btn-action btn-danger-action" onclick="deleteItem('especialidades',${e.id})"><i class="fa-solid fa-trash"></i></button>
+                  </div>`).join('')
+                : '<p class="text-muted small">Sem especialidades registadas.</p>';
 
             // Tipos de Animal
-            const { data: tipos } = await sb.from('tipos_animais').select('*').order('nome');
+            const { data: tipos } = await sbAdmin.from('tipos_animais').select('*').order('nome');
             const tiposList = document.getElementById('tiposList');
             tiposList.innerHTML = tipos?.length
                 ? tipos.map(t => `<div class="settings-item">
@@ -1662,15 +1753,17 @@
                 : '<p class="text-muted small">Sem tipos ainda.</p>';
 
             // Raças
-            const { data: racas } = await sb.from('racas').select('*, tipos_animais(nome)').order('nome_raca');
+            const { data: racas, error: rError } = await sbAdmin.from('racas').select('*, tipos_animais(nome)').order('nome_raca');
+            if (rError) console.error("Erro ao carregar raças:", rError);
+            
             const racasTbody = document.getElementById('racasTbody');
             racasTbody.innerHTML = racas?.length
                 ? racas.map(r => `<tr>
                     <td>${r.nome_raca}</td>
-                    <td>${r.tipos_animais?.nome || '—'}</td>
+                    <td>${r.tipos_animais?.nome || r.id_tipo_animal || '—'}</td>
                     <td><button class="btn-action btn-danger-action" onclick="deleteItem('racas',${r.id})"><i class="fa-solid fa-trash"></i></button></td>
                   </tr>`).join('')
-                : '<tr><td colspan="3" class="text-center text-muted py-3">Sem raças.</td></tr>';
+                : '<tr><td colspan="3" class="text-center text-muted py-3">Sem raças encontradas.</td></tr>';
         }
 
         function openAddModal(type) {
@@ -1698,7 +1791,7 @@
             document.getElementById('addItemFields').innerHTML = fields;
 
             if (type === 'raca') {
-                sb.from('tipos_animais').select('id, nome').order('nome').then(({ data }) => {
+                sbAdmin.from('tipos_animais').select('id, nome').order('nome').then(({ data }) => {
                     document.getElementById('itemTipoId').innerHTML = data?.map(t => `<option value="${t.id}">${t.nome}</option>`).join('') || '';
                 });
             }
@@ -1710,17 +1803,15 @@
             if (!nome) { alert('Preenche o nome.'); return; }
 
             if (currentItemType === 'tipo') {
-                const { error } = await sb.from('tipos_animais').insert([{ nome }]);
+                const { error } = await sbAdmin.from('tipos_animais').insert([{ nome }]);
                 if (error) { alert('Erro: ' + error.message); return; }
             } else if (currentItemType === 'raca') {
                 const tipoId = document.getElementById('itemTipoId')?.value;
-                const { error } = await sb.from('racas').insert([{ nome_raca: nome, id_tipo_animal: tipoId }]);
+                const { error } = await sbAdmin.from('racas').insert([{ nome_raca: nome, id_tipo_animal: tipoId }]);
                 if (error) { alert('Erro: ' + error.message); return; }
             } else if (currentItemType === 'especialidade') {
-                // Especialidade: stored in vet profiles; just show as reference
-                alert(`Especialidade "${nome}" registada.\n\nPara aparecer nos menus, atribui esta especialidade a um veterinário ao editá-lo.`);
-                bootstrap.Modal.getInstance(document.getElementById('addItemModal')).hide();
-                return;
+                const { error } = await sbAdmin.from('especialidades').insert([{ nome }]);
+                if (error) { alert('Erro: ' + error.message); return; }
             }
 
             bootstrap.Modal.getInstance(document.getElementById('addItemModal')).hide();
@@ -1729,7 +1820,7 @@
 
         async function deleteItem(table, id) {
             if (!confirm('Eliminar este item?')) return;
-            await sb.from(table).delete().eq('id', id);
+            await sbAdmin.from(table).delete().eq('id', id);
             loadSettings();
         }
 
@@ -1758,12 +1849,11 @@
         // Init ZooniData
         document.addEventListener('DOMContentLoaded', () => {
             const specSelect = document.getElementById('vetEspecialidade');
-            if (specSelect && typeof ZooniData !== 'undefined') {
-                ZooniData.especialidades.forEach(especialidade => {
-                    const option = document.createElement('option');
-                    option.value = especialidade;
-                    option.textContent = especialidade;
-                    specSelect.appendChild(option);
+            if (specSelect) {
+                sb.from('veterinarios').select('especialidade').not('especialidade', 'is', null).then(({ data }) => {
+                    const especialidades = [...new Set(data?.map(v => v.especialidade).filter(Boolean))];
+                    specSelect.innerHTML = '<option value="">Selecione uma especialidade...</option>' +
+                        especialidades.map(e => `<option value="${e}">${e}</option>`).join('');
                 });
             }
         });
@@ -1771,5 +1861,3 @@
 </body>
 
 </html>
-```
-

@@ -4,8 +4,11 @@
 // ═══════════════════════════════════════════════════════
 (function () {
     window.applyZooniTheme = function(theme) {
-        // Admin pages always use light mode
-        if (window.location.pathname.includes('dashboard_admin')) {
+        // Admin pages and Vet auth pages always use light mode
+        const path = window.location.pathname;
+        if (path.includes('dashboard_admin') || 
+            path.includes('registo_veterinario.html') || 
+            path.includes('login.html')) {
             document.documentElement.removeAttribute('data-theme');
             return;
         }
