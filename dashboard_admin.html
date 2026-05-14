@@ -940,7 +940,9 @@
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label-zooni">Cédula Profissional</label>
-                                <input type="text" class="form-control-zooni" id="vetCedula" placeholder="Nº de cédula">
+                                <input type="text" class="form-control-zooni" id="vetCedula" placeholder="Nº de cédula (5 dígitos)"
+                                    pattern="[0-9]{5}" minlength="5" maxlength="5"
+                                    oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,5)">
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label-zooni">Telefone</label>
@@ -1404,6 +1406,18 @@
 
         // ─── VETS ───
 
+        function formatEspecialidade(esp) {
+            if (!esp) return '—';
+            if (Array.isArray(esp)) return esp.join(', ');
+            if (typeof esp === 'string') {
+                try {
+                    const parsed = JSON.parse(esp);
+                    if (Array.isArray(parsed)) return parsed.join(', ');
+                } catch(e) {}
+            }
+            return esp;
+        }
+
         async function loadVets() {
             const { data, error } = await sbAdmin.from('veterinarios').select('*').order('nome');
             currentVets = data || []; // Store fetched vets
@@ -1416,7 +1430,7 @@
                 <tr>
                     <td><strong>${v.nome}</strong></td>
                     <td class="text-muted small">${v.email || '—'}</td>
-                    <td>${v.especialidade || '—'}</td>
+                    <td>${formatEspecialidade(v.especialidade)}</td>
                     <td>${v.clinica || '—'}</td>
                     <td>${badgeVetStatus(v.status)}</td>
                     <td>

@@ -10,6 +10,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="assets/js/theme.js"></script>
+    <script>
+        // Forçar o modo claro conforme pedido pelo utilizador
+        localStorage.setItem('zooni-theme', 'light');
+        document.documentElement.removeAttribute('data-theme');
+    </script>
     <link rel="stylesheet" href="assets/css/theme.css">
 
     <style>
@@ -18,12 +23,6 @@
             --primary: #3D8B3D;
             --primary-dark: #1E4D1E;
             --primary-light: #5CB85C;
-            --bg-color: #F2F8F2;
-            --text-main: #1a2e1a;
-            --text-sec: #5a7a5a;
-            --card-bg: #ffffff;
-            --border-color: #e8f0e8;
-            --input-bg: #ffffff;
             --mint: #00B894;
             --orange: #FF7675;
             --danger: #d63031;
@@ -31,22 +30,6 @@
             --info: #0984e3;
         }
 
-        /* Force light mode on vet pages */
-        [data-theme="dark"] {
-            --bg-color: #F2F8F2 !important;
-            --text-main: #1a2e1a !important;
-            --text-sec: #5a7a5a !important;
-            --primary: #3D8B3D !important;
-            --card-bg: #ffffff !important;
-            --border-color: #e8f0e8 !important;
-        }
-        [data-theme="dark"] body { background-color: #F2F8F2 !important; color: #1a2e1a !important; }
-        [data-theme="dark"] .sidebar { background: linear-gradient(180deg,#3D8B3D 0%,#1E4D1E 100%) !important; }
-        [data-theme="dark"] .patient-table-wrap,
-        [data-theme="dark"] .search-bar-wrap,
-        [data-theme="dark"] .stat-card,
-        [data-theme="dark"] .offcanvas,
-        [data-theme="dark"] .modal-content { background:#fff !important; color:#1a2e1a !important; border-color:#e8f0e8 !important; }
 
         /* ── Layout ───────────────────────────────────────────── */
         body {
@@ -171,7 +154,7 @@
         }
 
         .stat-card {
-            background: white;
+            background: var(--card-bg);
             border: 1px solid var(--border-color);
             border-radius: 16px;
             padding: 1.2rem 1.4rem;
@@ -203,7 +186,7 @@
 
         /* ── Search & Filter Bar ──────────────────────────────── */
         .search-bar-wrap {
-            background: white;
+            background: var(--card-bg);
             border: 1px solid var(--border-color);
             border-radius: 16px;
             padding: 1.2rem 1.4rem;
@@ -252,7 +235,7 @@
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s;
-            background: white;
+            background: var(--card-bg);
             color: var(--text-sec);
             white-space: nowrap;
             user-select: none;
@@ -263,7 +246,7 @@
 
         /* ── Patient Table ────────────────────────────────────── */
         .patient-table-wrap {
-            background: white;
+            background: var(--card-bg);
             border: 1px solid var(--border-color);
             border-radius: 20px;
             overflow: hidden;
@@ -276,7 +259,7 @@
         }
 
         .patient-table thead th {
-            background: #f8faf8;
+            background: var(--bg-color);
             padding: 12px 18px;
             font-size: 0.75rem;
             font-weight: 700;
@@ -290,13 +273,13 @@
         .patient-table thead th:first-child { border-radius: 0; }
 
         .patient-table tbody tr {
-            border-bottom: 1px solid #f5f7f5;
+            border-bottom: 1px solid var(--border-color);
             cursor: pointer;
             transition: background 0.15s;
         }
 
         .patient-table tbody tr:last-child { border-bottom: none; }
-        .patient-table tbody tr:hover { background: #f0f7f0; }
+        .patient-table tbody tr:hover { background: var(--card-hover); }
 
         .patient-table tbody td {
             padding: 14px 18px;
@@ -949,7 +932,7 @@
                 <label class="small fw-bold text-muted mb-1 d-block">
                     <i class="fa-solid fa-pills text-danger me-1"></i>Alergias Conhecidas
                 </label>
-                <input type="text" class="edit-field" id="editAlergias" placeholder="Ex: Penicilina, Aspirina">
+                <input type="text" class="edit-field" id="editAlergias" placeholder="Não definido" readonly disabled title="As alergias apenas podem ser alteradas pelo tutor." style="background-color: var(--bg-color); cursor: not-allowed; opacity: 0.8;">
             </div>
             <div class="mb-3">
                 <label class="small fw-bold text-muted mb-1 d-block">
@@ -1593,7 +1576,6 @@
             const payload = {
                 peso_kg: Number.isFinite(parsedPeso) ? parsedPeso : null,
                 microchip: document.getElementById('editMicrochip').value.trim() || null,
-                alergias: document.getElementById('editAlergias').value.trim() || null,
                 alertas_clinicos: document.getElementById('editAlertas').value.trim() || null
             };
 

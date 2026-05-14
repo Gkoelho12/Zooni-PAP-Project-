@@ -24,8 +24,14 @@ async function initAuth() {
         document.getElementById('inputOMV').value = vet.numero_omv || '';
         document.getElementById('inputBio').value = vet.biografia || '';
         document.getElementById('inputMargem').value = vet.margem_minutos ?? 10;
-        currentTags = normalizeEspecialidades(vet.especialidades);
+        // Fix: correct column name is 'especialidade' (singular)
+        currentTags = normalizeEspecialidades(vet.especialidade);
         renderTags();
+        // Load clinica and telefone
+        const clinicaEl = document.getElementById('inputClinica');
+        const telefoneEl = document.getElementById('inputTelefone');
+        if (clinicaEl) clinicaEl.value = vet.clinica || '';
+        if (telefoneEl) telefoneEl.value = vet.telefone || '';
         if (vet.foto_url) document.getElementById('avatarPreview').src = vet.foto_url;
         else {
             const name = encodeURIComponent(vet.nome || 'Vet');
@@ -100,22 +106,62 @@ function normalizeEspecialidades(val) {
     return [];
 }
 
+const ALL_ESPECIALIDADES = [
+    'Medicina Geral','Cirurgia','Cardiologia','Dermatologia','Neurologia','Oncologia',
+    'Ortopedia','Oftalmologia','Medicina Interna','Medicina de Urgência','Reprodução Animal',
+    'Nutrição e Dietética','Comportamento Animal','Animais Exóticos','Medicina Felina',
+    'Medicina Equina','Animais Silvestres','Anestesiologia','Radiologia e Imagiologia','Odontologia Veterinária'
+];
+
+let tempTags = []; // temp selection while modal is open
+
 function renderTags() {
     const c = document.getElementById('tagsContainer');
+    const emptyMsg = document.getElementById('tagsEmpty');
     c.innerHTML = '';
-    currentTags.forEach((tag, i) => {
-        const d = document.createElement('span');
-        d.className = 'tag-pill';
-        d.innerHTML = `${tag} <i class="fa-solid fa-xmark remove-tag" onclick="removeTag(${i})"></i>`;
-        c.appendChild(d);
+    if (currentTags.length === 0) {
+        if (emptyMsg) emptyMsg.style.display = 'block';
+    } else {
+        if (emptyMsg) emptyMsg.style.display = 'none';
+        currentTags.forEach((tag, i) => {
+            const d = document.createElement('span');
+            d.className = 'tag-pill';
+            d.innerHTML = `${tag} <i class="fa-solid fa-xmark remove-tag" onclick="removeTag(${i})"></i>`;
+            c.appendChild(d);
+        });
+    }
+}
+
+function openEspecialidadesModal() {
+    tempTags = [...currentTags];
+    const container = document.getElementById('especialidadesCheckList');
+    container.innerHTML = '';
+    ALL_ESPECIALIDADES.forEach(esp => {
+        const selected = tempTags.includes(esp);
+        const chip = document.createElement('div');
+        chip.className = 'esp-chip' + (selected ? ' selected' : '');
+        chip.textContent = esp;
+        chip.dataset.value = esp;
+        chip.onclick = () => {
+            if (tempTags.includes(esp)) {
+                tempTags = tempTags.filter(t => t !== esp);
+                chip.classList.remove('selected');
+            } else {
+                tempTags.push(esp);
+                chip.classList.add('selected');
+            }
+        };
+        container.appendChild(chip);
     });
+    const modal = new bootstrap.Modal(document.getElementById('modalEspecialidades'));
+    modal.show();
 }
-function addTag() {
-    const input = document.getElementById('tagInput');
-    const v = input.value.trim();
-    if (v && !currentTags.includes(v)) { currentTags.push(v); renderTags(); }
-    input.value = '';
+
+function confirmEspecialidades() {
+    currentTags = [...tempTags];
+    renderTags();
 }
+
 function removeTag(i) { currentTags.splice(i, 1); renderTags(); }
 
 // ── SAVE PERFIL ──────────────────────────────────────────────
@@ -123,10 +169,14 @@ async function savePerfil() {
     const nome = document.getElementById('inputNome').value.trim();
     const omv = document.getElementById('inputOMV').value.trim();
     const bio = document.getElementById('inputBio').value.trim();
+    const clinica = document.getElementById('inputClinica')?.value.trim() || '';
+    const telefone = document.getElementById('inputTelefone')?.value.trim() || '';
     if (!nome) { showToast('Introduza o nome clínico.', 'error'); return; }
 
     const { error } = await supabaseClient.from('veterinarios').update({
-        nome, numero_omv: omv, biografia: bio, especialidades: currentTags
+        nome, numero_omv: omv, biografia: bio,
+        especialidade: currentTags,  // Fix: correct column name
+        clinica, telefone
     }).eq('user_id', VET_USER_ID);
 
     if (error) showToast('Erro: ' + error.message, 'error');

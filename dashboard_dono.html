@@ -1980,6 +1980,18 @@
             } catch (e) { }
         }
 
+        function formatEspecialidade(esp) {
+            if (!esp) return '';
+            if (Array.isArray(esp)) return esp.join(', ');
+            if (typeof esp === 'string') {
+                try {
+                    const parsed = JSON.parse(esp);
+                    if (Array.isArray(parsed)) return parsed.join(', ');
+                } catch(e) {}
+            }
+            return esp;
+        }
+
         async function loadVeterinarios() {
             try {
                 const sel = document.getElementById('ticketVeterinario');
@@ -2016,7 +2028,8 @@
                     const opt = document.createElement('option');
                     opt.value = vet.user_id;
                     const clinica = vet.clinica ? ` — ${vet.clinica}` : '';
-                    const esp = vet.especialidade ? ` • ${vet.especialidade}` : '';
+                    const fEsp = formatEspecialidade(vet.especialidade);
+                    const esp = fEsp ? ` • ${fEsp}` : '';
                     opt.textContent = `${vet.nome}${clinica}${esp}`;
                     sel.appendChild(opt);
                 });

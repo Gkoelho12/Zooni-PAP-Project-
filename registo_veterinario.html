@@ -608,7 +608,9 @@
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.6rem; margin-bottom:0.85rem;">
                     <div class="input-group-custom" style="margin-bottom:0;">
                         <i class="fa-solid fa-id-card"></i>
-                        <input type="text" id="regCedula" placeholder="Nº Cédula (OMV / CRMV) *" required>
+                        <input type="text" id="regCedula" placeholder="Nº Cédula (OMV) *" required
+                            pattern="[0-9]{5}" minlength="5" maxlength="5"
+                            oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,5)">
                     </div>
                     <div class="input-group-custom" style="margin-bottom:0;">
                         <i class="fa-solid fa-phone"></i>

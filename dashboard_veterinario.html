@@ -13,13 +13,11 @@
     <script src="assets/js/theme.js"></script>
     <link rel="stylesheet" href="assets/css/theme.css">
     <style>
+        /* Primary/brand colors only — theme colors handled by theme.css */
         :root {
             --primary: #3D8B3D;
             --primary-dark: #1E4D1E;
             --primary-light: #5CB85C;
-            --bg-color: #F2F8F2;
-            --text-main: #1a2e1a;
-            --text-sec: #5a7a5a;
             --mint: #00B894;
             --orange: #FF7675;
         }
@@ -135,17 +133,17 @@
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            background: #FDFDFF;
+            background: var(--bg-color);
         }
 
         /* TOP NAVBAR */
         .navbar-area {
             padding: 1rem 2rem;
-            border-bottom: 1px solid #f1f2f6;
+            border-bottom: 1px solid var(--border-color);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: white;
+            background: var(--card-bg);
             height: 70px;
         }
 
@@ -200,8 +198,8 @@
         }
 
         .summary-card {
-            background: white;
-            border: 1px solid #f1f2f6;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
             border-radius: 12px;
             padding: 1rem;
             flex: 1;

@@ -790,7 +790,7 @@
                                     <label class="form-label" data-i18n="profile_phone">Telemóvel (Contacto de Emergência)</label>
                                     <div class="input-group">
                                         <span class="input-group-text" style="border-radius:10px 0 0 10px; background:var(--bg-color); border-color:var(--border);">🇵🇹 +351</span>
-                                        <input type="tel" class="form-control" id="inputTelemovel" placeholder="912 345 678" style="border-radius:0 10px 10px 0;">
+                                        <input type="tel" class="form-control" id="inputTelemovel" placeholder="912345678" style="border-radius:0 10px 10px 0;" pattern="[0-9]{9}" minlength="9" maxlength="9" oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,9)">
                                     </div>
                                     <small class="text-muted" data-i18n="profile_phone_hint">Usado pelos veterinários para contacto urgente.</small>
                                 </div>

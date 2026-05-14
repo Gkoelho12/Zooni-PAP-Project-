@@ -831,6 +831,18 @@
         }
 
         // ── LOAD ALL ACTIVE VETS ──────────────────────────────
+        function formatEspecialidade(esp) {
+            if (!esp) return 'Medicina Geral';
+            if (Array.isArray(esp)) return esp.join(', ');
+            if (typeof esp === 'string') {
+                try {
+                    const parsed = JSON.parse(esp);
+                    if (Array.isArray(parsed)) return parsed.join(', ');
+                } catch(e) {}
+            }
+            return esp;
+        }
+
         async function loadVets() {
             const { data, error } = await sb
                 .from('veterinarios')
@@ -961,7 +973,7 @@
 
             let filtered = allVets.filter(v => {
                 const matchSearch = !query || v.nome?.toLowerCase().includes(query) || v.clinica?.toLowerCase().includes(query);
-                const matchSpec = !spec || v.especialidade === spec;
+                const matchSpec = !spec || (Array.isArray(v.especialidade) ? v.especialidade.includes(spec) : v.especialidade?.includes(spec));
                 const matchStatus = !statusF || vetStatusMap[v.user_id] === statusF;
                 const matchFav = !showOnlyFavs || favoritosSet.has(v.user_id);
                 return matchSearch && matchSpec && matchStatus && matchFav;
@@ -1018,7 +1030,7 @@
                         ${avatarHtml}
                         <div class="vet-info">
                             <div class="vet-name">${v.nome || '—'}</div>
-                            <div class="vet-spec">${v.especialidade || 'Medicina Geral'}</div>
+                            <div class="vet-spec">${formatEspecialidade(v.especialidade)}</div>
                             <div class="vet-clinic"><i class="fa-solid fa-location-dot" style="font-size:0.75rem; color:var(--primary);"></i> ${v.clinica || '—'}</div>
                         </div>
                         <button class="btn-fav ${isFav ? 'active' : ''}" title="Favorito" onclick="toggleFav('${v.user_id}', this)">
@@ -1155,8 +1167,9 @@
                     const opt = document.createElement('option');
                     opt.value = vet.user_id;
                     const clinica = vet.clinica ? ` — ${vet.clinica}` : '';
-                    const esp = vet.especialidade ? ` • ${vet.especialidade}` : '';
-                    opt.textContent = `${vet.nome}${clinica}${esp}`;
+                    const fEsp = formatEspecialidade(vet.especialidade);
+                    const espText = fEsp ? ` • ${fEsp}` : '';
+                    opt.textContent = `${vet.nome}${clinica}${espText}`;
                     sel.appendChild(opt);
                 });
             } catch (e) { console.error('Erro ao carregar veterinários:', e); }

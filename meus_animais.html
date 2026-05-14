@@ -1250,15 +1250,21 @@
                         </div>
 
                         <div class="mb-3">
-                            <label class="small text-muted fw-bold" data-i18n="modal_pet_allergies">Alergias Conhecidas</label>
-                            <textarea class="form-control" id="alergias" rows="2"
+                            <div class="form-check form-switch mb-2">
+                                <input class="form-check-input" type="checkbox" id="temAlergias" onchange="toggleAlergias()">
+                                <label class="form-check-label small text-muted fw-bold" for="temAlergias" data-i18n="modal_pet_allergies">Tem Alergias Conhecidas?</label>
+                            </div>
+                            <textarea class="form-control" id="alergias" rows="2" style="display: none;"
                                 data-i18n-placeholder="modal_pet_allergies_ph"
                                 placeholder="Ex: Amendoim, determinados antibióticos..."></textarea>
                         </div>
 
                         <div class="mb-4">
-                            <label class="small text-muted fw-bold" data-i18n="modal_pet_diseases">Doenças Crónicas</label>
-                            <textarea class="form-control" id="doencas_cronicas" rows="2"
+                            <div class="form-check form-switch mb-2">
+                                <input class="form-check-input" type="checkbox" id="temDoencas" onchange="toggleDoencas()">
+                                <label class="form-check-label small text-muted fw-bold" for="temDoencas" data-i18n="modal_pet_diseases">Tem Doenças Crónicas?</label>
+                            </div>
+                            <textarea class="form-control" id="doencas_cronicas" rows="2" style="display: none;"
                                 data-i18n-placeholder="modal_pet_diseases_ph"
                                 placeholder="Ex: Diabetes, Leishmaniose..."></textarea>
                         </div>
@@ -1824,8 +1830,14 @@
                 document.getElementById('sexo').value = data.sexo || '';
                 document.getElementById('castrado').checked = data.castrado || false;
                 document.getElementById('microchip').value = data.microchip || '';
+                
                 document.getElementById('alergias').value = data.alergias || '';
+                document.getElementById('temAlergias').checked = !!data.alergias;
+                toggleAlergias();
+                
                 document.getElementById('doencas_cronicas').value = data.doencas_cronicas || '';
+                document.getElementById('temDoencas').checked = !!data.doencas_cronicas;
+                toggleDoencas();
 
                 // Important: clear the file input from any previous operation so selecting the same file works again
                 document.getElementById('foto').value = '';
@@ -1846,6 +1858,18 @@
             } catch (e) { }
         }
 
+        // Toggle logic for the checkboxes
+        function toggleAlergias() {
+            const tem = document.getElementById('temAlergias').checked;
+            document.getElementById('alergias').style.display = tem ? 'block' : 'none';
+            if (!tem) document.getElementById('alergias').value = '';
+        }
+        function toggleDoencas() {
+            const tem = document.getElementById('temDoencas').checked;
+            document.getElementById('doencas_cronicas').style.display = tem ? 'block' : 'none';
+            if (!tem) document.getElementById('doencas_cronicas').value = '';
+        }
+
         /* Modal Event Handlers */
         document.querySelector('[data-bs-target="#addPetModal"]').addEventListener('click', () => {
             document.getElementById('animalForm').reset();
@@ -1856,6 +1880,14 @@
             // Birth date cannot be in the future
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('nascimento').max = today;
+            
+            document.getElementById('microchip').value = '';
+            document.getElementById('alergias').value = '';
+            document.getElementById('temAlergias').checked = false;
+            toggleAlergias();
+            document.getElementById('doencas_cronicas').value = '';
+            document.getElementById('temDoencas').checked = false;
+            toggleDoencas();
         });
 
         document.getElementById('tipo').addEventListener('change', (e) => loadRacas(e.target.value));
@@ -2154,6 +2186,18 @@
             } catch (e) { }
         }
 
+        function formatEspecialidade(esp) {
+            if (!esp) return '';
+            if (Array.isArray(esp)) return esp.join(', ');
+            if (typeof esp === 'string') {
+                try {
+                    const parsed = JSON.parse(esp);
+                    if (Array.isArray(parsed)) return parsed.join(', ');
+                } catch(e) {}
+            }
+            return esp;
+        }
+
         async function loadVeterinarios() {
             const sel = document.getElementById('ticketVeterinario');
             sel.innerHTML = '<option value="">A carregar...</option>';
@@ -2199,7 +2243,8 @@
                     const opt = document.createElement('option');
                     opt.value = vet.user_id;
                     const clinica = vet.clinica ? ` — ${vet.clinica}` : '';
-                    const esp = vet.especialidade ? ` • ${vet.especialidade}` : '';
+                    const fEsp = formatEspecialidade(vet.especialidade);
+                    const esp = fEsp ? ` • ${fEsp}` : '';
                     opt.textContent = `${vet.nome}${clinica}${esp}`;
                     sel.appendChild(opt);
                 });
@@ -2627,14 +2672,50 @@
 
             if (error) {
                 console.error('DB Error:', error);
-                alert('Erro: ' + error.message + '\\n\\n(Nota: Tem de adicionar a coluna "comprovativo_url" do tipo text na tabela "vacinas" do Supabase)');
+                alert('Erro: ' + error.message + '\n\n(Nota: Tem de adicionar a coluna "comprovativo_url" do tipo text na tabela "vacinas" do Supabase)');
                 return;
             }
 
             bootstrap.Modal.getInstance(document.getElementById('addVacinaModal')).hide();
             document.getElementById('vacinaForm').reset();
+            toggleVacinaFields(); // Reset fields to default
             loadPetVaccines(currentProfilePetId);
         }
+
+        // Vaccine Toggle Logic
+        function toggleVacinaFields() {
+            const jaTomada = document.getElementById('vacinaJaTomada').checked;
+            const dataTomaInput = document.getElementById('vacinaDataToma');
+            const colProximaDose = document.getElementById('colProximaDose');
+            const lblDataToma = document.getElementById('lblDataToma');
+            
+            // Set max date to today for Data de Toma
+            const today = new Date().toISOString().split('T')[0];
+            dataTomaInput.setAttribute('max', today);
+
+            if (jaTomada) {
+                // Se já foi tomada, esconde a próxima dose e impede datas no futuro
+                colProximaDose.style.display = 'none';
+                document.getElementById('vacinaProximaDose').value = '';
+                lblDataToma.innerText = 'Data de Toma';
+                // Remove max attribute se não estivesse, mas queremos forçar o max
+                dataTomaInput.setAttribute('max', today);
+                
+                // Se o utilizador já tinha metido uma data no futuro, limpamos
+                if(dataTomaInput.value > today) dataTomaInput.value = today;
+            } else {
+                // Se NÃO foi tomada, mostra para agendar
+                colProximaDose.style.display = 'block';
+                lblDataToma.innerText = 'Data de Registo';
+                dataTomaInput.removeAttribute('max');
+            }
+        }
+
+        // Initialize toggle on modal open
+        document.getElementById('addVacinaModal').addEventListener('show.bs.modal', function () {
+            document.getElementById('vacinaForm').reset();
+            toggleVacinaFields();
+        });
 
         async function saveDesparasitacao() {
             const tipo = document.getElementById('despTipo').value;
@@ -2963,18 +3044,22 @@
             </div>
             <div class="modal-body">
                 <form id="vacinaForm">
+                    <div class="mb-3 form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="vacinaJaTomada" checked onchange="toggleVacinaFields()">
+                        <label class="form-check-label fw-bold small text-muted" for="vacinaJaTomada">A vacina já foi tomada?</label>
+                    </div>
                     <div class="mb-3">
                         <label class="small text-muted fw-bold">Nome da Vacina</label>
                         <input type="text" class="form-control mt-1" id="vacinaNome" required
                             placeholder="Ex: Raiva, Quíntupla...">
                     </div>
                     <div class="row mb-3">
-                        <div class="col-6">
-                            <label class="small text-muted fw-bold">Data de Toma</label>
+                        <div class="col-6" id="colDataToma">
+                            <label class="small text-muted fw-bold" id="lblDataToma">Data de Toma</label>
                             <input type="date" class="form-control mt-1" id="vacinaDataToma" required>
                         </div>
-                        <div class="col-6">
-                            <label class="small text-muted fw-bold">Próxima Dose</label>
+                        <div class="col-6" id="colProximaDose" style="display: none;">
+                            <label class="small text-muted fw-bold">Próxima Dose / Data Agendada</label>
                             <input type="date" class="form-control mt-1" id="vacinaProximaDose">
                         </div>
                     </div>
