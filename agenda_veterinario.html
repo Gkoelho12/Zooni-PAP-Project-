@@ -150,8 +150,8 @@
         .header-area { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2.5rem; }
         
         /* Filter Pills (Same as Owner) */
-        .filter-pill { padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; cursor: pointer; border: 1px solid #dfe6e9; background: white; color: var(--text-main); transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px; }
-        .filter-pill.active { background: #f1f2f6; border-color: transparent; }
+        .filter-pill { padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; cursor: pointer; border: 1px solid var(--border-color); background: var(--card-bg); color: var(--text-main); transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px; }
+        .filter-pill.active { background: var(--border-color); border-color: transparent; }
         .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
         
         /* Add Event CTA Button */
@@ -164,11 +164,11 @@
         
         /* FullCalendar Customization (Exact Match to Owner CSS) */
         .fc { font-family: 'Outfit', sans-serif; height: 100%; }
-        .fc-theme-standard td, .fc-theme-standard th, .fc-theme-standard .fc-scrollgrid { border-color: #f1f2f6; }
+        .fc-theme-standard td, .fc-theme-standard th, .fc-theme-standard .fc-scrollgrid { border-color: var(--border-color); }
         
         .fc .fc-toolbar-title { font-size: 1.25rem; font-weight: 700; color: var(--text-main); }
-        .fc .fc-button-primary { background-color: white; color: var(--text-main); border: 1px solid #dfe6e9; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02); text-transform: capitalize; }
-        .fc .fc-button-primary:hover { background-color: #f8f9fa; color: var(--primary); border-color: #dfe6e9; }
+        .fc .fc-button-primary { background-color: var(--card-bg); color: var(--text-main); border: 1px solid var(--border-color); box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02); text-transform: capitalize; }
+        .fc .fc-button-primary:hover { background-color: var(--card-hover); color: var(--primary); border-color: var(--primary); }
         .fc .fc-button-primary:not(:disabled).fc-button-active, .fc .fc-button-primary:not(:disabled):active { background-color: var(--primary); color: white; border-color: var(--primary); }
         
         .fc-event { border: none; cursor: pointer; color: #ffffff !important; font-weight: 600; }
@@ -224,32 +224,32 @@
 
         <!-- MAIN -->
         <main class="main-content">
-            <!-- Header Area (Minha Agenda style) -->
+            <!-- Header Area -->
             <div class="header-area">
                 <div>
-                    <h2 class="fw-bold mb-1">My Schedule</h2>
-                    <p class="text-muted">All your events and appointments in one place.</p>
+                    <h2 class="fw-bold mb-1">A Minha Agenda</h2>
+                    <p class="text-muted">Todos os seus eventos e consultas num só lugar.</p>
                 </div>
             </div>
 
-            <!-- Fila de Filtros e Botão Adicionar Evento (Owner Style) -->
+            <!-- Fila de Filtros e Botão Adicionar Evento -->
             <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
                 <div class="d-flex gap-2 flex-wrap">
-                    <div class="filter-pill active">All</div>
-                    <div class="filter-pill"><span class="dot" style="background-color: var(--event-vacina);"></span> Vaccines</div>
-                    <div class="filter-pill"><span class="dot" style="background-color: var(--event-desparasitacao);"></span> Deworming</div>
-                    <div class="filter-pill"><span class="dot" style="background-color: var(--event-medicacao);"></span> Medication</div>
-                    <div class="filter-pill"><span class="dot" style="background-color: var(--event-consulta);"></span> Appointments</div>
-                    <div class="filter-pill"><span class="dot" style="background-color: var(--event-cirurgia);"></span> Surgeries</div>
-                    <div class="filter-pill" onclick="openBlockModal()"><span class="dot" style="background-color: var(--event-bloqueio);"></span> Manual Block</div>
+                    <div class="filter-pill active">Todos</div>
+                    <div class="filter-pill"><span class="dot" style="background-color: var(--event-vacina);"></span> Vacinas</div>
+                    <div class="filter-pill"><span class="dot" style="background-color: var(--event-desparasitacao);"></span> Desparasitação</div>
+                    <div class="filter-pill"><span class="dot" style="background-color: var(--event-medicacao);"></span> Medicação</div>
+                    <div class="filter-pill"><span class="dot" style="background-color: var(--event-consulta);"></span> Consultas</div>
+                    <div class="filter-pill"><span class="dot" style="background-color: var(--event-cirurgia);"></span> Cirurgias</div>
+                    <div class="filter-pill" onclick="openBlockModal()"><span class="dot" style="background-color: var(--event-bloqueio);"></span> Bloqueio Manual</div>
                 </div>
-                <!-- Standard Add Event Button just like Owner -->
-                <button class="btn-add-event" onclick="openBlockModal()"><i class="fa-solid fa-plus"></i> Add Event / Block</button>
+                <!-- Botão Adicionar Evento -->
+                <button class="btn-add-event" onclick="openBlockModal()"><i class="fa-solid fa-plus"></i> Adicionar Evento / Bloco</button>
             </div>
 
             <!-- Area de Layout Central (Glass Card full width) -->
             <div class="agenda-layout">
-                <div class="glass-card">
+                <div class="glass-card force-light-theme">
                     <div id="calendar"></div>
                 </div>
             </div>
@@ -257,7 +257,7 @@
     </div>
 
     <!-- Offcanvas for Patient Context -->
-    <div class="offcanvas offcanvas-end" tabindex="-1" id="contextOffcanvas" aria-labelledby="contextOffcanvasLabel">
+    <div class="offcanvas offcanvas-end force-light-theme" tabindex="-1" id="contextOffcanvas" aria-labelledby="contextOffcanvasLabel">
         <div class="offcanvas-header border-bottom">
             <h5 class="offcanvas-title fw-bold" id="contextOffcanvasLabel">Detalhes do Agendamento</h5>
             <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
@@ -268,7 +268,7 @@
     </div>
 
     <!-- Modal Bloqueio Manual -->
-    <div class="modal fade" id="blockModal" tabindex="-1">
+    <div class="modal fade force-light-theme" id="blockModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header border-0 pb-0">

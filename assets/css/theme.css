@@ -461,3 +461,70 @@ table {
     }
 }
 
+/* ── Force Light Theme Utility ──────────────────────── */
+.force-light-theme.calendar-panel,
+.force-light-theme.glass-card,
+.force-light-theme.card-panel,
+.force-light-theme.bg-light,
+.force-light-theme.bg-white,
+.force-light-theme.offcanvas,
+.force-light-theme .modal-content,
+.force-light-theme .modal-header,
+.force-light-theme .modal-body,
+.force-light-theme .modal-footer,
+.force-light-theme .bg-light,
+.force-light-theme .bg-white,
+.force-light-theme .rounded-3,
+.force-light-theme .rounded-4 {
+    background-color: #ffffff !important;
+    color: #1a2e1a !important;
+    border-color: #e8f0e8 !important;
+}
+
+.force-light-theme,
+.force-light-theme p,
+.force-light-theme h1,
+.force-light-theme h2,
+.force-light-theme h3,
+.force-light-theme h4,
+.force-light-theme h5,
+.force-light-theme h6,
+.force-light-theme label {
+    color: #1a2e1a !important;
+}
+
+/* Preserve specific status colors */
+.force-light-theme .text-primary { color: var(--primary) !important; }
+.force-light-theme .text-success { color: #2ecc71 !important; }
+.force-light-theme .text-danger { color: #e74c3c !important; }
+.force-light-theme .text-warning { color: #f1c40f !important; }
+.force-light-theme .text-white { color: #ffffff !important; }
+
+.force-light-theme .text-muted,
+.force-light-theme small {
+    color: #5a7a5a !important;
+}
+
+.force-light-theme .bg-white {
+    background-color: #ffffff !important;
+}
+
+/* FullCalendar forced light mode */
+.force-light-theme .fc,
+.force-light-theme .fc table,
+.force-light-theme .fc th,
+.force-light-theme .fc td {
+    background-color: #ffffff !important;
+    color: #1a2e1a !important;
+    border-color: #e8f0e8 !important;
+}
+
+.force-light-theme .fc-toolbar-title,
+.force-light-theme .fc-col-header-cell-cushion,
+.force-light-theme .fc-daygrid-day-number {
+    color: #1a2e1a !important;
+}
+
+.force-light-theme .btn-close {
+    filter: none !important;
+}

@@ -13,13 +13,11 @@
     <script src="assets/js/theme.js"></script>
     <link rel="stylesheet" href="assets/css/theme.css">
     <style>
+        /* Primary/brand colors only — theme colors handled by theme.css */
         :root {
             --primary: #3D8B3D;
             --primary-dark: #1E4D1E;
             --primary-light: #5CB85C;
-            --bg-color: #F2F8F2;
-            --text-main: #1a2e1a;
-            --text-sec: #5a7a5a;
             --mint: #00B894;
             --orange: #FF7675;
         }
@@ -135,17 +133,17 @@
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            background: #FDFDFF;
+            background: var(--bg-color);
         }
 
         /* TOP NAVBAR */
         .navbar-area {
             padding: 1rem 2rem;
-            border-bottom: 1px solid #f1f2f6;
+            border-bottom: 1px solid var(--border-color);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: white;
+            background: var(--card-bg);
             height: 70px;
         }
 
@@ -200,8 +198,8 @@
         }
 
         .summary-card {
-            background: white;
-            border: 1px solid #f1f2f6;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
             border-radius: 12px;
             padding: 1rem;
             flex: 1;
@@ -619,7 +617,7 @@
             <!-- Split View -->
             <div class="split-view">
                 <!-- Calendar (70%) -->
-                <div class="calendar-panel">
+                <div class="calendar-panel force-light-theme">
                     <div class="calendar-header">Agenda</div>
                     <div id="vetCalendarEl" style="padding: 0.5rem 1rem; height: calc(100% - 48px); overflow: auto;"></div>
                 </div>
@@ -638,7 +636,7 @@
     </div>
 
     <!-- Modal Detalhes do Ticket (Fases 2 & 3) -->
-    <div class="modal fade" id="ticketDetailModal" tabindex="-1" aria-hidden="true">
+    <div class="modal fade force-light-theme" id="ticketDetailModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-xl">
             <div class="modal-content border-0 rounded-4 overflow-hidden bg-white text-dark" data-bs-theme="light">
                 <div class="modal-header modal-header-ticket border-0">
@@ -1403,7 +1401,7 @@
             // Update modal for archive context
             document.querySelector('#confirmarConsultaModal .modal-title').innerHTML = '<i class="fa-solid fa-box-archive me-2"></i>Finalizar e Arquivar';
             document.querySelector('#confirmarConsultaModal .modal-title').className = 'modal-title fw-bold text-dark fs-5';
-            document.querySelector('#confirmarConsultaModal p').innerHTML = 'Pode <strong>anexar a fatura</strong> antes de arquivar. (Opcional)';
+            document.querySelector('#confirmarConsultaModal p').innerHTML = 'Deve <strong>anexar a fatura</strong> antes de arquivar a consulta.';
             const confirmBtn = document.getElementById('btnConfirmarConsultaDash');
             confirmBtn.innerHTML = '<i class="fa-solid fa-box-archive me-1"></i> Arquivar Consulta';
             confirmBtn.className = 'btn btn-dark rounded-pill px-4 fw-bold flex-grow-1';
@@ -1415,6 +1413,13 @@
                 try {
                     let faturaUrl = null;
                     const file = document.getElementById('faturaInputDash').files[0];
+                    if (!file) {
+                        alert('Por favor, anexe a fatura antes de finalizar.');
+                        confirmBtn.disabled = false;
+                        confirmBtn.innerHTML = '<i class="fa-solid fa-box-archive me-1"></i> Arquivar Consulta';
+                        return;
+                    }
+
                     if (file) {
                         const ext = file.name.split('.').pop();
                         const fileName = `fatura_${capturedId}_${Date.now()}.${ext}`;
@@ -1469,6 +1474,21 @@
         // Fix: Open refuse modal via JS (Bootstrap can't open nested modals via data-*)
         let refuseModalInstance = null;
 
+        async function loadVetsForForwarding() {
+            const { data } = await supabaseClient.from('veterinarios').select('user_id, nome').eq('status', 'ativo').neq('user_id', vetUserId);
+            const sel = document.getElementById('refusalVetRecommendation');
+            if (sel) {
+                sel.innerHTML = '<option value="">Selecione um veterinário...</option>';
+                data?.forEach(v => {
+                    const opt = document.createElement('option');
+                    opt.value = v.user_id;
+                    opt.textContent = v.nome;
+                    opt.setAttribute('data-nome', v.nome);
+                    sel.appendChild(opt);
+                });
+            }
+        }
+
         function openRefuseModal() {
             // First hide the detail modal
             const detailModal = bootstrap.Modal.getInstance(document.getElementById('ticketDetailModal'));
@@ -1477,10 +1497,26 @@
             // After it hides, open the refuse modal
             document.getElementById('ticketDetailModal').addEventListener('hidden.bs.modal', function onHidden() {
                 document.getElementById('refusalReasonText').value = '';
+                
+                // Reset forwarding state
+                const chkForward = document.getElementById('chkForwardTicket');
+                const forwardSection = document.getElementById('forwardVetSection');
+                if (chkForward) chkForward.checked = false;
+                if (forwardSection) forwardSection.style.display = 'none';
+
+                loadVetsForForwarding();
                 refuseModalInstance = new bootstrap.Modal(document.getElementById('refuseReasonModal'));
                 refuseModalInstance.show();
             }, { once: true });
         }
+
+        // Handle Forward Checkbox toggle
+        document.addEventListener('change', function(e) {
+            if (e.target.id === 'chkForwardTicket') {
+                const section = document.getElementById('forwardVetSection');
+                if (section) section.style.display = e.target.checked ? 'block' : 'none';
+            }
+        });
 
         // Event delegation — refuseReasonModal HTML is AFTER this script, so getElementById returns null
         document.addEventListener('click', async function (e) {
@@ -1489,18 +1525,21 @@
 
             console.log('Confirmar Recusa clicado. currentTicketId =', currentTicketId);
 
-            const refusalReasonText = document.getElementById('refusalReasonText');
-            let reason = refusalReasonText ? refusalReasonText.value.trim() : '';
-
+            const chkForward = document.getElementById('chkForwardTicket');
+            const isForwarding = chkForward && chkForward.checked;
             const vetSelect = document.getElementById('refusalVetRecommendation');
-            if (vetSelect && vetSelect.value) {
+            let reason = document.getElementById('refusalReasonText').value;
+            
+            let targetVetId = null;
+            if (isForwarding) {
+                targetVetId = vetSelect.value;
+                if (!targetVetId) { alert('Por favor, selecione um veterinário para encaminhar.'); return; }
                 const opt = vetSelect.options[vetSelect.selectedIndex];
-                const vetId = vetSelect.value;
                 const vetNome = opt.getAttribute('data-nome');
-                reason += `\n\n|VET_REC:${vetId}:${vetNome}|`;
+                reason += `\n\n[Encaminhado para Dr/a. ${vetNome}]`;
             }
 
-            if (!reason) { alert('Por favor, indique o motivo da recusa.'); return; }
+            if (!reason) { alert('Por favor, indique o motivo da recusa/encaminhamento.'); return; }
             if (!currentTicketId) { alert('Erro: ID do ticket não encontrado.'); return; }
 
             const originalText = btn.textContent;
@@ -1508,9 +1547,13 @@
             btn.textContent = 'A processar...';
 
             try {
+                const updatePayload = isForwarding 
+                    ? { id_veterinario: targetVetId, motivo_recusa: reason, estado: 'pendente' }
+                    : { estado: 'recusado', motivo_recusa: reason };
+
                 const { data, error } = await supabaseClient
                     .from('tickets')
-                    .update({ estado: 'recusado', motivo_recusa: reason })
+                    .update(updatePayload)
                     .eq('id', currentTicketId)
                     .select();
 
@@ -1674,7 +1717,7 @@
     </div>
 
     <!-- Modal para Motivo de Recusa -->
-    <div class="modal fade" id="refuseReasonModal" tabindex="-1" aria-hidden="true">
+    <div class="modal fade force-light-theme" id="refuseReasonModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content border-0 shadow-lg rounded-4">
                 <div class="modal-header border-0 pb-0">
@@ -1688,13 +1731,19 @@
                         placeholder="Ex: Não temos disponibilidade nesta horário, por favor sugira outro..."></textarea>
 
                     <div class="mt-4">
-                        <label class="form-label text-muted small fw-bold mb-1">Recomendar outro Veterinário
-                            (Opcional)</label>
-                        <p class="text-muted small mb-2" style="font-size: 0.8rem;">O cliente poderá marcar facilmente
-                            uma nova consulta com o veterinário escolhido.</p>
-                        <select id="refusalVetRecommendation" class="form-select rounded-3">
-                            <option value="">Nenhum (Apenas recusar)</option>
-                        </select>
+                        <div class="form-check form-switch mb-2">
+                            <input class="form-check-input" type="checkbox" id="chkForwardTicket" style="cursor:pointer;">
+                            <label class="form-check-label small fw-bold text-primary" for="chkForwardTicket" style="cursor:pointer;">
+                                <i class="fa-solid fa-share-from-square me-1"></i> Encaminhar para outro veterinário
+                            </label>
+                        </div>
+
+                        <div id="forwardVetSection" style="display: none;">
+                            <p class="text-muted small mb-2" style="font-size: 0.8rem;">O ticket será transferido para o veterinário escolhido e ficará pendente na agenda dele.</p>
+                            <select id="refusalVetRecommendation" class="form-select rounded-3">
+                                <option value="">Selecione um veterinário...</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer border-0 pt-0">
@@ -1719,7 +1768,7 @@
                 </div>
                 <div class="modal-body px-4 pb-2">
                     <p class="text-dark mb-4" style="font-size:0.95rem;">
-                        Ao confirmar esta consulta, pode <strong>anexar a fatura</strong> para o histórico do dono.
+                        Deve <strong>anexar a fatura</strong> para o histórico do dono antes de arquivar a consulta.
                     </p>
 
                     <!-- Upload Zone — label nativo para garantir que abre sempre o file picker -->
@@ -1731,7 +1780,7 @@
                                 Clique para selecionar a fatura
                             </p>
                             <p class="text-muted mb-0" style="font-size:0.82rem;">
-                                PDF, PNG ou JPG &bull; Opcional
+                                PDF, PNG ou JPG &bull; Obrigatório
                             </p>
                         </div>
                         <div id="faturaPreviewDash" class="d-none">

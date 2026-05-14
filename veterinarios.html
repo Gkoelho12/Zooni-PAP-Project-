@@ -831,6 +831,18 @@
         }
 
         // ── LOAD ALL ACTIVE VETS ──────────────────────────────
+        function formatEspecialidade(esp) {
+            if (!esp) return 'Medicina Geral';
+            if (Array.isArray(esp)) return esp.join(', ');
+            if (typeof esp === 'string') {
+                try {
+                    const parsed = JSON.parse(esp);
+                    if (Array.isArray(parsed)) return parsed.join(', ');
+                } catch(e) {}
+            }
+            return esp;
+        }
+
         async function loadVets() {
             const { data, error } = await sb
                 .from('veterinarios')
@@ -961,7 +973,7 @@
 
             let filtered = allVets.filter(v => {
                 const matchSearch = !query || v.nome?.toLowerCase().includes(query) || v.clinica?.toLowerCase().includes(query);
-                const matchSpec = !spec || v.especialidade === spec;
+                const matchSpec = !spec || (Array.isArray(v.especialidade) ? v.especialidade.includes(spec) : v.especialidade?.includes(spec));
                 const matchStatus = !statusF || vetStatusMap[v.user_id] === statusF;
                 const matchFav = !showOnlyFavs || favoritosSet.has(v.user_id);
                 return matchSearch && matchSpec && matchStatus && matchFav;
@@ -1018,7 +1030,7 @@
                         ${avatarHtml}
                         <div class="vet-info">
                             <div class="vet-name">${v.nome || '—'}</div>
-                            <div class="vet-spec">${v.especialidade || 'Medicina Geral'}</div>
+                            <div class="vet-spec">${formatEspecialidade(v.especialidade)}</div>
                             <div class="vet-clinic"><i class="fa-solid fa-location-dot" style="font-size:0.75rem; color:var(--primary);"></i> ${v.clinica || '—'}</div>
                         </div>
                         <button class="btn-fav ${isFav ? 'active' : ''}" title="Favorito" onclick="toggleFav('${v.user_id}', this)">
@@ -1155,8 +1167,9 @@
                     const opt = document.createElement('option');
                     opt.value = vet.user_id;
                     const clinica = vet.clinica ? ` — ${vet.clinica}` : '';
-                    const esp = vet.especialidade ? ` • ${vet.especialidade}` : '';
-                    opt.textContent = `${vet.nome}${clinica}${esp}`;
+                    const fEsp = formatEspecialidade(vet.especialidade);
+                    const espText = fEsp ? ` • ${fEsp}` : '';
+                    opt.textContent = `${vet.nome}${clinica}${espText}`;
                     sel.appendChild(opt);
                 });
             } catch (e) { console.error('Erro ao carregar veterinários:', e); }
@@ -1192,53 +1205,61 @@
                 const btn = document.getElementById('btnEnviarTicket');
                 btn.disabled = true; btn.textContent = 'Enviando...';
 
-                const id_animal = document.getElementById('ticketPetId').value;
-                const motivo = document.getElementById('ticketMotivo').value;
-                const descricao = document.getElementById('ticketDescricao').value;
-                const data_sugerida = document.getElementById('ticketDataSugerida').value;
-                const files = document.getElementById('ticketEvidenceInput').files;
-                const vetSelect = document.getElementById('ticketVeterinario');
-                const id_veterinario = vetSelect.value;
+                try {
+                    const id_animal = document.getElementById('ticketPetId').value;
+                    const motivo = document.getElementById('ticketMotivo').value;
+                    const descricao = document.getElementById('ticketDescricao').value;
+                    const data_sugerida = document.getElementById('ticketDataSugerida').value;
+                    const files = document.getElementById('ticketEvidenceInput').files;
+                    const vetSelect = document.getElementById('ticketVeterinario');
+                    const id_veterinario = vetSelect.value;
 
-                if (!id_animal) { alert('Por favor, selecione um pet.'); btn.disabled = false; btn.textContent = 'Enviar Pedido de Consulta'; return; }
-                if (!id_veterinario) { alert('Por favor, selecione um veterinário.'); btn.disabled = false; btn.textContent = 'Enviar Pedido de Consulta'; return; }
+                    if (!id_animal) { alert('Por favor, selecione um pet.'); return; }
+                    if (!id_veterinario) { alert('Por favor, selecione um veterinário.'); return; }
 
-                let uploadedUrls = [];
-                for (let i = 0; i < files.length; i++) {
-                    const file = files[i];
-                    const ext = file.name.split('.').pop();
-                    const fName = `ticket_${Date.now()}_${i}.${ext}`;
-                    const { error: upErr } = await sb.storage.from('tickets').upload(fName, file);
-                    if (!upErr) {
-                        const { data: pubData } = sb.storage.from('tickets').getPublicUrl(fName);
-                        uploadedUrls.push(pubData.publicUrl);
+                    let uploadedUrls = [];
+                    for (let i = 0; i < files.length; i++) {
+                        const file = files[i];
+                        const ext = file.name.split('.').pop();
+                        const fName = `ticket_${Date.now()}_${i}.${ext}`;
+                        const { error: upErr } = await sb.storage.from('tickets').upload(fName, file);
+                        if (!upErr) {
+                            const { data: pubData } = sb.storage.from('tickets').getPublicUrl(fName);
+                            uploadedUrls.push(pubData.publicUrl);
+                        }
                     }
-                }
 
-                const { error } = await sb.from('tickets').insert([{
-                    id_dono: DONO_ID,
-                    id_animal,
-                    motivo,
-                    descricao,
-                    evidencias_url: uploadedUrls.join(','),
-                    data_sugerida: data_sugerida || null,
-                    estado: 'pendente',
-                    id_veterinario
-                }]);
+                    const { error } = await sb.from('tickets').insert([{
+                        id_dono: DONO_ID,
+                        id_animal,
+                        motivo,
+                        descricao,
+                        evidencias_url: uploadedUrls.join(','),
+                        data_sugerida: data_sugerida || null,
+                        estado: 'pendente',
+                        id_veterinario
+                    }]);
 
-                if (error) {
-                    console.error(error);
-                    alert('Erro ao enviar ticket.');
-                } else {
-                    bootstrap.Modal.getInstance(document.getElementById('addTicketModal')).hide();
-                    // Success toast
-                    const toast = document.createElement('div');
-                    toast.style.cssText = 'position:fixed;bottom:24px;right:24px;z-index:9999;background:#00B894;color:#fff;padding:14px 22px;border-radius:14px;font-family:Outfit,sans-serif;font-weight:700;box-shadow:0 6px 24px rgba(0,0,0,.15);';
-                    toast.innerHTML = '<i class="fa-solid fa-circle-check me-2"></i> Ticket enviado com sucesso!';
-                    document.body.appendChild(toast);
-                    setTimeout(() => toast.remove(), 3500);
+                    if (error) {
+                        console.error(error);
+                        alert('Erro ao enviar ticket.');
+                    } else {
+                        bootstrap.Modal.getInstance(document.getElementById('addTicketModal')).hide();
+                        // Success toast
+                        const toast = document.createElement('div');
+                        toast.style.cssText = 'position:fixed;bottom:24px;right:24px;z-index:9999;background:#00B894;color:#fff;padding:14px 22px;border-radius:14px;font-family:Outfit,sans-serif;font-weight:700;box-shadow:0 6px 24px rgba(0,0,0,.15);';
+                        toast.innerHTML = '<i class="fa-solid fa-circle-check me-2"></i> Ticket enviado com sucesso!';
+                        document.body.appendChild(toast);
+                        setTimeout(() => toast.remove(), 3500);
+                        form.reset();
+                    }
+                } catch (err) {
+                    console.error('Submission error:', err);
+                    alert('Erro inesperado ao enviar pedido: ' + err.message);
+                } finally {
+                    btn.disabled = false;
+                    btn.textContent = 'Enviar Pedido de Consulta';
                 }
-                btn.disabled = false; btn.textContent = 'Enviar Pedido de Consulta';
             });
         });
 

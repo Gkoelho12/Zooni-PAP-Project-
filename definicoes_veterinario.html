@@ -11,7 +11,8 @@
     <link rel="stylesheet" href="assets/css/theme.css">
     <script src="assets/js/i18n.js"></script>
     <style>
-        :root{--primary:#3D8B3D;--primary-dark:#1E4D1E;--primary-light:#5CB85C;--bg-color:#F2F8F2;--text-main:#1a2e1a;--text-sec:#5a7a5a;--danger:#d63031;--card-bg:#fff;--border:#e8f0e8}
+        /* Primary/brand colors only — theme colors are handled by theme.css */
+        :root{--primary:#3D8B3D;--primary-dark:#1E4D1E;--primary-light:#5CB85C;--danger:#d63031}
         *{box-sizing:border-box}
         body{background:var(--bg-color);font-family:'Outfit',sans-serif;color:var(--text-main);margin:0}
         .app-container{display:grid;grid-template-columns:260px 1fr;min-height:100vh}
@@ -117,10 +118,67 @@
 
         /* Appearance selector */
         .appearance-options{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+
+        /* ── Dark Mode Overrides ── */
+        [data-theme="dark"] .danger-zone {
+            background: rgba(239, 68, 68, 0.08) !important;
+            border-color: rgba(239, 68, 68, 0.3) !important;
+        }
+        [data-theme="dark"] .danger-zone h6 { color: #F87171 !important; }
+        [data-theme="dark"] .danger-zone p { color: var(--text-sec) !important; }
+        [data-theme="dark"] .toast-custom {
+            background: #242424 !important;
+            border: 1px solid rgba(255,255,255,0.08) !important;
+            box-shadow: 0 8px 30px rgba(0,0,0,.4) !important;
+        }
+        [data-theme="dark"] .toast-custom .toast-text { color: #E4E4E7 !important; }
+        [data-theme="dark"] .appearance-option {
+            border-color: rgba(255,255,255,0.1) !important;
+            color: var(--text-sec) !important;
+            background: var(--card-bg) !important;
+        }
+        [data-theme="dark"] .appearance-option:hover,
+        [data-theme="dark"] .appearance-option.selected {
+            border-color: var(--primary) !important;
+            background: rgba(52, 211, 153, 0.08) !important;
+            color: var(--primary) !important;
+        }
+        [data-theme="dark"] .day-schedule {
+            background: #1a1a1a !important;
+            border-color: rgba(255,255,255,0.08) !important;
+        }
+        [data-theme="dark"] .block-row input[type="time"] {
+            background: var(--input-bg) !important;
+            color: var(--text-main) !important;
+            border-color: var(--input-border) !important;
+        }
+        [data-theme="dark"] .password-strength { background: #3F3F46 !important; }
+        [data-theme="dark"] .tag-pill {
+            background: rgba(52, 211, 153, 0.1) !important;
+            color: var(--primary) !important;
+        }
+        [data-theme="dark"] .services-table th,
+        [data-theme="dark"] .services-table td { border-color: rgba(255,255,255,0.08) !important; color: var(--text-main) !important; }
+        [data-theme="dark"] .btn-add-row {
+            background: #1a1a1a !important;
+            border-color: rgba(255,255,255,0.1) !important;
+            color: var(--text-sec) !important;
+        }
+        [data-theme="dark"] .toggle-row { border-color: rgba(255,255,255,0.08) !important; }
+        [data-theme="dark"] .toggle-label { color: var(--text-main) !important; }
+
         .appearance-option{border:2px solid var(--border);border-radius:14px;padding:16px;text-align:center;cursor:pointer;transition:all .2s;font-size:.85rem;font-weight:600;color:var(--text-sec)}
         .appearance-option .icon{font-size:1.6rem;margin-bottom:6px;display:block}
         .appearance-option:hover{border-color:var(--primary);color:var(--primary)}
         .appearance-option.selected{border-color:var(--primary);background:rgba(61,139,61,.08);color:var(--primary)}
+
+        /* Specialty chips in modal */
+        .esp-chip{padding:8px 16px;border-radius:20px;border:2px solid var(--border-color,#e8f0e8);background:var(--card-bg,#fff);color:var(--text-sec,#5a7a5a);font-size:.85rem;font-weight:600;cursor:pointer;transition:all .18s;user-select:none}
+        .esp-chip:hover{border-color:var(--primary);color:var(--primary)}
+        .esp-chip.selected{border-color:var(--primary);background:rgba(61,139,61,.12);color:var(--primary)}
+        [data-theme="dark"] .esp-chip{border-color:rgba(255,255,255,0.12);background:#1a1a1a;color:var(--text-sec)}
+        [data-theme="dark"] .esp-chip.selected{border-color:var(--primary);background:rgba(52,211,153,0.12);color:var(--primary)}
+
     </style>
 </head>
 <body>
@@ -160,8 +218,7 @@
                     <button class="settings-nav-item" onclick="switchSection('horarios',this)"><i class="fa-regular fa-clock"></i> Horários e Agenda</button>
                     <button class="settings-nav-item" onclick="switchSection('servicos',this)"><i class="fa-solid fa-stethoscope"></i> Serviços e Preços</button>
                     <div class="settings-nav-divider"></div>
-                    <button class="settings-nav-item" onclick="switchSection('aparencia',this)"><i class="fa-solid fa-palette"></i> Aparência</button>
-                    <button class="settings-nav-item" onclick="switchSection('idioma',this)"><i class="fa-solid fa-globe"></i> Idioma</button>
+                    <button class="settings-nav-item" onclick="switchSection('preferencias',this)"><i class="fa-solid fa-palette"></i> Aparência & Idioma</button>
                     <div class="settings-nav-divider"></div>
                     <button class="settings-nav-item" onclick="switchSection('seguranca',this)"><i class="fa-solid fa-shield-halved"></i> Segurança e Conta</button>
                 </nav>
@@ -185,7 +242,9 @@
                             <div class="settings-card-title"><i class="fa-solid fa-user-doctor"></i> Dados Profissionais</div>
                             <div class="row g-3 mb-3">
                                 <div class="col-md-8"><label class="form-label">Nome Clínico</label><input type="text" class="form-control" id="inputNome" placeholder="Dr/a. Nome Completo"></div>
-                                <div class="col-md-4"><label class="form-label">Nº OMV</label><input type="text" class="form-control" id="inputOMV" placeholder="Ex: 12345"></div>
+                                <div class="col-md-4"><label class="form-label">Nº Cédula (OMV)</label><input type="text" class="form-control" id="inputOMV" placeholder="Ex: 12345"></div>
+                                <div class="col-md-8"><label class="form-label">Clínica / Hospital</label><input type="text" class="form-control" id="inputClinica" placeholder="Ex: Clínica Veterinária Central"></div>
+                                <div class="col-md-4"><label class="form-label">Telefone</label><input type="tel" class="form-control" id="inputTelefone" placeholder="Ex: 912345678" pattern="[0-9]{9}" minlength="9" maxlength="9" oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,9)"></div>
                                 <div class="col-12"><label class="form-label">Email</label><input type="email" class="form-control" id="inputEmail" readonly style="opacity:.7;cursor:not-allowed"></div>
                                 <div class="col-12">
                                     <label class="form-label">Biografia</label>
@@ -198,9 +257,11 @@
                         <div class="settings-card">
                             <div class="settings-card-title"><i class="fa-solid fa-tags"></i> Especialidades</div>
                             <div class="tag-container" id="tagsContainer"></div>
-                            <div class="tag-input-row">
-                                <input type="text" class="form-control" id="tagInput" placeholder="Ex: Cardiologia, Exóticos, Dermatologia...">
-                                <button class="btn-save" onclick="addTag()" style="padding:8px 16px"><i class="fa-solid fa-plus"></i></button>
+                            <p class="text-muted small mb-2" id="tagsEmpty" style="display:none"><i class="fa-solid fa-circle-info me-1"></i>Nenhuma especialidade adicionada ainda.</p>
+                            <div class="mt-2">
+                                <button class="btn-save" onclick="openEspecialidadesModal()" style="padding:10px 20px;display:flex;align-items:center;gap:8px">
+                                    <i class="fa-solid fa-plus"></i> Gerir Especialidades
+                                </button>
                             </div>
                         </div>
 
@@ -288,8 +349,8 @@
                         </div>
                     </div>
 
-                    <!-- ═══ APARÊNCIA ═══ -->
-                    <div id="panel-aparencia" class="settings-panel">
+                    <!-- ═══ APARÊNCIA & IDIOMA ═══ -->
+                    <div id="panel-preferencias" class="settings-panel">
                         <div class="settings-card">
                             <div class="settings-card-title"><i class="fa-solid fa-palette"></i> Aparência</div>
                             <div class="appearance-options">
@@ -307,10 +368,7 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
 
-                    <!-- ═══ IDIOMA ═══ -->
-                    <div id="panel-idioma" class="settings-panel">
                         <div class="settings-card">
                             <div class="settings-card-title"><i class="fa-solid fa-globe"></i> Idioma e Região</div>
                             <div class="row g-3">
@@ -336,6 +394,30 @@
                 </div>
             </div>
         </main>
+    </div>
+
+    <!-- Modal Especialidades -->
+    <div class="modal fade" id="modalEspecialidades" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold"><i class="fa-solid fa-tags me-2" style="color:var(--primary)"></i>Escolher Especialidades</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body px-4">
+                    <p class="text-muted small mb-3">Selecione uma ou mais especialidades. Clique novamente para remover.</p>
+                    <div id="especialidadesCheckList" class="d-flex flex-wrap gap-2">
+                        <!-- chips gerados pelo JS -->
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button class="btn-save" onclick="confirmEspecialidades()" data-bs-dismiss="modal" style="padding:10px 22px">
+                        <i class="fa-solid fa-check me-1"></i>Confirmar
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
