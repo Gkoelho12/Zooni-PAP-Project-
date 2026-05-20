@@ -174,7 +174,7 @@
             align-items: center;
             padding: 120px 80px 80px;
             position: relative;
-            overflow: hidden;
+            overflow: visible;
         }
 
         .hero::before {
@@ -305,6 +305,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            min-height: 580px;
         }
 
         .phone-mockup {
@@ -982,8 +983,8 @@
 
         /* ── PHONE MOCKUP (inline SVG/CSS based) ─────────────── */
         .phone-frame {
-            width: 280px;
-            height: 560px;
+            width: 270px;
+            height: 540px;
             border-radius: 40px;
             background: #0a0a0a;
             border: 8px solid #1a1a1a;
@@ -1151,6 +1152,261 @@
             transform: rotate(20deg);
             z-index: 0;
         }
+
+        /* ── DESKTOP MOCKUP ───────────────────────────────────── */
+        .desktop-mockup {
+            position: relative;
+            z-index: 2;
+            animation: float 4s ease-in-out infinite;
+            display: none;
+        }
+
+        .desktop-frame {
+            width: 520px;
+            background: #1a1a1a;
+            border-radius: 16px 16px 10px 10px;
+            box-shadow: 0 40px 80px rgba(0,0,0,.55), 0 0 0 1px rgba(255,255,255,.07);
+            overflow: hidden;
+        }
+
+        .desktop-titlebar {
+            background: linear-gradient(180deg, #2d2d2d, #242424);
+            padding: 11px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid rgba(255,255,255,.06);
+        }
+
+        .dt-dots {
+            display: flex;
+            gap: 6px;
+        }
+
+        .dt-dots span {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .dt-dots span:nth-child(1) { background: #ff5f57; }
+        .dt-dots span:nth-child(2) { background: #febc2e; }
+        .dt-dots span:nth-child(3) { background: #28c840; }
+
+        .dt-url-bar {
+            flex: 1;
+            background: rgba(255,255,255,.07);
+            border-radius: 6px;
+            padding: 5px 12px;
+            font-size: .72rem;
+            color: rgba(255,255,255,.45);
+            font-family: monospace;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .dt-url-bar i {
+            color: #28c840;
+            font-size: .7rem;
+        }
+
+        .desktop-screen {
+            background: linear-gradient(160deg, #E8F5E9, #F7FAF7);
+            height: 360px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* App content inside the desktop screen */
+        .ds-sidebar {
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 160px;
+            background: linear-gradient(180deg, #1B5E20, #2E7D32);
+            padding: 20px 0;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .ds-sidebar-logo {
+            padding: 0 16px 16px;
+            font-size: .85rem;
+            font-weight: 800;
+            color: white;
+            border-bottom: 1px solid rgba(255,255,255,.1);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .ds-nav-item {
+            padding: 9px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: .7rem;
+            font-weight: 600;
+            color: rgba(255,255,255,.65);
+            border-radius: 0;
+            transition: all .2s;
+            cursor: default;
+        }
+
+        .ds-nav-item.active {
+            background: rgba(255,255,255,.12);
+            color: white;
+        }
+
+        .ds-nav-item i {
+            width: 14px;
+            font-size: .75rem;
+        }
+
+        .ds-content {
+            position: absolute;
+            left: 160px;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            padding: 16px;
+            overflow: hidden;
+        }
+
+        .ds-topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 14px;
+        }
+
+        .ds-topbar .ds-greeting {
+            font-size: .75rem;
+            font-weight: 700;
+            color: #1B5E20;
+        }
+
+        .ds-topbar .ds-greeting span {
+            display: block;
+            font-size: .62rem;
+            font-weight: 400;
+            color: #6B7C6C;
+        }
+
+        .ds-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .ds-stat-card {
+            background: white;
+            border-radius: 10px;
+            padding: 10px 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,.06);
+        }
+
+        .ds-stat-card .ds-val {
+            font-size: .95rem;
+            font-weight: 900;
+            color: #1B5E20;
+        }
+
+        .ds-stat-card .ds-lbl {
+            font-size: .58rem;
+            color: #6B7C6C;
+            font-weight: 600;
+        }
+
+        .ds-table-label {
+            font-size: .62rem;
+            font-weight: 800;
+            color: #6B7C6C;
+            letter-spacing: .5px;
+            text-transform: uppercase;
+            margin-bottom: 7px;
+        }
+
+        .ds-table {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,.05);
+        }
+
+        .ds-table-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 12px;
+            border-bottom: 1px solid #F0F5F0;
+            font-size: .62rem;
+        }
+
+        .ds-table-row:last-child {
+            border-bottom: none;
+        }
+
+        .ds-table-row .dt-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .ds-table-row strong {
+            flex: 1;
+            font-weight: 700;
+            color: #0D1B0E;
+        }
+
+        .ds-table-row .dt-vet {
+            color: #6B7C6C;
+            min-width: 80px;
+        }
+
+        .ds-table-row .dt-badge {
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: .58rem;
+        }
+
+        .dt-badge.confirmed  { background: #E8F5E9; color: #2E7D32; }
+        .dt-badge.pending    { background: #FFF8E1; color: #F57F17; }
+        .dt-badge.urgent     { background: #FFEBEE; color: #c62828; }
+
+        /* Desktop stand/base */
+        .desktop-stand {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .desktop-neck {
+            width: 80px;
+            height: 20px;
+            background: linear-gradient(180deg, #1a1a1a, #222);
+            clip-path: polygon(20% 0%, 80% 0%, 100% 100%, 0% 100%);
+        }
+
+        .desktop-base {
+            width: 200px;
+            height: 10px;
+            background: linear-gradient(180deg, #222, #1a1a1a);
+            border-radius: 0 0 8px 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,.4);
+        }
+
+        /* Device visibility helpers */
+        .show-on-mobile  { display: none; }
+        .show-on-desktop { display: none; }
 
         /* ── Responsive ───────────────────────────────────────── */
         @media (max-width: 1400px) {
@@ -1513,18 +1769,19 @@
 
             </div>
 
-            <!-- Right — Phone Mockup -->
+            <!-- Right — Device Mockup (phone on mobile, desktop on desktop) -->
             <div class="hero-right">
                 <div class="hero-glow"></div>
-                <!-- Floating cards -->
-                <div class="floating-card card-1">
+
+                <!-- Floating cards (desktop only) -->
+                <div class="floating-card card-1 show-on-desktop">
                     <div class="fc-icon fc-green"><i class="fa-solid fa-calendar-check"></i></div>
                     <div>
                         <strong>Consulta Marcada!</strong>
                         <div style="font-weight:400;color:#6B7C6C;font-size:.75rem;">Amanhã · 14:30</div>
                     </div>
                 </div>
-                <div class="floating-card card-2">
+                <div class="floating-card card-2 show-on-desktop">
                     <div class="fc-icon fc-blue"><i class="fa-solid fa-syringe"></i></div>
                     <div>
                         <strong>Vacina em 3 dias</strong>
@@ -1532,8 +1789,100 @@
                     </div>
                 </div>
 
-                <!-- App Screen -->
-                <div class="phone-frame">
+                <!-- ── DESKTOP MOCKUP ── -->
+                <div class="desktop-mockup show-on-desktop" id="desktopMockup">
+                    <div class="desktop-frame">
+                        <!-- Title bar -->
+                        <div class="desktop-titlebar">
+                            <div class="dt-dots">
+                                <span></span><span></span><span></span>
+                            </div>
+                            <div class="dt-url-bar">
+                                <i class="fa-solid fa-lock"></i>
+                                app.zooni.pt/dashboard
+                            </div>
+                        </div>
+                        <!-- Screen -->
+                        <div class="desktop-screen">
+                            <!-- Sidebar -->
+                            <div class="ds-sidebar">
+                                <div class="ds-sidebar-logo">
+                                    <i class="fa-solid fa-paw"></i> Zooni
+                                </div>
+                                <div class="ds-nav-item active">
+                                    <i class="fa-solid fa-house"></i> Dashboard
+                                </div>
+                                <div class="ds-nav-item">
+                                    <i class="fa-solid fa-paw"></i> Os Meus Animais
+                                </div>
+                                <div class="ds-nav-item">
+                                    <i class="fa-solid fa-calendar"></i> Agenda
+                                </div>
+                                <div class="ds-nav-item">
+                                    <i class="fa-solid fa-comments"></i> Mensagens
+                                </div>
+                                <div class="ds-nav-item">
+                                    <i class="fa-solid fa-bell"></i> Alertas
+                                </div>
+                                <div class="ds-nav-item">
+                                    <i class="fa-solid fa-file-invoice"></i> Faturas
+                                </div>
+                            </div>
+                            <!-- Main content -->
+                            <div class="ds-content">
+                                <div class="ds-topbar">
+                                    <div class="ds-greeting">
+                                        Bom dia, Joana! 👋
+                                        <span>Terça-feira, 20 de Maio</span>
+                                    </div>
+                                </div>
+                                <div class="ds-stats">
+                                    <div class="ds-stat-card">
+                                        <div class="ds-val">2</div>
+                                        <div class="ds-lbl">Animais</div>
+                                    </div>
+                                    <div class="ds-stat-card">
+                                        <div class="ds-val">3</div>
+                                        <div class="ds-lbl">Consultas</div>
+                                    </div>
+                                    <div class="ds-stat-card">
+                                        <div class="ds-val">1</div>
+                                        <div class="ds-lbl">Alertas</div>
+                                    </div>
+                                </div>
+                                <div class="ds-table-label">Próximas Consultas</div>
+                                <div class="ds-table">
+                                    <div class="ds-table-row">
+                                        <div class="dt-dot" style="background:#4CAF50"></div>
+                                        <strong>Vacinação · Max</strong>
+                                        <span class="dt-vet">Dr. Carlos Silva</span>
+                                        <span class="dt-badge confirmed">Amanhã</span>
+                                    </div>
+                                    <div class="ds-table-row">
+                                        <div class="dt-dot" style="background:#FF9800"></div>
+                                        <strong>Consulta Rotina · Luna</strong>
+                                        <span class="dt-vet">Dra. Inês Pinto</span>
+                                        <span class="dt-badge pending">Sex</span>
+                                    </div>
+                                    <div class="ds-table-row">
+                                        <div class="dt-dot" style="background:#e74c3c"></div>
+                                        <strong>Desparasitação · Max</strong>
+                                        <span class="dt-vet">Prazo a terminar</span>
+                                        <span class="dt-badge urgent">Urgente</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Monitor stand -->
+                    <div class="desktop-stand">
+                        <div class="desktop-neck"></div>
+                        <div class="desktop-base"></div>
+                    </div>
+                </div>
+
+                <!-- ── PHONE MOCKUP ── -->
+                <div class="phone-frame show-on-mobile" id="phoneMockup">
                     <div class="phone-notch"></div>
                     <div class="phone-screen">
                         <div class="phone-app-bar">
@@ -1858,6 +2207,25 @@
             el.style.transition = 'opacity .55s ease, transform .55s ease';
             observer.observe(el);
         });
+
+        // ── Device Detection: show desktop or phone mockup ──────────
+        function applyDeviceMockup() {
+            const isMobile = /Mobi|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+                || window.innerWidth <= 820;
+
+            const desktopEls = document.querySelectorAll('.show-on-desktop');
+            const mobileEls  = document.querySelectorAll('.show-on-mobile');
+
+            desktopEls.forEach(el => {
+                el.style.display = isMobile ? 'none' : (el.classList.contains('desktop-mockup') ? 'block' : 'flex');
+            });
+            mobileEls.forEach(el => {
+                el.style.display = isMobile ? 'block' : 'none';
+            });
+        }
+
+        applyDeviceMockup();
+        window.addEventListener('resize', applyDeviceMockup, { passive: true });
     </script>
 </body>
 

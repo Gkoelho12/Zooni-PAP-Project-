@@ -1453,7 +1453,7 @@
                 const { data: dbNotifs, error } = await supabaseClient
                     .from('notificacoes')
                     .select('*')
-                    .eq('user_id', ID_DONO)
+                    .eq('user_id', session.user.id)
                     .order('criado_em', { ascending: false })
                     .limit(5);
 
@@ -2012,19 +2012,43 @@
 
                 const { data, error } = await supabaseClient
                     .from('veterinarios')
-                    .select('user_id, nome, clinica, especialidade, status')
+                    .select('user_id, nome, clinica, especialidade, status, modo_ferias')
                     .eq('status', 'ativo')
                     .in('user_id', favIds)
                     .order('nome');
 
+                // Filter vets by their current real-time working schedule
+                const now = new Date();
+                const dayOfWeek = now.getDay();
+                const currentHourMin = now.toTimeString().substring(0, 5);
+
+                const { data: horarios } = await supabaseClient
+                    .from('zooni_horarios_padrao')
+                    .select('id_vet, hora_inicio, hora_fim')
+                    .eq('dia_semana', dayOfWeek)
+                    .in('id_vet', favIds);
+
+                const workingFavIds = new Set();
+                if (horarios) {
+                    horarios.forEach(h => {
+                        const inicio = h.hora_inicio.substring(0, 5);
+                        const fim = h.hora_fim.substring(0, 5);
+                        if (currentHourMin >= inicio && currentHourMin <= fim) {
+                            workingFavIds.add(h.id_vet);
+                        }
+                    });
+                }
+
+                const availableVets = (data || []).filter(vet => !vet.modo_ferias && workingFavIds.has(vet.user_id));
+
                 sel.innerHTML = '<option value="">Selecione um veterinário favorito...</option>';
 
-                if (error || !data || data.length === 0) {
-                    sel.innerHTML = '<option value="">Nenhum veterinário favorito ativo</option>';
+                if (error || availableVets.length === 0) {
+                    sel.innerHTML = '<option value="">Nenhum veterinário disponível neste momento</option>';
                     return;
                 }
 
-                data.forEach(vet => {
+                availableVets.forEach(vet => {
                     const opt = document.createElement('option');
                     opt.value = vet.user_id;
                     const clinica = vet.clinica ? ` — ${vet.clinica}` : '';
@@ -2082,8 +2106,50 @@
                 const id_veterinario_user = vetSelect.value;
                 const vet_nome = vetSelect.options[vetSelect.selectedIndex]?.text || '';
 
-                if (!id_animal) { alert('Por favor, selecione um pet.'); return; }
-                if (!id_veterinario_user) { alert('Por favor, selecione um veterinário.'); return; }
+                if (!id_animal) { alert('Por favor, selecione um pet.'); btn.disabled = false; btn.textContent = 'Enviar Pedido de Consulta'; return; }
+                if (!id_veterinario_user) { alert('Por favor, selecione um veterinário.'); btn.disabled = false; btn.textContent = 'Enviar Pedido de Consulta'; return; }
+
+                // Validar horário de trabalho do veterinário
+                if (data_sugerida) {
+                    const sugestaoDate = new Date(data_sugerida);
+                    const dayOfWeek = sugestaoDate.getDay();
+                    const timeStr = data_sugerida.split('T')[1]; // Formato "HH:MM"
+                    
+                    const { data: horarios, error: horErr } = await supabaseClient
+                        .from('zooni_horarios_padrao')
+                        .select('hora_inicio, hora_fim')
+                        .eq('id_vet', id_veterinario_user)
+                        .eq('dia_semana', dayOfWeek);
+
+                    if (horErr) {
+                        console.error("Erro ao verificar horário:", horErr);
+                        alert("Erro ao validar o horário do veterinário.");
+                        btn.disabled = false; btn.textContent = 'Enviar Pedido de Consulta';
+                        return;
+                    }
+
+                    if (!horarios || horarios.length === 0) {
+                        alert("O veterinário encontra-se ausente o dia todo neste dia da semana. Por favor, escolha outra data.");
+                        btn.disabled = false; btn.textContent = 'Enviar Pedido de Consulta';
+                        return;
+                    }
+
+                    let isWithinSchedule = false;
+                    for (let h of horarios) {
+                        const inicio = h.hora_inicio.substring(0, 5); // Ex: "09:00"
+                        const fim = h.hora_fim.substring(0, 5);       // Ex: "13:00"
+                        if (timeStr >= inicio && timeStr <= fim) {
+                            isWithinSchedule = true;
+                            break;
+                        }
+                    }
+
+                    if (!isWithinSchedule) {
+                        alert("O horário sugerido está fora do horário de trabalho do veterinário para este dia. Por favor, verifique a disponibilidade e escolha um horário válido.");
+                        btn.disabled = false; btn.textContent = 'Enviar Pedido de Consulta';
+                        return;
+                    }
+                }
 
                 let uploadedUrls = [];
                 if (files.length > 0) {
@@ -2230,6 +2296,48 @@
                 const newVetId = document.getElementById('forwardVetId').value;
                 const newVetNome = document.getElementById('forwardVetNameDisplay').textContent;
                 const newDate = document.getElementById('forwardDataSugerida').value;
+
+                // Validar horário de trabalho do veterinário
+                if (newDate) {
+                    const sugestaoDate = new Date(newDate);
+                    const dayOfWeek = sugestaoDate.getDay();
+                    const timeStr = newDate.split('T')[1]; // Formato "HH:MM"
+                    
+                    const { data: horarios, error: horErr } = await supabaseClient
+                        .from('zooni_horarios_padrao')
+                        .select('hora_inicio, hora_fim')
+                        .eq('id_vet', newVetId)
+                        .eq('dia_semana', dayOfWeek);
+
+                    if (horErr) {
+                        console.error("Erro ao verificar horário:", horErr);
+                        alert("Erro ao validar o horário do veterinário.");
+                        btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-paper-plane me-1"></i> Enviar Pedido';
+                        return;
+                    }
+
+                    if (!horarios || horarios.length === 0) {
+                        alert("O veterinário encontra-se ausente o dia todo neste dia da semana. Por favor, escolha outra data.");
+                        btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-paper-plane me-1"></i> Enviar Pedido';
+                        return;
+                    }
+
+                    let isWithinSchedule = false;
+                    for (let h of horarios) {
+                        const inicio = h.hora_inicio.substring(0, 5); // Ex: "09:00"
+                        const fim = h.hora_fim.substring(0, 5);       // Ex: "13:00"
+                        if (timeStr >= inicio && timeStr <= fim) {
+                            isWithinSchedule = true;
+                            break;
+                        }
+                    }
+
+                    if (!isWithinSchedule) {
+                        alert("O horário sugerido está fora do horário de trabalho do veterinário para este dia. Por favor, verifique a disponibilidade e escolha um horário válido.");
+                        btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-paper-plane me-1"></i> Enviar Pedido';
+                        return;
+                    }
+                }
 
                 try {
                     // Fetch the current (original) vet name before overwriting

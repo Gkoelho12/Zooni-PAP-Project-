@@ -278,6 +278,102 @@
                 max-width: 440px;
             }
         }
+
+        /* Modal Overlay */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Modal Box */
+        .modal-box {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            transform: translateY(20px) scale(0.95);
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .modal-overlay.active .modal-box {
+            transform: translateY(0) scale(1);
+        }
+
+        .modal-box h3 {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: var(--primary-dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .modal-box p {
+            font-size: 0.9rem;
+            color: var(--text-sec);
+            margin-bottom: 1.5rem;
+            line-height: 1.5;
+        }
+
+        .modal-btns {
+            display: flex;
+            gap: 12px;
+            margin-top: 1rem;
+        }
+
+        .btn-cancel {
+            flex: 1;
+            background: #f1f2f6;
+            color: #2f3542;
+            border: none;
+            padding: 12px;
+            border-radius: 12px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-cancel:hover {
+            background: #dfe4ea;
+        }
+
+        .btn-submit-modal {
+            flex: 1;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 12px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-submit-modal:hover {
+            background: var(--primary-dark);
+        }
     </style>
 </head>
 
@@ -320,7 +416,7 @@
                         autocomplete="current-password">
                 </div>
                 <div class="remember-row" style="justify-content: flex-end;">
-                    <a href="#">Esqueceu a password?</a>
+                    <a href="#" onclick="handleForgotPassword(event)">Esqueceu a password?</a>
                 </div>
                 <button type="submit" class="btn-login" id="btnLogin">
                     <i class="fa-solid fa-arrow-right-to-bracket"></i> Entrar
@@ -338,6 +434,10 @@
                     <input type="email" id="registoEmail" placeholder="Email" required autocomplete="email">
                 </div>
                 <div class="input-group-custom">
+                    <i class="fa-solid fa-phone"></i>
+                    <input type="tel" id="registoTelemovel" placeholder="Telemóvel (9 dígitos)" pattern="[0-9]{9}" minlength="9" maxlength="9" oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,9)" required>
+                </div>
+                <div class="input-group-custom">
                     <i class="fa-solid fa-lock"></i>
                     <input type="password" id="registoPassword" placeholder="Password (mín. 6 caracteres)" required
                         autocomplete="new-password">
@@ -349,6 +449,24 @@
 
             <div class="error-msg" id="errorMsg"></div>
             <div class="success-msg" id="successMsg"></div>
+        </div>
+    </div>
+
+    <!-- Modal Forgot Password -->
+    <div class="modal-overlay" id="forgotPwdModal">
+        <div class="modal-box">
+            <h3>Recuperar Password</h3>
+            <p>Introduz o teu email abaixo e enviaremos um link para definires uma nova password.</p>
+            <div class="input-group-custom" style="margin-bottom: 0;">
+                <i class="fa-regular fa-envelope"></i>
+                <input type="email" id="forgotPwdEmail" placeholder="O teu email" autocomplete="email">
+            </div>
+            <div class="modal-btns">
+                <button type="button" class="btn-cancel" onclick="closeForgotModal()">Cancelar</button>
+                <button type="button" class="btn-submit-modal" id="btnForgotSubmit" onclick="sendResetPassword()">Enviar</button>
+            </div>
+            <div class="error-msg" id="modalErrorMsg" style="margin-top: 1rem;"></div>
+            <div class="success-msg" id="modalSuccessMsg" style="margin-top: 1rem;"></div>
         </div>
     </div>
 
@@ -450,6 +568,62 @@
         function hideMessages() {
             document.getElementById('errorMsg').style.display = 'none';
             document.getElementById('successMsg').style.display = 'none';
+            document.getElementById('modalErrorMsg').style.display = 'none';
+            document.getElementById('modalSuccessMsg').style.display = 'none';
+        }
+
+        // ESQUECEU A PASSWORD
+        function handleForgotPassword(e) {
+            e.preventDefault();
+            hideMessages();
+            
+            // Auto-fill modal input if user already typed an email
+            const mainEmail = document.getElementById('loginEmail').value.trim();
+            document.getElementById('forgotPwdEmail').value = mainEmail;
+            
+            // Open modal
+            document.getElementById('forgotPwdModal').classList.add('active');
+        }
+
+        function closeForgotModal() {
+            document.getElementById('forgotPwdModal').classList.remove('active');
+            hideMessages();
+        }
+
+        async function sendResetPassword() {
+            hideMessages();
+            const emailInput = document.getElementById('forgotPwdEmail');
+            const email = emailInput.value.trim();
+            const btn = document.getElementById('btnForgotSubmit');
+
+            if (!email) {
+                const el = document.getElementById('modalErrorMsg');
+                el.textContent = 'Por favor, introduz o teu email.';
+                el.style.display = 'block';
+                emailInput.focus();
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> A enviar...';
+
+            const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
+                redirectTo: window.location.origin + '/reset_password.html',
+            });
+
+            btn.disabled = false;
+            btn.innerHTML = 'Enviar';
+
+            if (error) {
+                const el = document.getElementById('modalErrorMsg');
+                el.textContent = 'Erro: ' + error.message;
+                el.style.display = 'block';
+            } else {
+                const el = document.getElementById('modalSuccessMsg');
+                el.textContent = 'Email enviado! Verifica a tua caixa de entrada.';
+                el.style.display = 'block';
+                setTimeout(closeForgotModal, 3000);
+            }
         }
 
         // LOGIN
@@ -484,13 +658,39 @@
                     return;
                 }
             } else if (role === 'veterinario') {
-                const { data: vet } = await supabaseClient.from('veterinarios').select('user_id, status').eq('user_id', userId).single();
+                let { data: vet } = await supabaseClient.from('veterinarios').select('user_id, status').eq('user_id', userId).single();
                 if (!vet) {
-                    await supabaseClient.auth.signOut();
-                    showError('Esta conta não tem acesso de veterinário. Regista-te primeiro.');
-                    btn.disabled = false;
-                    btn.innerHTML = '<i class="fa-solid fa-arrow-right-to-bracket"></i> Entrar';
-                    return;
+                    const metadata = data.user.user_metadata;
+                    if (metadata && metadata.role === 'veterinario') {
+                        // Tentar criar o perfil de veterinário caso tenha falhado inicialmente no registo
+                        const { error: insertError } = await supabaseClient.from('veterinarios').insert([{
+                            user_id: userId,
+                            nome: metadata.nome || email.split('@')[0],
+                            email: email,
+                            telefone: metadata.telefone || null,
+                            especialidade: metadata.especialidade || null,
+                            clinica: metadata.clinica || null,
+                            cedula_profissional: metadata.cedula_profissional || null,
+                            documento_url: metadata.documento_url || null,
+                            status: 'pendente',
+                            tem_servico_24h: metadata.tem_servico_24h || false,
+                            contacto_24h: metadata.contacto_24h || null
+                        }]);
+                        
+                        if (!insertError) {
+                            vet = { status: 'pendente' };
+                        } else {
+                            console.error('Erro ao criar perfil de veterinário após login:', insertError);
+                        }
+                    }
+
+                    if (!vet) {
+                        await supabaseClient.auth.signOut();
+                        showError('Esta conta não tem acesso de veterinário. Regista-te primeiro.');
+                        btn.disabled = false;
+                        btn.innerHTML = '<i class="fa-solid fa-arrow-right-to-bracket"></i> Entrar';
+                        return;
+                    }
                 }
                 // Check status
                 if (vet.status === 'pendente') {
@@ -506,8 +706,26 @@
                 }
                 // status === 'ativo' → proceed to dashboard
             } else {
-                const { data: cliente } = await supabaseClient.from('clientes').select('id').eq('user_id', userId).single();
+                let { data: cliente } = await supabaseClient.from('clientes').select('id').eq('user_id', userId).single();
                 if (!cliente) {
+                    const metadata = data.user.user_metadata;
+                    if (metadata && metadata.role === 'dono') {
+                        // Tentar criar o perfil agora que o utilizador já está autenticado (e validou o email)
+                        const { error: insertError } = await supabaseClient.from('clientes').insert([{
+                            user_id: userId,
+                            nome: metadata.nome || email.split('@')[0],
+                            email: email,
+                            telemovel: metadata.telemovel || ''
+                        }]);
+                        
+                        if (!insertError) {
+                            // O perfil foi criado com sucesso após login
+                            window.location.href = redirectUrl;
+                            return;
+                        } else {
+                            console.error('Erro ao criar perfil de cliente após login:', insertError);
+                        }
+                    }
                     await supabaseClient.auth.signOut();
                     showError('Esta conta não tem acesso de dono. Tenta criar conta primeiro.');
                     btn.disabled = false;
@@ -543,6 +761,7 @@
             const nome = document.getElementById('registoNome').value.trim();
             const email = document.getElementById('registoEmail').value.trim();
             const password = document.getElementById('registoPassword').value;
+            const telemovel = document.getElementById('registoTelemovel').value.trim();
 
             if (password.length < 6) {
                 showError('A password deve ter pelo menos 6 caracteres.');
@@ -551,8 +770,18 @@
                 return;
             }
 
-            // 1. Create auth user
-            const { data: authData, error: authError } = await supabaseClient.auth.signUp({ email, password });
+            // 1. Create auth user with metadata (so we can recreate profile if RLS blocks it initially)
+            const { data: authData, error: authError } = await supabaseClient.auth.signUp({ 
+                email, 
+                password,
+                options: {
+                    data: {
+                        role: role,
+                        nome: nome,
+                        telemovel: telemovel
+                    }
+                }
+            });
 
             if (authError) {
                 showError('Erro ao criar conta: ' + authError.message);
@@ -577,15 +806,22 @@
                 const { error: dbError } = await supabaseClient.from('clientes').insert([{
                     user_id: userId,
                     nome,
-                    email
+                    email,
+                    telemovel
                 }]);
                 if (dbError) console.error('Erro ao criar perfil de cliente:', dbError);
             }
 
             // Remove default remember me
 
-            showSuccess('Conta criada com sucesso! A redirecionar...');
-            setTimeout(() => { window.location.href = redirectUrl; }, 1500);
+            if (authData.session) {
+                showSuccess('Conta criada com sucesso! A redirecionar...');
+                setTimeout(() => { window.location.href = redirectUrl; }, 1500);
+            } else {
+                showSuccess('Email enviado para verificação.');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa-solid fa-user-plus"></i> Criar Conta';
+            }
         });
     </script>
 </body>

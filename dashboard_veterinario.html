@@ -548,10 +548,15 @@
 <body>
     <div class="app-container">
         <!-- SIDEBAR -->
-                <aside class="sidebar">
-            <div class="logo-container">
-                <img src="assets/logo.png" alt="Zooni Logo" class="logo-img-sidebar">
-                <div class="logo-subtext">VETERINÁRIO</div>
+        <aside class="sidebar">
+            <div class="logo-container d-flex justify-content-between align-items-start w-100">
+                <div>
+                    <img src="assets/logo.png" alt="Zooni Logo" class="logo-img-sidebar">
+                    <div class="logo-subtext">VETERINÁRIO</div>
+                </div>
+                <button class="mobile-menu-close" onclick="document.querySelector('.sidebar').classList.remove('active')" title="Fechar Menu">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
             </div>
             
             <ul class="nav-links">
@@ -579,7 +584,10 @@
 
         <!-- MAIN -->
         <main class="main-content">
-            <div class="navbar-area">
+            <div class="navbar-area d-flex align-items-center">
+                <button class="btn d-md-none" onclick="document.querySelector('.sidebar').classList.add('active')" title="Abrir Menu" style="flex-shrink: 0; width: 45px; height: 45px; border-radius: 50%; background: white; border: 1px solid #f1f2f6; display: flex; align-items: center; justify-content: center;">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
                 <div class="nav-actions" style="margin-left:auto;">
                     <i class="fa-regular fa-bell text-muted" style="cursor: pointer;"></i>
                     <div onclick="window.location.href='definicoes_veterinario.html'"

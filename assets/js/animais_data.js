@@ -27,17 +27,17 @@ const ZooniData = {
     ].sort(),
 
     tiposAnimais: [
-        { id: "cao", nome: "Cão" },
-        { id: "gato", nome: "Gato" },
-        { id: "ave", nome: "Ave" },
-        { id: "roedor", nome: "Roedor / Pequeno Mamífero" },
-        { id: "reptil", nome: "Réptil / Anfíbio" },
-        { id: "equideo", nome: "Cão / Equídeo" }, /* Keeping structure simple */
-        { id: "outro", nome: "Outro" }
+        { id: "cão",     nome: "Cão" },
+        { id: "gato",    nome: "Gato" },
+        { id: "ave",     nome: "Ave" },
+        { id: "roedor",  nome: "Roedor / Pequeno Mamífero" },
+        { id: "réptil",  nome: "Réptil / Anfíbio" },
+        { id: "equídeo", nome: "Equídeo" },
+        { id: "outro",   nome: "Outro" }
     ],
 
     racas: {
-        "cao": [
+        "cão": [
             "Sem Raça Definida (S.R.D.) / Rafeiro",
             "Affenpinscher",
             "Afghan Hound",
@@ -191,7 +191,7 @@ const ZooniData = {
             "Rato Doméstico",
             "Outro (Roedor / Mamífero)"
         ],
-        "reptil": [
+        "réptil": [
             "Agama Mwanzae",
             "Anófeles",
             "Axolote (Anfíbio)",
@@ -212,7 +212,7 @@ const ZooniData = {
             "Tritão (Anfíbio)",
             "Outro (Réptil / Anfíbio)"
         ],
-        "equideo": [
+        "equídeo": [
             "Burro / Asno",
             "Cavalo Andaluz",
             "Cavalo Árabe",

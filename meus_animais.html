@@ -44,12 +44,17 @@
             --input-bg: #09090B;
             --input-border: #52525B;
             /* Cores de Destaque Desaturadas para Dark Mode */
-            --primary: #34D399; /* Zooni Green suave */
-            --danger: #F87171; /* Vermelho suave */
+            --primary: #34D399;
+            /* Zooni Green suave */
+            --danger: #F87171;
+            /* Vermelho suave */
         }
 
-        [data-theme="dark"] body { background-color: var(--bg-color); color: var(--text-main); }
-        
+        [data-theme="dark"] body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+        }
+
         [data-theme="dark"] .card-panel,
         [data-theme="dark"] .pet-card,
         [data-theme="dark"] .pet-card-wide,
@@ -57,65 +62,162 @@
         [data-theme="dark"] .glass-card,
         [data-theme="dark"] .settings-card,
         [data-theme="dark"] .settings-nav,
-        [data-theme="dark"] .checklist-panel { 
-            background-color: var(--card-bg) !important; 
-            border-color: var(--border-color) !important; 
-            color: var(--text-main) !important; 
+        [data-theme="dark"] .checklist-panel {
+            background-color: var(--card-bg) !important;
+            border-color: var(--border-color) !important;
+            color: var(--text-main) !important;
         }
 
         [data-theme="dark"] .bg-white,
-        [data-theme="dark"] .bg-light { background-color: var(--card-bg) !important; }
+        [data-theme="dark"] .bg-light {
+            background-color: var(--card-bg) !important;
+        }
 
         /* Offcanvas Pet Profile Overrides - Premium Look */
-        [data-theme="dark"] .offcanvas { background-color: #242424 !important; border-left: 1px solid rgba(255,255,255,0.1) !important; color: #E4E4E7 !important; }
-        [data-theme="dark"] .offcanvas .btn-close { filter: invert(1) grayscale(100%) brightness(200%); }
-        [data-theme="dark"] #petProfileOffcanvas .pet-profile-header { border-bottom: 1px solid rgba(255,255,255,0.05) !important; }
-        [data-theme="dark"] #petProfileOffcanvas .profile-tab-nav { border-bottom: 1px solid rgba(255,255,255,0.05) !important; }
-        [data-theme="dark"] #petProfileOffcanvas .offcanvas-tab-content { background-color: #242424 !important; }
-        [data-theme="dark"] #petProfileOffcanvas .bg-light { background-color: #18181B !important; color: #E4E4E7 !important; border: 1px solid rgba(255,255,255,0.05) !important; }
-        [data-theme="dark"] #petProfileOffcanvas .info-label { color: #A1A1AA !important; }
-        [data-theme="dark"] #petProfileOffcanvas .info-value, [data-theme="dark"] #petProfileOffcanvas .text-dark { color: #E4E4E7 !important; }
-        [data-theme="dark"] #petProfileOffcanvas .pet-profile-emoji-lg { border: 2px solid #34D399 !important; background: #121212; color: #34D399; }
-        [data-theme="dark"] #petProfileTabs .nav-link { background-color: transparent !important; color: #A1A1AA !important; }
-        [data-theme="dark"] #petProfileTabs .nav-link.active { background-color: rgba(52, 211, 153, 0.1) !important; color: #34D399 !important; }
-        [data-theme="dark"] #petProfileOffcanvas .offcanvas-footer-actions { background-color: #242424 !important; border-top: 1px solid rgba(255,255,255,0.05) !important; }
-        [data-theme="dark"] #petProfileOffcanvas .btn-primary { background-color: #34D399 !important; color: #121212 !important; border: none !important; }
-        [data-theme="dark"] #petProfileOffcanvas .btn-outline-secondary { color: #A1A1AA !important; border-color: rgba(255,255,255,0.1) !important; background: transparent !important; }
-        [data-theme="dark"] #petProfileOffcanvas .btn-outline-secondary:hover { background-color: rgba(255,255,255,0.05) !important; color: white !important; }
-        [data-theme="dark"] #petProfileOffcanvas .btn-outline-danger { color: #EF4444 !important; border-color: rgba(239, 68, 68, 0.3) !important; background: transparent !important; }
-        [data-theme="dark"] #petProfileOffcanvas .btn-outline-danger:hover { background-color: rgba(239, 68, 68, 0.1) !important; color: #EF4444 !important; }
-        
+        [data-theme="dark"] .offcanvas {
+            background-color: #242424 !important;
+            border-left: 1px solid rgba(255, 255, 255, 0.1) !important;
+            color: #E4E4E7 !important;
+        }
+
+        [data-theme="dark"] .offcanvas .btn-close {
+            filter: invert(1) grayscale(100%) brightness(200%);
+        }
+
+        [data-theme="dark"] #petProfileOffcanvas .pet-profile-header {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+        }
+
+        [data-theme="dark"] #petProfileOffcanvas .profile-tab-nav {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+        }
+
+        [data-theme="dark"] #petProfileOffcanvas .offcanvas-tab-content {
+            background-color: #242424 !important;
+        }
+
+        [data-theme="dark"] #petProfileOffcanvas .bg-light {
+            background-color: #18181B !important;
+            color: #E4E4E7 !important;
+            border: 1px solid rgba(255, 255, 255, 0.05) !important;
+        }
+
+        [data-theme="dark"] #petProfileOffcanvas .info-label {
+            color: #A1A1AA !important;
+        }
+
+        [data-theme="dark"] #petProfileOffcanvas .info-value,
+        [data-theme="dark"] #petProfileOffcanvas .text-dark {
+            color: #E4E4E7 !important;
+        }
+
+        [data-theme="dark"] #petProfileOffcanvas .pet-profile-emoji-lg {
+            border: 2px solid #34D399 !important;
+            background: #121212;
+            color: #34D399;
+        }
+
+        [data-theme="dark"] #petProfileTabs .nav-link {
+            background-color: transparent !important;
+            color: #A1A1AA !important;
+        }
+
+        [data-theme="dark"] #petProfileTabs .nav-link.active {
+            background-color: rgba(52, 211, 153, 0.1) !important;
+            color: #34D399 !important;
+        }
+
+        [data-theme="dark"] #petProfileOffcanvas .offcanvas-footer-actions {
+            background-color: #242424 !important;
+            border-top: 1px solid rgba(255, 255, 255, 0.05) !important;
+        }
+
+        [data-theme="dark"] #petProfileOffcanvas .btn-primary {
+            background-color: #34D399 !important;
+            color: #121212 !important;
+            border: none !important;
+        }
+
+        [data-theme="dark"] #petProfileOffcanvas .btn-outline-secondary {
+            color: #A1A1AA !important;
+            border-color: rgba(255, 255, 255, 0.1) !important;
+            background: transparent !important;
+        }
+
+        [data-theme="dark"] #petProfileOffcanvas .btn-outline-secondary:hover {
+            background-color: rgba(255, 255, 255, 0.05) !important;
+            color: white !important;
+        }
+
+        [data-theme="dark"] #petProfileOffcanvas .btn-outline-danger {
+            color: #EF4444 !important;
+            border-color: rgba(239, 68, 68, 0.3) !important;
+            background: transparent !important;
+        }
+
+        [data-theme="dark"] #petProfileOffcanvas .btn-outline-danger:hover {
+            background-color: rgba(239, 68, 68, 0.1) !important;
+            color: #EF4444 !important;
+        }
+
         /* Offcanvas Sub-Cards (Health & Tickets) */
         [data-theme="dark"] #petProfileOffcanvas .health-item,
         [data-theme="dark"] #petProfileOffcanvas .ticket-history-item {
             background-color: #18181B !important;
-            border-color: rgba(255,255,255,0.05) !important;
+            border-color: rgba(255, 255, 255, 0.05) !important;
         }
-        [data-theme="dark"] #petProfileOffcanvas .health-item-title { color: #E4E4E7 !important; }
-        [data-theme="dark"] #petProfileOffcanvas .health-item-date { color: #A1A1AA !important; }
-        [data-theme="dark"] #petProfileOffcanvas .ticket-history-item .fw-bold { color: #E4E4E7 !important; }
-        [data-theme="dark"] #petProfileOffcanvas .ticket-history-item .bg-white { background-color: #242424 !important; border-color: rgba(255,255,255,0.05) !important; }
-        [data-theme="dark"] #vacinasList .status-badge, [data-theme="dark"] #desparasitacaoList .status-badge { background-color: rgba(255,255,255,0.08) !important; }
-        [data-theme="dark"] #vacinasList .text-success, [data-theme="dark"] #desparasitacaoList .text-success { color: #10B981 !important; }
-        [data-theme="dark"] #vacinasList .text-danger, [data-theme="dark"] #desparasitacaoList .text-danger { color: #EF4444 !important; }
-        
+
+        [data-theme="dark"] #petProfileOffcanvas .health-item-title {
+            color: #E4E4E7 !important;
+        }
+
+        [data-theme="dark"] #petProfileOffcanvas .health-item-date {
+            color: #A1A1AA !important;
+        }
+
+        [data-theme="dark"] #petProfileOffcanvas .ticket-history-item .fw-bold {
+            color: #E4E4E7 !important;
+        }
+
+        [data-theme="dark"] #petProfileOffcanvas .ticket-history-item .bg-white {
+            background-color: #242424 !important;
+            border-color: rgba(255, 255, 255, 0.05) !important;
+        }
+
+        [data-theme="dark"] #vacinasList .status-badge,
+        [data-theme="dark"] #desparasitacaoList .status-badge {
+            background-color: rgba(255, 255, 255, 0.08) !important;
+        }
+
+        [data-theme="dark"] #vacinasList .text-success,
+        [data-theme="dark"] #desparasitacaoList .text-success {
+            color: #10B981 !important;
+        }
+
+        [data-theme="dark"] #vacinasList .text-danger,
+        [data-theme="dark"] #desparasitacaoList .text-danger {
+            color: #EF4444 !important;
+        }
+
         [data-theme="dark"] .text-dark,
         [data-theme="dark"] .text-muted,
         [data-theme="dark"] small,
-        [data-theme="dark"] .text-secondary { color: var(--text-sec) !important; }
-        
+        [data-theme="dark"] .text-secondary {
+            color: var(--text-sec) !important;
+        }
+
         /* Formulários / Inputs */
         [data-theme="dark"] .form-control,
         [data-theme="dark"] .form-select,
         [data-theme="dark"] input:not([type="checkbox"]):not([type="radio"]),
         [data-theme="dark"] textarea,
         [data-theme="dark"] .input-group-text,
-        [data-theme="dark"] select { 
-            background-color: var(--input-bg) !important; 
-            color: var(--text-main) !important; 
-            border: 1px solid var(--input-border) !important; 
+        [data-theme="dark"] select {
+            background-color: var(--input-bg) !important;
+            color: var(--text-main) !important;
+            border: 1px solid var(--input-border) !important;
         }
-        
+
         [data-theme="dark"] .form-control:focus,
         [data-theme="dark"] .form-select:focus,
         [data-theme="dark"] textarea:focus {
@@ -125,11 +227,16 @@
 
         [data-theme="dark"] input::placeholder,
         [data-theme="dark"] textarea::placeholder,
-        [data-theme="dark"] .form-control::placeholder { color: var(--text-sec) !important; opacity: 1; }
-        
+        [data-theme="dark"] .form-control::placeholder {
+            color: var(--text-sec) !important;
+            opacity: 1;
+        }
+
         [data-theme="dark"] label,
-        [data-theme="dark"] .form-label { color: var(--text-main) !important; }
-        
+        [data-theme="dark"] .form-label {
+            color: var(--text-main) !important;
+        }
+
         /* Dropdowns & Menus Suspensos / Notificações / Modal */
         [data-theme="dark"] .dropdown-menu,
         [data-theme="dark"] .notification-dropdown,
@@ -141,51 +248,117 @@
             color: var(--text-main) !important;
         }
 
-        [data-theme="dark"] .dropdown-item { color: var(--text-main); }
-        [data-theme="dark"] .dropdown-item:hover { background-color: var(--card-hover); color: white; }
-        
-        [data-theme="dark"] .notification-item { border-color: var(--border-color); }
-        [data-theme="dark"] .notification-item:hover { background-color: var(--card-hover); }
-        [data-theme="dark"] .notification-item.unread { background-color: rgba(52, 211, 153, 0.05); border-left-color: var(--primary); }
-        
+        [data-theme="dark"] .dropdown-item {
+            color: var(--text-main);
+        }
+
+        [data-theme="dark"] .dropdown-item:hover {
+            background-color: var(--card-hover);
+            color: white;
+        }
+
+        [data-theme="dark"] .notification-item {
+            border-color: var(--border-color);
+        }
+
+        [data-theme="dark"] .notification-item:hover {
+            background-color: var(--card-hover);
+        }
+
+        [data-theme="dark"] .notification-item.unread {
+            background-color: rgba(52, 211, 153, 0.05);
+            border-left-color: var(--primary);
+        }
+
         /* Toggles / Switches (Definições) */
         [data-theme="dark"] .form-check-input[type="checkbox"][role="switch"] {
             background-color: #3F3F46 !important;
             border-color: #3F3F46 !important;
         }
+
         [data-theme="dark"] .form-check-input[type="checkbox"][role="switch"]:checked {
             background-color: var(--primary) !important;
             border-color: var(--primary) !important;
         }
 
         /* Settings specific nav */
-        [data-theme="dark"] .settings-nav-item { color: var(--text-sec); }
-        [data-theme="dark"] .settings-nav-item.active { color: var(--primary); }
-        [data-theme="dark"] .settings-nav-item:hover { background: rgba(255,255,255,0.05); color: var(--text-main); }
+        [data-theme="dark"] .settings-nav-item {
+            color: var(--text-sec);
+        }
+
+        [data-theme="dark"] .settings-nav-item.active {
+            color: var(--primary);
+        }
+
+        [data-theme="dark"] .settings-nav-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-main);
+        }
 
         /* Fullcalendar overrides (Agenda) */
-        [data-theme="dark"] .fc { color: var(--text-main); }
+        [data-theme="dark"] .fc {
+            color: var(--text-main);
+        }
+
         [data-theme="dark"] .fc table,
         [data-theme="dark"] .fc th,
-        [data-theme="dark"] .fc td { border-color: var(--border-color); background-color: var(--card-bg); }
+        [data-theme="dark"] .fc td {
+            border-color: var(--border-color);
+            background-color: var(--card-bg);
+        }
+
         [data-theme="dark"] .fc-toolbar-title,
         [data-theme="dark"] .fc-col-header-cell-cushion,
-        [data-theme="dark"] .fc-daygrid-day-number { color: var(--text-main); }
-        [data-theme="dark"] .fc-button { background-color: var(--primary); border-color: rgba(255,255,255,0.1); color: #121212 !important; }
-        [data-theme="dark"] .fc-day-today { background-color: rgba(52, 211, 153, 0.1) !important; }
+        [data-theme="dark"] .fc-daygrid-day-number {
+            color: var(--text-main);
+        }
+
+        [data-theme="dark"] .fc-button {
+            background-color: var(--primary);
+            border-color: rgba(255, 255, 255, 0.1);
+            color: #121212 !important;
+        }
+
+        [data-theme="dark"] .fc-day-today {
+            background-color: rgba(52, 211, 153, 0.1) !important;
+        }
 
         /* Bordas genéricas e Diversos */
         [data-theme="dark"] .border,
         [data-theme="dark"] .border-bottom,
-        [data-theme="dark"] .border-top { border-color: var(--border-color) !important; }
-        
+        [data-theme="dark"] .border-top {
+            border-color: var(--border-color) !important;
+        }
+
         [data-theme="dark"] .header-area,
-        [data-theme="dark"] .alert { background-color: transparent !important; color: var(--text-main) !important; }
-        [data-theme="dark"] .shadow-sm, [data-theme="dark"] .shadow { box-shadow: none !important; }
-        [data-theme="dark"] .rounded.border { background-color: var(--card-bg); }
-        [data-theme="dark"] .filter-pill { background-color: var(--card-bg); color: var(--text-sec); border-color: var(--border-color); }
-        [data-theme="dark"] .filter-pill.active { background-color: var(--primary); color: #121212; }
-        [data-theme="dark"] .status-badge { background-color: rgba(255,255,255,0.08); }
+        [data-theme="dark"] .alert {
+            background-color: transparent !important;
+            color: var(--text-main) !important;
+        }
+
+        [data-theme="dark"] .shadow-sm,
+        [data-theme="dark"] .shadow {
+            box-shadow: none !important;
+        }
+
+        [data-theme="dark"] .rounded.border {
+            background-color: var(--card-bg);
+        }
+
+        [data-theme="dark"] .filter-pill {
+            background-color: var(--card-bg);
+            color: var(--text-sec);
+            border-color: var(--border-color);
+        }
+
+        [data-theme="dark"] .filter-pill.active {
+            background-color: var(--primary);
+            color: #121212;
+        }
+
+        [data-theme="dark"] .status-badge {
+            background-color: rgba(255, 255, 255, 0.08);
+        }
 
         body {
             background-color: var(--bg-color);
@@ -270,6 +443,7 @@
         .nav-link.text-danger {
             color: #ff6b6b !important;
         }
+
         .nav-link.text-danger:hover {
             background-color: rgba(255, 107, 107, 0.15);
             color: #ff6b6b !important;
@@ -943,34 +1117,42 @@
 <body>
     <div class="app-container">
         <!-- SIDEBAR -->
-                <aside class="sidebar">
+        <aside class="sidebar">
             <div class="logo-container d-flex justify-content-between align-items-center w-100">
                 <img src="assets/logo.png" alt="Zooni Logo" class="logo-img-sidebar">
-                <button class="mobile-menu-close" onclick="document.querySelector('.sidebar').classList.remove('active')" title="Fechar Menu">
+                <button class="mobile-menu-close"
+                    onclick="document.querySelector('.sidebar').classList.remove('active')" title="Fechar Menu">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
             <ul class="nav-links">
                 <li class="nav-item">
-                    <a href="dashboard_dono.html" class="nav-link "><i class="fa-solid fa-house"></i> <span data-i18n="nav_home">Início</span></a>
+                    <a href="dashboard_dono.html" class="nav-link "><i class="fa-solid fa-house"></i> <span
+                            data-i18n="nav_home">Início</span></a>
                 </li>
                 <li class="nav-item">
-                    <a href="meus_animais.html" class="nav-link active"><i class="fa-solid fa-dog"></i> <span data-i18n="nav_animals">Os Meus Animais</span></a>
+                    <a href="meus_animais.html" class="nav-link active"><i class="fa-solid fa-dog"></i> <span
+                            data-i18n="nav_animals">Os Meus Animais</span></a>
                 </li>
                 <li class="nav-item">
-                    <a href="agenda_dono.html" class="nav-link "><i class="fa-solid fa-calendar"></i> <span data-i18n="nav_calendar">Calendário</span></a>
+                    <a href="agenda_dono.html" class="nav-link "><i class="fa-solid fa-calendar"></i> <span
+                            data-i18n="nav_calendar">Calendário</span></a>
                 </li>
                 <li class="nav-item">
-                    <a href="chat_dono.html" class="nav-link "><i class="fa-solid fa-comments"></i> <span data-i18n="nav_chat">Chat da Clínica</span></a>
+                    <a href="chat_dono.html" class="nav-link "><i class="fa-solid fa-comments"></i> <span
+                            data-i18n="nav_chat">Chat da Clínica</span></a>
                 </li>
                 <li class="nav-item">
-                    <a href="veterinarios.html" class="nav-link "><i class="fa-solid fa-user-doctor"></i> <span>Veterinários</span></a>
+                    <a href="veterinarios.html" class="nav-link "><i class="fa-solid fa-user-doctor"></i>
+                        <span>Veterinários</span></a>
                 </li>
             </ul>
-            
+
             <div class="nav-line-break"></div>
-            <a href="definicoes_dono.html" class="nav-link "><i class="fa-solid fa-gear"></i> <span data-i18n="nav_settings">Configurações</span></a>
-            <a href="index.html" class="nav-link text-danger"><i class="fa-solid fa-arrow-right-from-bracket"></i> <span data-i18n="nav_logout">Sair</span></a>
+            <a href="definicoes_dono.html" class="nav-link "><i class="fa-solid fa-gear"></i> <span
+                    data-i18n="nav_settings">Configurações</span></a>
+            <a href="index.html" class="nav-link text-danger"><i class="fa-solid fa-arrow-right-from-bracket"></i> <span
+                    data-i18n="nav_logout">Sair</span></a>
 
             <button class="btn-sidebar-cta mt-auto" data-bs-toggle="modal" data-bs-target="#addTicketModal">
                 <i class="fa-solid fa-plus"></i> <span data-i18n="nav_new_ticket">Novo Pedido</span>
@@ -982,12 +1164,15 @@
             <!-- Header -->
             <div class="header-area">
                 <div class="d-flex align-items-center gap-3">
-                    <button class="btn btn-icon-circle d-md-none" onclick="document.querySelector('.sidebar').classList.add('active')" title="Abrir Menu" style="flex-shrink: 0;">
+                    <button class="btn btn-icon-circle d-md-none"
+                        onclick="document.querySelector('.sidebar').classList.add('active')" title="Abrir Menu"
+                        style="flex-shrink: 0;">
                         <i class="fa-solid fa-bars"></i>
                     </button>
                     <div>
                         <h2 class="fw-bold mb-1" data-i18n="animals_title">A Minha Matilha / Família 🐾</h2>
-                        <p class="text-secondary m-0" data-i18n="animals_subtitle">Gere todas as informações e alertas de saúde dos teus animais num único lugar.</p>
+                        <p class="text-secondary m-0" data-i18n="animals_subtitle">Gere todas as informações e alertas
+                            de saúde dos teus animais num único lugar.</p>
                     </div>
                 </div>
                 <div class="user-profile">
@@ -1016,7 +1201,8 @@
                             </div>
                             <!-- Footer -->
                             <div class="p-2 border-top text-center bg-light" style="border-radius: 0 0 16px 16px;">
-                                <a href="notificacoes.html" class="text-decoration-none small text-primary fw-bold">Ver todas as
+                                <a href="notificacoes.html" class="text-decoration-none small text-primary fw-bold">Ver
+                                    todas as
                                     notificações</a>
                             </div>
                         </div>
@@ -1024,39 +1210,48 @@
                     <!-- Profile Dropdown -->
                     <div class="dropdown">
                         <img src="https://ui-avatars.com/api/?name=User&background=3D8B3D&color=fff" alt="Profile"
-                            class="profile-pic" id="headerProfilePic" data-bs-toggle="dropdown" aria-expanded="false" style="cursor: pointer;">
-                        
+                            class="profile-pic" id="headerProfilePic" data-bs-toggle="dropdown" aria-expanded="false"
+                            style="cursor: pointer;">
+
                         <div class="dropdown-menu dropdown-menu-end profile-dropdown">
                             <!-- Header -->
                             <div class="p-3 border-bottom text-center bg-light" style="border-radius: 16px 16px 0 0;">
                                 <h6 class="mb-0 fw-bold text-dark" id="dropdownUserName">Carregando...</h6>
                                 <span class="badge bg-secondary mb-1" data-i18n="common_tutor">Tutor</span>
-                                <div class="small text-muted" id="dropdownUserEmail" style="font-size: 0.75rem;">carregando...</div>
+                                <div class="small text-muted" id="dropdownUserEmail" style="font-size: 0.75rem;">
+                                    carregando...</div>
                             </div>
-                            
+
                             <!-- Actons -->
                             <div class="p-2">
                                 <a class="dropdown-item py-2" href="#" onclick="openProfileModal(); return false;">
-                                    <i class="fa-regular fa-user me-2 text-primary"></i> <span data-i18n="common_profile">O Meu Perfil</span>
+                                    <i class="fa-regular fa-user me-2 text-primary"></i> <span
+                                        data-i18n="common_profile">O Meu Perfil</span>
                                 </a>
                                 <a class="dropdown-item py-2" href="meus_animais.html">
-                                    <i class="fa-solid fa-paw me-2 text-primary"></i> <span data-i18n="common_manage_animals">Gerir Animais</span>
+                                    <i class="fa-solid fa-paw me-2 text-primary"></i> <span
+                                        data-i18n="common_manage_animals">Gerir Animais</span>
                                 </a>
                                 <a class="dropdown-item py-2" href="definicoes_dono.html#faturasSection">
-                                    <i class="fa-regular fa-credit-card me-2 text-primary"></i> <span data-i18n="common_payments">Pagamentos / Faturação</span>
+                                    <i class="fa-regular fa-credit-card me-2 text-primary"></i> <span
+                                        data-i18n="common_payments">Pagamentos / Faturação</span>
                                 </a>
                                 <a class="dropdown-item py-2" href="definicoes_dono.html">
-                                    <i class="fa-solid fa-gear me-2 text-primary"></i> <span data-i18n="common_settings">Definições</span>
+                                    <i class="fa-solid fa-gear me-2 text-primary"></i> <span
+                                        data-i18n="common_settings">Definições</span>
                                 </a>
                             </div>
-                            
+
                             <!-- Help & Logout -->
                             <div class="p-2 border-top">
                                 <a class="dropdown-item py-2" href="#">
-                                    <i class="fa-regular fa-circle-question me-2 text-muted"></i> <span data-i18n="common_help">Ajuda / Suporte</span>
+                                    <i class="fa-regular fa-circle-question me-2 text-muted"></i> <span
+                                        data-i18n="common_help">Ajuda / Suporte</span>
                                 </a>
-                                <a class="dropdown-item py-2 text-danger" href="#" onclick="localStorage.removeItem('zooni-remember'); supabaseClient.auth.signOut().then(() => window.location.href='login.html?logout=1');">
-                                    <i class="fa-solid fa-arrow-right-from-bracket me-2"></i> <span data-i18n="common_sign_out">Terminar Sessão</span>
+                                <a class="dropdown-item py-2 text-danger" href="#"
+                                    onclick="localStorage.removeItem('zooni-remember'); supabaseClient.auth.signOut().then(() => window.location.href='login.html?logout=1');">
+                                    <i class="fa-solid fa-arrow-right-from-bracket me-2"></i> <span
+                                        data-i18n="common_sign_out">Terminar Sessão</span>
                                 </a>
                             </div>
                         </div>
@@ -1227,32 +1422,37 @@
                         <div class="mb-3 d-flex align-items-center gap-2">
                             <div class="form-check form-switch mb-0">
                                 <input class="form-check-input" type="checkbox" id="castrado" role="switch">
-                                <label class="form-check-label small text-muted fw-bold" for="castrado" data-i18n="modal_pet_neutered">Castrado / Esterilizado</label>
+                                <label class="form-check-label small text-muted fw-bold" for="castrado"
+                                    data-i18n="modal_pet_neutered">Castrado / Esterilizado</label>
                             </div>
                         </div>
 
                         <div class="mb-3">
-                            <label class="small text-muted fw-bold" data-i18n="modal_pet_microchip">N.º Microchip</label>
+                            <label class="small text-muted fw-bold" data-i18n="modal_pet_microchip">N.º
+                                Microchip</label>
                             <input type="text" class="form-control" id="microchip" placeholder="Ex: 620098100012345">
                         </div>
 
                         <div class="mb-3">
                             <label class="small text-muted fw-bold" data-i18n="modal_pet_photo">Foto</label>
                             <div id="previewContainer" onclick="document.getElementById('foto').click()">
-                                <span class="text-muted small"><i class="fa-solid fa-camera"></i> <span data-i18n="modal_pet_choose">Escolher</span></span>
+                                <span class="text-muted small"><i class="fa-solid fa-camera"></i> <span
+                                        data-i18n="modal_pet_choose">Escolher</span></span>
                             </div>
                             <input type="file" class="d-none" id="foto" accept="image/*">
                             <div class="text-end mt-2">
-                                <button type="button" class="btn btn-sm btn-outline-danger d-none"
-                                    id="btnRemoverFoto" data-i18n="modal_pet_remove">Remover</button>
+                                <button type="button" class="btn btn-sm btn-outline-danger d-none" id="btnRemoverFoto"
+                                    data-i18n="modal_pet_remove">Remover</button>
                                 <input type="hidden" id="removeFotoFlag" value="false">
                             </div>
                         </div>
 
                         <div class="mb-3">
                             <div class="form-check form-switch mb-2">
-                                <input class="form-check-input" type="checkbox" id="temAlergias" onchange="toggleAlergias()">
-                                <label class="form-check-label small text-muted fw-bold" for="temAlergias" data-i18n="modal_pet_allergies">Tem Alergias Conhecidas?</label>
+                                <input class="form-check-input" type="checkbox" id="temAlergias"
+                                    onchange="toggleAlergias()">
+                                <label class="form-check-label small text-muted fw-bold" for="temAlergias"
+                                    data-i18n="modal_pet_allergies">Tem Alergias Conhecidas?</label>
                             </div>
                             <textarea class="form-control" id="alergias" rows="2" style="display: none;"
                                 data-i18n-placeholder="modal_pet_allergies_ph"
@@ -1261,15 +1461,18 @@
 
                         <div class="mb-4">
                             <div class="form-check form-switch mb-2">
-                                <input class="form-check-input" type="checkbox" id="temDoencas" onchange="toggleDoencas()">
-                                <label class="form-check-label small text-muted fw-bold" for="temDoencas" data-i18n="modal_pet_diseases">Tem Doenças Crónicas?</label>
+                                <input class="form-check-input" type="checkbox" id="temDoencas"
+                                    onchange="toggleDoencas()">
+                                <label class="form-check-label small text-muted fw-bold" for="temDoencas"
+                                    data-i18n="modal_pet_diseases">Tem Doenças Crónicas?</label>
                             </div>
                             <textarea class="form-control" id="doencas_cronicas" rows="2" style="display: none;"
                                 data-i18n-placeholder="modal_pet_diseases_ph"
                                 placeholder="Ex: Diabetes, Leishmaniose..."></textarea>
                         </div>
 
-                        <button type="submit" class="btn-primary-modal" id="btnSalvar" data-i18n="btn_save">Salvar</button>
+                        <button type="submit" class="btn-primary-modal" id="btnSalvar"
+                            data-i18n="btn_save">Salvar</button>
                     </form>
                 </div>
             </div>
@@ -1364,8 +1567,8 @@
             // Populate Dropdown logic
             const dropdownNameEl = document.getElementById('dropdownUserName');
             const dropdownEmailEl = document.getElementById('dropdownUserEmail');
-            if(dropdownNameEl) dropdownNameEl.textContent = nomeCliente;
-            if(dropdownEmailEl) dropdownEmailEl.textContent = session.user.email;
+            if (dropdownNameEl) dropdownNameEl.textContent = nomeCliente;
+            if (dropdownEmailEl) dropdownEmailEl.textContent = session.user.email;
 
             // Load data now that we have the ID
             loadTipos();
@@ -1468,7 +1671,7 @@
                 const { data: dbNotifs, error } = await supabaseClient
                     .from('notificacoes')
                     .select('*')
-                    .eq('user_id', ID_DONO)
+                    .eq('user_id', session.user.id)
                     .order('criado_em', { ascending: false })
                     .limit(5);
 
@@ -1478,8 +1681,8 @@
                 const month = String(refDate.getMonth() + 1).padStart(2, '0');
                 const day = String(refDate.getDate()).padStart(2, '0');
                 const todayDateStr = `${year}-${month}-${day}`;
-                
-                refDate.setHours(0,0,0,0);
+
+                refDate.setHours(0, 0, 0, 0);
                 const fetchStart = new Date(refDate.getTime() - 86400000).toISOString();
                 const fetchEnd = new Date(refDate.getTime() + 172800000).toISOString();
 
@@ -1491,11 +1694,11 @@
                     .lte('data_inicio', fetchEnd);
 
                 const todayEvents = (rawEvents || []).filter(e => {
-                     if (!e.data_inicio) return false;
-                     const evDate = new Date(e.data_inicio);
-                     return evDate.getFullYear() === refDate.getFullYear() &&
-                            evDate.getMonth() === refDate.getMonth() &&
-                            evDate.getDate() === refDate.getDate();
+                    if (!e.data_inicio) return false;
+                    const evDate = new Date(e.data_inicio);
+                    return evDate.getFullYear() === refDate.getFullYear() &&
+                        evDate.getMonth() === refDate.getMonth() &&
+                        evDate.getDate() === refDate.getDate();
                 });
 
                 const { data: todayTickets } = await supabaseClient
@@ -1533,7 +1736,7 @@
                             </div>
                             <div class="notification-content">
                                 <div class="notification-text"><strong><span data-i18n="common_today_consult">Consulta Hoje</span>:</strong> ${tk.motivo} (${nomePet})</div>
-                                <div class="notification-time"><i class="fa-regular fa-clock me-1"></i>${tk.hr_agendada?.substring(0,5) || 'Hoje'}</div>
+                                <div class="notification-time"><i class="fa-regular fa-clock me-1"></i>${tk.hr_agendada?.substring(0, 5) || 'Hoje'}</div>
                             </div>
                         </div>`;
                 });
@@ -1583,7 +1786,7 @@
                         </div>
                     `;
                 }).join('');
-                
+
                 listEl.innerHTML = html;
 
             } catch (e) {
@@ -1652,18 +1855,31 @@
             if (typeof ZooniData !== 'undefined') {
                 ZooniData.tiposAnimais.forEach(t => {
                     const opt = document.createElement('option');
-                    // Store value as the id for JS lookup, but text as what user sees
-                    opt.value = t.id;
+                    // value = nome display (what goes to DB), data-id = internal key for breed lookup
+                    opt.value = t.nome;      // e.g. "Cão"
+                    opt.dataset.id = t.id;   // e.g. "cão" — used to filter racas
                     opt.textContent = ZOONI_I18N.translateType(t.nome) || t.nome;
                     s.appendChild(opt);
                 });
             }
         }
 
-        async function loadRacas(tipoId) {
+        async function loadRacas(tipoNomeOrId) {
             const s = document.getElementById('raca');
             s.innerHTML = '<option value="" data-i18n="modal_pet_breed_select">' + (ZOONI_I18N.t('modal_pet_breed_select') || 'Selecione a raça...') + '</option>';
-            if (!tipoId || typeof ZooniData === 'undefined' || !ZooniData.racas[tipoId]) return;
+            if (!tipoNomeOrId) return;
+
+            // Resolve to internal ID — check if it's already an id key or a nome
+            const selTipo = document.getElementById('tipo');
+            let tipoId = tipoNomeOrId;
+            for (let opt of selTipo.options) {
+                if (opt.value === tipoNomeOrId || opt.dataset.id === tipoNomeOrId) {
+                    tipoId = opt.dataset.id || tipoNomeOrId.toLowerCase();
+                    break;
+                }
+            }
+
+            if (typeof ZooniData === 'undefined' || !ZooniData.racas[tipoId]) return;
 
             ZooniData.racas[tipoId].forEach(r => {
                 const opt = document.createElement('option');
@@ -1827,14 +2043,26 @@
 
                 // New fields
                 document.getElementById('peso').value = data.peso || '';
-                document.getElementById('sexo').value = data.sexo || '';
+                
+                if (data.sexo) {
+                    let s = data.sexo.toLowerCase();
+                    if (s.includes('fêmea') || s.includes('femea')) {
+                        document.getElementById('sexo').value = 'femea';
+                    } else if (s.includes('macho')) {
+                        document.getElementById('sexo').value = 'macho';
+                    } else {
+                        document.getElementById('sexo').value = '';
+                    }
+                } else {
+                    document.getElementById('sexo').value = '';
+                }
                 document.getElementById('castrado').checked = data.castrado || false;
                 document.getElementById('microchip').value = data.microchip || '';
-                
+
                 document.getElementById('alergias').value = data.alergias || '';
                 document.getElementById('temAlergias').checked = !!data.alergias;
                 toggleAlergias();
-                
+
                 document.getElementById('doencas_cronicas').value = data.doencas_cronicas || '';
                 document.getElementById('temDoencas').checked = !!data.doencas_cronicas;
                 toggleDoencas();
@@ -1880,7 +2108,7 @@
             // Birth date cannot be in the future
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('nascimento').max = today;
-            
+
             document.getElementById('microchip').value = '';
             document.getElementById('alergias').value = '';
             document.getElementById('temAlergias').checked = false;
@@ -1922,9 +2150,9 @@
             // Get text representations of type and breed instead of IDs
             const selTipo = document.getElementById('tipo');
             const selRaca = document.getElementById('raca');
-            let tipo_txt = selTipo.value;
-            // The database enum expects lowercase (e.g., 'cão', 'gato')
-            if (tipo_txt) tipo_txt = tipo_txt.toLowerCase();
+            // Use data-id which stores the lowercase accented enum value (e.g. 'cão', 'gato')
+            const selectedTipoOpt = selTipo.options[selTipo.selectedIndex];
+            const tipo_txt = (selectedTipoOpt?.dataset?.id) || null;
             const raca_txt = selRaca.options[selRaca.selectedIndex].value;
 
             const nasc = document.getElementById('nascimento').value;
@@ -2193,7 +2421,7 @@
                 try {
                     const parsed = JSON.parse(esp);
                     if (Array.isArray(parsed)) return parsed.join(', ');
-                } catch(e) {}
+                } catch (e) { }
             }
             return esp;
         }
@@ -2227,19 +2455,43 @@
                 // 2. Fetch only those vets (favIds are UUIDs = user_id)
                 const { data, error } = await supabaseClient
                     .from('veterinarios')
-                    .select('user_id, nome, clinica, especialidade')
+                    .select('user_id, nome, clinica, especialidade, modo_ferias')
                     .eq('status', 'ativo')
                     .in('user_id', favIds)
                     .order('nome');
 
+                // 3. Filter vets by their current real-time working schedule
+                const now = new Date();
+                const dayOfWeek = now.getDay();
+                const currentHourMin = now.toTimeString().substring(0, 5);
+
+                const { data: horarios } = await supabaseClient
+                    .from('zooni_horarios_padrao')
+                    .select('id_vet, hora_inicio, hora_fim')
+                    .eq('dia_semana', dayOfWeek)
+                    .in('id_vet', favIds);
+
+                const workingFavIds = new Set();
+                if (horarios) {
+                    horarios.forEach(h => {
+                        const inicio = h.hora_inicio.substring(0, 5);
+                        const fim = h.hora_fim.substring(0, 5);
+                        if (currentHourMin >= inicio && currentHourMin <= fim) {
+                            workingFavIds.add(h.id_vet);
+                        }
+                    });
+                }
+
+                const availableVets = (data || []).filter(vet => !vet.modo_ferias && workingFavIds.has(vet.user_id));
+
                 sel.innerHTML = '<option value="">Selecione um veterinário...</option>';
 
-                if (error || !data || data.length === 0) {
-                    sel.innerHTML = '<option value="">Nenhum veterinário disponível</option>';
+                if (error || availableVets.length === 0) {
+                    sel.innerHTML = '<option value="">Nenhum veterinário disponível neste momento</option>';
                     return;
                 }
 
-                data.forEach(vet => {
+                availableVets.forEach(vet => {
                     const opt = document.createElement('option');
                     opt.value = vet.user_id;
                     const clinica = vet.clinica ? ` — ${vet.clinica}` : '';
@@ -2297,8 +2549,50 @@
                 const id_veterinario_user = vetSelect.value;
                 const vet_nome = vetSelect.options[vetSelect.selectedIndex]?.text || '';
 
-                if (!id_animal) { alert('Por favor, selecione um pet.'); return; }
-                if (!id_veterinario_user) { alert('Por favor, selecione um veterinário.'); return; }
+                if (!id_animal) { alert('Por favor, selecione um pet.'); btn.disabled = false; btn.textContent = 'Enviar Pedido de Consulta'; return; }
+                if (!id_veterinario_user) { alert('Por favor, selecione um veterinário.'); btn.disabled = false; btn.textContent = 'Enviar Pedido de Consulta'; return; }
+
+                // Validar horário de trabalho do veterinário
+                if (data_sugerida) {
+                    const sugestaoDate = new Date(data_sugerida);
+                    const dayOfWeek = sugestaoDate.getDay();
+                    const timeStr = data_sugerida.split('T')[1]; // Formato "HH:MM"
+                    
+                    const { data: horarios, error: horErr } = await supabaseClient
+                        .from('zooni_horarios_padrao')
+                        .select('hora_inicio, hora_fim')
+                        .eq('id_vet', id_veterinario_user)
+                        .eq('dia_semana', dayOfWeek);
+
+                    if (horErr) {
+                        console.error("Erro ao verificar horário:", horErr);
+                        alert("Erro ao validar o horário do veterinário.");
+                        btn.disabled = false; btn.textContent = 'Enviar Pedido de Consulta';
+                        return;
+                    }
+
+                    if (!horarios || horarios.length === 0) {
+                        alert("O veterinário encontra-se ausente o dia todo neste dia da semana. Por favor, escolha outra data.");
+                        btn.disabled = false; btn.textContent = 'Enviar Pedido de Consulta';
+                        return;
+                    }
+
+                    let isWithinSchedule = false;
+                    for (let h of horarios) {
+                        const inicio = h.hora_inicio.substring(0, 5); // Ex: "09:00"
+                        const fim = h.hora_fim.substring(0, 5);       // Ex: "13:00"
+                        if (timeStr >= inicio && timeStr <= fim) {
+                            isWithinSchedule = true;
+                            break;
+                        }
+                    }
+
+                    if (!isWithinSchedule) {
+                        alert("O horário sugerido está fora do horário de trabalho do veterinário para este dia. Por favor, verifique a disponibilidade e escolha um horário válido.");
+                        btn.disabled = false; btn.textContent = 'Enviar Pedido de Consulta';
+                        return;
+                    }
+                }
 
                 let uploadedUrls = [];
                 if (files.length > 0) {
@@ -2427,6 +2721,48 @@
                 const ticketId = document.getElementById('forwardTicketId').value;
                 const newVetId = document.getElementById('forwardVetId').value;
                 const newDate = document.getElementById('forwardDataSugerida').value;
+
+                // Validar horário de trabalho do veterinário
+                if (newDate) {
+                    const sugestaoDate = new Date(newDate);
+                    const dayOfWeek = sugestaoDate.getDay();
+                    const timeStr = newDate.split('T')[1]; // Formato "HH:MM"
+                    
+                    const { data: horarios, error: horErr } = await supabaseClient
+                        .from('zooni_horarios_padrao')
+                        .select('hora_inicio, hora_fim')
+                        .eq('id_vet', newVetId)
+                        .eq('dia_semana', dayOfWeek);
+
+                    if (horErr) {
+                        console.error("Erro ao verificar horário:", horErr);
+                        alert("Erro ao validar o horário do veterinário.");
+                        btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-paper-plane me-1"></i> Enviar Pedido';
+                        return;
+                    }
+
+                    if (!horarios || horarios.length === 0) {
+                        alert("O veterinário encontra-se ausente o dia todo neste dia da semana. Por favor, escolha outra data.");
+                        btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-paper-plane me-1"></i> Enviar Pedido';
+                        return;
+                    }
+
+                    let isWithinSchedule = false;
+                    for (let h of horarios) {
+                        const inicio = h.hora_inicio.substring(0, 5); // Ex: "09:00"
+                        const fim = h.hora_fim.substring(0, 5);       // Ex: "13:00"
+                        if (timeStr >= inicio && timeStr <= fim) {
+                            isWithinSchedule = true;
+                            break;
+                        }
+                    }
+
+                    if (!isWithinSchedule) {
+                        alert("O horário sugerido está fora do horário de trabalho do veterinário para este dia. Por favor, verifique a disponibilidade e escolha um horário válido.");
+                        btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-paper-plane me-1"></i> Enviar Pedido';
+                        return;
+                    }
+                }
 
                 try {
                     // Update the existing ticket with the new vet, new date, remove refuse reason, and set state to pending
@@ -2688,7 +3024,7 @@
             const dataTomaInput = document.getElementById('vacinaDataToma');
             const colProximaDose = document.getElementById('colProximaDose');
             const lblDataToma = document.getElementById('lblDataToma');
-            
+
             // Set max date to today for Data de Toma
             const today = new Date().toISOString().split('T')[0];
             dataTomaInput.setAttribute('max', today);
@@ -2700,9 +3036,9 @@
                 lblDataToma.innerText = 'Data de Toma';
                 // Remove max attribute se não estivesse, mas queremos forçar o max
                 dataTomaInput.setAttribute('max', today);
-                
+
                 // Se o utilizador já tinha metido uma data no futuro, limpamos
-                if(dataTomaInput.value > today) dataTomaInput.value = today;
+                if (dataTomaInput.value > today) dataTomaInput.value = today;
             } else {
                 // Se NÃO foi tomada, mostra para agendar
                 colProximaDose.style.display = 'block';
@@ -2846,8 +3182,8 @@
                         <div class="mb-4">
                             <label class="small text-muted fw-bold">Número de Telefone</label>
                             <input type="tel" class="form-control mt-1" id="profileTelefone"
-                                placeholder="Ex: 912 345 678" minlength="9" maxlength="9"
-                                pattern="[0-9]{9}" oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,9)">
+                                placeholder="Ex: 912 345 678" minlength="9" maxlength="9" pattern="[0-9]{9}"
+                                oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,9)">
                         </div>
                         <div id="profileSaveMsg" class="alert alert-success py-2 small d-none">
                             <i class="fa-solid fa-circle-check me-1"></i> Perfil actualizado com sucesso!
@@ -2954,7 +3290,8 @@
             </li>
             <li class="nav-item">
                 <button class="nav-link" data-bs-toggle="pill" data-bs-target="#tabHistorico">
-                    <i class="fa-solid fa-clock-rotate-left me-1"></i><span data-i18n="profile_tab_history">Histórico</span>
+                    <i class="fa-solid fa-clock-rotate-left me-1"></i><span
+                        data-i18n="profile_tab_history">Histórico</span>
                 </button>
             </li>
         </ul>
@@ -2996,15 +3333,19 @@
         <!-- Tab B: Caderneta de Saúde -->
         <div class="tab-pane fade" id="tabSaude">
             <div class="d-flex justify-content-between align-items-center mb-2">
-                <h6 class="fw-bold mb-0"><i class="fa-solid fa-syringe me-1 text-primary"></i><span data-i18n="profile_vaccines">Vacinas</span></h6>
-                <button class="btn btn-sm btn-outline-primary rounded-pill px-3" onclick="openAddVacinaModal()"><span data-i18n="profile_add">+ Adicionar</span></button>
+                <h6 class="fw-bold mb-0"><i class="fa-solid fa-syringe me-1 text-primary"></i><span
+                        data-i18n="profile_vaccines">Vacinas</span></h6>
+                <button class="btn btn-sm btn-outline-primary rounded-pill px-3" onclick="openAddVacinaModal()"><span
+                        data-i18n="profile_add">+ Adicionar</span></button>
             </div>
             <div id="vacinasList" class="mb-4">
                 <p class="text-muted small">A carregar...</p>
             </div>
             <div class="d-flex justify-content-between align-items-center mb-2">
-                <h6 class="fw-bold mb-0"><i class="fa-solid fa-shield-heart me-1 text-success"></i><span data-i18n="profile_deworming">Desparasitação</span></h6>
-                <button class="btn btn-sm btn-outline-success rounded-pill px-3" onclick="openAddDespModal()"><span data-i18n="profile_add">+ Adicionar</span></button>
+                <h6 class="fw-bold mb-0"><i class="fa-solid fa-shield-heart me-1 text-success"></i><span
+                        data-i18n="profile_deworming">Desparasitação</span></h6>
+                <button class="btn btn-sm btn-outline-success rounded-pill px-3" onclick="openAddDespModal()"><span
+                        data-i18n="profile_add">+ Adicionar</span></button>
             </div>
             <div id="desparasitacaoList">
                 <p class="text-muted small">A carregar...</p>
@@ -3045,8 +3386,10 @@
             <div class="modal-body">
                 <form id="vacinaForm">
                     <div class="mb-3 form-check form-switch">
-                        <input class="form-check-input" type="checkbox" id="vacinaJaTomada" checked onchange="toggleVacinaFields()">
-                        <label class="form-check-label fw-bold small text-muted" for="vacinaJaTomada">A vacina já foi tomada?</label>
+                        <input class="form-check-input" type="checkbox" id="vacinaJaTomada" checked
+                            onchange="toggleVacinaFields()">
+                        <label class="form-check-label fw-bold small text-muted" for="vacinaJaTomada">A vacina já foi
+                            tomada?</label>
                     </div>
                     <div class="mb-3">
                         <label class="small text-muted fw-bold">Nome da Vacina</label>
@@ -3119,6 +3462,3 @@
 </div>
 
 </html>
-
-
-

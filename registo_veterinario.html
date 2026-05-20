@@ -879,8 +879,25 @@
                     documento_url = publicUrlData.publicUrl;
                 }
 
-                // 2. Create auth user
-                const { data: authData, error: authError } = await sb.auth.signUp({ email, password });
+                // 2. Create auth user and pass metadata
+                const { data: authData, error: authError } = await sb.auth.signUp({ 
+                    email, 
+                    password,
+                    options: {
+                        data: {
+                            role: 'veterinario',
+                            nome,
+                            telefone,
+                            especialidade,
+                            clinica,
+                            cedula_profissional: cedula,
+                            documento_url,
+                            status: 'pendente',
+                            tem_servico_24h,
+                            contacto_24h
+                        }
+                    }
+                });
 
                 if (authError) {
                     if (authError.message.toLowerCase().includes('already')) {
@@ -895,13 +912,15 @@
 
                 const userId = authData.user?.id;
                 if (!userId) {
-                    showError('Erro inesperado ao obter ID do utilizador. Tenta novamente.');
+                    // Se o Supabase devolver null no utilizador (sem erro), geralmente significa que o email já existe
+                    // e a configuração "Prevent email address leakage" está ativa no servidor.
+                    showError('Este email já está associado a uma conta ou pendente de verificação. Se já tens conta, tenta fazer login ou recuperar a password.');
                     btn.disabled = false;
                     btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Enviar Pedido de Registo';
                     return;
                 }
 
-                // 3. Create profile in veterinarios table (id is auto-generated bigint — do NOT include it)
+                // 3. Create profile in veterinarios table
                 const { error: dbError } = await sb.from('veterinarios').insert([{
                     user_id: userId,
                     nome,

@@ -876,6 +876,22 @@
         async function computeStatuses(vets) {
             const now = new Date();
             const nowIso = now.toISOString();
+            const dayOfWeek = now.getDay();
+            const currentHourMin = now.toTimeString().substring(0, 5); // "HH:MM"
+
+            // Get schedules for today for all vets
+            const { data: horarios } = await sb
+                .from('zooni_horarios_padrao')
+                .select('id_vet, hora_inicio, hora_fim')
+                .eq('dia_semana', dayOfWeek);
+            
+            const workingVetsMap = {};
+            if (horarios) {
+                horarios.forEach(h => {
+                    if (!workingVetsMap[h.id_vet]) workingVetsMap[h.id_vet] = [];
+                    workingVetsMap[h.id_vet].push({ inicio: h.hora_inicio.substring(0, 5), fim: h.hora_fim.substring(0, 5) });
+                });
+            }
 
             // Get all tickets with active/ongoing status (marcado + within time range)
             const { data: activeTickets } = await sb
@@ -895,7 +911,17 @@
             });
 
             vets.forEach(v => {
-                if (v.modo_ferias) {
+                let isWorkingNow = false;
+                if (workingVetsMap[v.user_id]) {
+                    for (let h of workingVetsMap[v.user_id]) {
+                        if (currentHourMin >= h.inicio && currentHourMin <= h.fim) {
+                            isWorkingNow = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (v.modo_ferias || !isWorkingNow) {
                     vetStatusMap[v.user_id] = 'ausente';
                 } else if (busyVets.has(v.user_id)) {
                     vetStatusMap[v.user_id] = 'consulta';
@@ -1160,10 +1186,12 @@
                     .in('user_id', favIds)
                     .order('nome');
 
-                sel.innerHTML = '<option value="">Selecione um veterinário...</option>';
-                if (error || !data || data.length === 0) { sel.innerHTML = '<option value="">Nenhum veterinário disponível</option>'; return; }
+                const availableVets = (data || []).filter(vet => vetStatusMap[vet.user_id] !== 'ausente');
 
-                data.forEach(vet => {
+                sel.innerHTML = '<option value="">Selecione um veterinário...</option>';
+                if (error || availableVets.length === 0) { sel.innerHTML = '<option value="">Nenhum veterinário disponível neste momento</option>'; return; }
+
+                availableVets.forEach(vet => {
                     const opt = document.createElement('option');
                     opt.value = vet.user_id;
                     const clinica = vet.clinica ? ` — ${vet.clinica}` : '';
