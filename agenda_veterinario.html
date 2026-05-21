@@ -53,7 +53,22 @@
 
         body { font-family: 'Outfit', sans-serif; overflow-x: hidden; min-height: 100vh; background-color: var(--bg-color); color: var(--text-main); }
         .app-container { display: grid; grid-template-columns: 260px 1fr; min-height: 100vh; }
-        
+
+        /* ── MOBILE CLOSE BUTTON ── */
+        .mobile-menu-close {
+            display: none;
+            background: none; border: none;
+            color: rgba(255,255,255,0.8);
+            font-size: 1.4rem; cursor: pointer;
+            padding: 4px 8px; border-radius: 8px; line-height: 1;
+        }
+        .mobile-menu-close:hover { color: #fff; }
+        .sidebar-overlay {
+            display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,0.45); z-index: 1049;
+        }
+        .sidebar-overlay.active { display: block; }
+
         /* ── SIDEBAR STYLES ── */
         .sidebar {
             background-color: var(--primary-dark);
@@ -187,16 +202,45 @@
         /* Offcanvas Specific */
         .pet-photo { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; margin-bottom: 10px; border: 3px solid #f1f2f6; }
         .context-badge { padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; background: #f1f2f6; color: #2d3436; }
+
+        /* ── MOBILE RESPONSIVE ── */
+        @media (max-width: 768px) {
+            .app-container { grid-template-columns: 1fr !important; }
+            .sidebar {
+                position: fixed !important;
+                top: 0; left: -100%;
+                width: 260px; height: 100dvh;
+                z-index: 1050;
+                transition: left 0.3s ease;
+                overflow-y: auto;
+            }
+            .sidebar.active { left: 0 !important; box-shadow: 4px 0 24px rgba(0,0,0,0.3); }
+            .mobile-menu-close { display: block !important; }
+            .main-content { padding: 1rem !important; }
+            .header-area { flex-direction: column; align-items: flex-start; gap: 10px; margin-bottom: 1rem !important; }
+            .agenda-layout { height: 500px !important; min-height: 400px !important; }
+            .fc-toolbar-chunk .fc-button { font-size: 0.72rem !important; padding: 4px 7px !important; }
+            .fc-toolbar-title { font-size: 0.95rem !important; }
+        }
+        @media (max-width: 480px) {
+            .agenda-layout { height: 420px !important; }
+        }
     </style>
 </head>
 
 <body>
+    <div id="sidebarOverlay" class="sidebar-overlay" onclick="closeSidebar()"></div>
     <div class="app-container">
         <!-- SIDEBAR -->
                 <aside class="sidebar">
-            <div class="logo-container">
-                <img src="assets/logo.png" alt="Zooni Logo" class="logo-img-sidebar">
-                <div class="logo-subtext">VETERINÁRIO</div>
+            <div class="logo-container d-flex justify-content-between align-items-center w-100" style="margin-bottom:2.5rem">
+                <div>
+                    <img src="assets/logo.png" alt="Zooni Logo" class="logo-img-sidebar">
+                    <div class="logo-subtext">VETERINÁRIO</div>
+                </div>
+                <button class="mobile-menu-close" onclick="closeSidebar()" title="Fechar">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
             </div>
             
             <ul class="nav-links">
@@ -226,9 +270,14 @@
         <main class="main-content">
             <!-- Header Area -->
             <div class="header-area">
-                <div>
-                    <h2 class="fw-bold mb-1">A Minha Agenda</h2>
-                    <p class="text-muted">Todos os seus eventos e consultas num só lugar.</p>
+                <div class="d-flex align-items-center gap-3">
+                    <button class="btn d-md-none" onclick="openSidebar()" style="width:40px;height:40px;border-radius:50%;background:white;border:1px solid #e8f0e8;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+                    <div>
+                        <h2 class="fw-bold mb-1">A Minha Agenda</h2>
+                        <p class="text-muted mb-0">Todos os seus eventos e consultas num só lugar.</p>
+                    </div>
                 </div>
             </div>
 
@@ -572,6 +621,17 @@
                 });
             }
         }
+
+        // ── MOBILE SIDEBAR ─────────────────────────────────────────────
+        function openSidebar() {
+            document.querySelector('.sidebar').classList.add('active');
+            document.getElementById('sidebarOverlay').classList.add('active');
+        }
+        function closeSidebar() {
+            document.querySelector('.sidebar').classList.remove('active');
+            document.getElementById('sidebarOverlay').classList.remove('active');
+        }
+        document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeSidebar(); });
 
         init();
     </script>

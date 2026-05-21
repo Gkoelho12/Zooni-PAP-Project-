@@ -1481,6 +1481,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <script src="assets/js/image_cropper.js"></script>
     <script>
         const SUPABASE_URL = 'https://xqtbtggmwejnkhckduti.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhxdGJ0Z2dtd2VqbmtoY2tkdXRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc2OTU5NjEsImV4cCI6MjA4MzI3MTk2MX0.G1wG0UC6sF7r6tMxGdqLGvsHa_dxlVD1-j6QNEw32IM';
@@ -2122,13 +2123,23 @@
 
         document.getElementById('foto').addEventListener('change', function (e) {
             if (e.target.files && e.target.files[0]) {
-                const reader = new FileReader();
-                reader.onload = (ev) => {
-                    document.getElementById('previewContainer').innerHTML = `<img src="${ev.target.result}" style="width:100%; height:100%; object-fit:contain;">`;
+                const file = e.target.files[0];
+
+                // Abrir modal de crop (rácio livre para foto do animal)
+                ZooniCropper.open(file, { aspectRatio: 1, maxSize: 800, quality: 0.88 }, (blob, dataUrl) => {
+                    // Mostrar preview
+                    document.getElementById('previewContainer').innerHTML = `<img src="${dataUrl}" style="width:100%; height:100%; object-fit:contain;">`;
                     document.getElementById('btnRemoverFoto').classList.remove('d-none');
                     document.getElementById('removeFotoFlag').value = 'false';
-                };
-                reader.readAsDataURL(e.target.files[0]);
+
+                    // Guardar o blob cropped de volta no input usando DataTransfer
+                    const dt = new DataTransfer();
+                    dt.items.add(new File([blob], file.name, { type: 'image/jpeg' }));
+                    document.getElementById('foto').files = dt.files;
+                });
+
+                // Reset para permitir seleccionar o mesmo ficheiro de novo
+                e.target.value = '';
             }
         });
 
@@ -2972,7 +2983,6 @@
             const nome = document.getElementById('vacinaNome').value.trim();
             const dataToma = document.getElementById('vacinaDataToma').value;
             const proximaDose = document.getElementById('vacinaProximaDose').value;
-            const fotoInput = document.getElementById('vacinaFoto');
 
             if (!nome || !dataToma) { alert('Preencha o nome e a data de toma.'); return; }
 
@@ -2981,11 +2991,10 @@
             btn.disabled = true;
 
             let comprovativo_url = null;
-            if (fotoInput.files.length > 0) {
-                const file = fotoInput.files[0];
-                const ext = file.name.split('.').pop();
-                const fName = `vacina_${Date.now()}.${ext}`;
-                const { error: upErr } = await supabaseClient.storage.from('Animais').upload(fName, file);
+            // Usar o blob já recortado pelo Cropper
+            if (_vacinaFotoBlob) {
+                const fName = `vacina_${Date.now()}.jpg`;
+                const { error: upErr } = await supabaseClient.storage.from('Animais').upload(fName, _vacinaFotoBlob, { contentType: 'image/jpeg' });
                 if (!upErr) {
                     const { data: pubData } = supabaseClient.storage.from('Animais').getPublicUrl(fName);
                     comprovativo_url = pubData.publicUrl;
@@ -3014,9 +3023,11 @@
 
             bootstrap.Modal.getInstance(document.getElementById('addVacinaModal')).hide();
             document.getElementById('vacinaForm').reset();
+            clearVacinaFoto(); // Limpar preview da foto
             toggleVacinaFields(); // Reset fields to default
             loadPetVaccines(currentProfilePetId);
         }
+
 
         // Vaccine Toggle Logic
         function toggleVacinaFields() {
@@ -3067,6 +3078,31 @@
             document.getElementById('despForm').reset();
             loadPetDeworming(currentProfilePetId);
         }
+
+        // ── VACINA FOTO CROPPER ──────────────────────────────────────
+        // Blob temporário para upload após crop
+        let _vacinaFotoBlob = null;
+
+        document.getElementById('vacinaFoto').addEventListener('change', function(e) {
+            if (e.target.files && e.target.files[0]) {
+                const file = e.target.files[0];
+                ZooniCropper.open(file, { aspectRatio: NaN, maxSize: 1200, quality: 0.88 }, (blob, dataUrl) => {
+                    _vacinaFotoBlob = blob;
+                    document.getElementById('vacinaFotoImg').src = dataUrl;
+                    document.getElementById('vacinaFotoPreview').style.display = 'flex';
+                    document.getElementById('vacinaFotoPreview').style.alignItems = 'center';
+                });
+                e.target.value = '';
+            }
+        });
+
+        function clearVacinaFoto() {
+            _vacinaFotoBlob = null;
+            document.getElementById('vacinaFotoImg').src = '';
+            document.getElementById('vacinaFotoPreview').style.display = 'none';
+            document.getElementById('vacinaFoto').value = '';
+        }
+
 
         function openTicketFromProfile() {
             const oc = bootstrap.Offcanvas.getInstance(document.getElementById('petProfileOffcanvas'));
@@ -3408,7 +3444,16 @@
                     </div>
                     <div class="mb-4">
                         <label class="small text-muted fw-bold">Foto do Boletim (Opcional)</label>
-                        <input type="file" class="form-control mt-1" id="vacinaFoto" accept="image/*"
+                        <div id="vacinaFotoPreview" class="mt-2 mb-2" style="display:none;">
+                            <img id="vacinaFotoImg" src="" alt="Preview" style="max-height:120px; border-radius:10px; border:2px solid var(--primary); object-fit:cover;">
+                            <button type="button" class="btn btn-sm btn-outline-danger ms-2 rounded-pill" onclick="clearVacinaFoto()">
+                                <i class="fa-solid fa-xmark"></i> Remover
+                            </button>
+                        </div>
+                        <button type="button" class="btn btn-outline-secondary w-100 rounded-3" onclick="document.getElementById('vacinaFoto').click()">
+                            <i class="fa-solid fa-camera me-1"></i> Escolher / Tirar Foto
+                        </button>
+                        <input type="file" class="d-none" id="vacinaFoto" accept="image/*"
                             title="Tire uma foto ou anexe o comprovativo da vacina assinada pelo médico.">
                         <small class="text-secondary d-block mt-1"><i class="fa-solid fa-camera me-1"></i> Útil para
                             viagens e hotéis caninos.</small>

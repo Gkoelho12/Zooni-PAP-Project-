@@ -1103,6 +1103,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <script src="assets/js/image_cropper.js"></script>
     <script>
         const SUPABASE_URL = 'https://xqtbtggmwejnkhckduti.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhxdGJ0Z2dtd2VqbmtoY2tkdXRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc2OTU5NjEsImV4cCI6MjA4MzI3MTk2MX0.G1wG0UC6sF7r6tMxGdqLGvsHa_dxlVD1-j6QNEw32IM';
@@ -1376,49 +1377,35 @@
         }
 
         // ── AVATAR ─────────────────────────────────────────────────
-        async function previewAvatar(event) {
+        function previewAvatar(event) {
             const file = event.target.files[0];
             if (!file) return;
 
             if (file.size > 5 * 1024 * 1024) {
                 showToast('A imagem não pode ter mais de 5MB.', 'error');
+                event.target.value = '';
                 return;
             }
 
-            // Compress & resize to max 300x300 then save as base64
-            const reader = new FileReader();
-            reader.onload = async (e) => {
-                const img = new Image();
-                img.onload = async () => {
-                    // Resize
-                    const canvas = document.createElement('canvas');
-                    const MAX = 300;
-                    let w = img.width, h = img.height;
-                    if (w > h) { if (w > MAX) { h = Math.round(h * MAX / w); w = MAX; } }
-                    else { if (h > MAX) { w = Math.round(w * MAX / h); h = MAX; } }
-                    canvas.width = w; canvas.height = h;
-                    canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-                    const base64 = canvas.toDataURL('image/jpeg', 0.82);
+            // Abrir modal de crop (1:1 para avatar circular)
+            ZooniCropper.open(file, { aspectRatio: 1, maxSize: 400, quality: 0.88 }, async (blob, dataUrl) => {
+                // Mostrar preview imediatamente
+                document.getElementById('avatarPreview').src = dataUrl;
+                document.getElementById('headerProfilePic').src = dataUrl;
 
-                    // Show preview immediately
-                    document.getElementById('avatarPreview').src = base64;
-                    document.getElementById('headerProfilePic').src = base64;
+                // Guardar base64 na tabela clientes
+                const { error } = await supabaseClient
+                    .from('clientes')
+                    .update({ foto_url: dataUrl })
+                    .eq('id', CURRENT_DONO_ID);
 
-                    // Save base64 to clientes table
-                    const { error } = await supabaseClient
-                        .from('clientes')
-                        .update({ foto_url: base64 })
-                        .eq('id', CURRENT_DONO_ID);
-
-                    if (error) {
-                        showToast('Erro ao guardar foto: ' + error.message, 'error');
-                    } else {
-                        showToast('Foto de perfil atualizada com sucesso!');
-                    }
-                };
-                img.src = e.target.result;
-            };
-            reader.readAsDataURL(file);
+                if (error) {
+                    showToast('Erro ao guardar foto: ' + error.message, 'error');
+                } else {
+                    showToast('Foto de perfil atualizada com sucesso!');
+                }
+                event.target.value = '';
+            });
         }
 
         async function removeAvatar() {

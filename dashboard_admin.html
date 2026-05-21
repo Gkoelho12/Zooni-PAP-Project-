@@ -1699,29 +1699,46 @@
         // ─── SETTINGS ───
         async function loadSettings() {
             // Especialidades (from vets table distinct)
-            const { data: vets } = await sb.from('veterinarios').select('especialidade').not('especialidade', 'is', null);
-            const especialidades = [...new Set(vets?.map(v => v.especialidade).filter(Boolean))];
+            const { data: vets } = await sbAdmin.from('veterinarios').select('especialidade').not('especialidade', 'is', null);
+            let allEsps = [];
+            vets?.forEach(v => {
+                let esp = v.especialidade;
+                if (!esp) return;
+                try {
+                    let parsed = JSON.parse(esp);
+                    if (Array.isArray(parsed)) {
+                        allEsps.push(...parsed);
+                        return;
+                    }
+                } catch(e) {}
+                
+                if (typeof esp === 'string') {
+                    allEsps.push(...esp.split(',').map(s => s.trim()).filter(Boolean));
+                }
+            });
+            const especialidades = [...new Set(allEsps)].sort();
+            
             const espList = document.getElementById('especialidadesList');
             espList.innerHTML = especialidades.length
                 ? especialidades.map(e => `<div class="settings-item"><span class="settings-item-name">${e}</span></div>`).join('')
                 : '<p class="text-muted small">Sem especialidades ainda.</p>';
 
             // Tipos de Animal
-            const { data: tipos } = await sb.from('tipos_animais').select('*').order('nome');
+            const { data: tipos } = await sbAdmin.from('tipos_animais').select('*').order('nome');
             const tiposList = document.getElementById('tiposList');
             tiposList.innerHTML = tipos?.length
                 ? tipos.map(t => `<div class="settings-item">
                     <span class="settings-item-name">${t.nome}</span>
-                    <button class="btn-action btn-danger-action" onclick="deleteItem('tipos_animais',${t.id})"><i class="fa-solid fa-trash"></i></button>
+                    <button class="btn-action btn-danger-action" onclick="deleteItem('tipos_animais','${t.id}')"><i class="fa-solid fa-trash"></i></button>
                   </div>`).join('')
                 : '<p class="text-muted small">Sem tipos ainda.</p>';
 
             // Raças
-            const { data: racas } = await sb.from('racas').select('*, tipos_animais(nome)').order('nome_raca');
+            const { data: racas } = await sbAdmin.from('racas').select('*, tipos_animais(nome)').order('nome');
             const racasTbody = document.getElementById('racasTbody');
             racasTbody.innerHTML = racas?.length
                 ? racas.map(r => `<tr>
-                    <td>${r.nome_raca}</td>
+                    <td>${r.nome}</td>
                     <td>${r.tipos_animais?.nome || '—'}</td>
                     <td><button class="btn-action btn-danger-action" onclick="deleteItem('racas',${r.id})"><i class="fa-solid fa-trash"></i></button></td>
                   </tr>`).join('')
@@ -1753,7 +1770,7 @@
             document.getElementById('addItemFields').innerHTML = fields;
 
             if (type === 'raca') {
-                sb.from('tipos_animais').select('id, nome').order('nome').then(({ data }) => {
+                sbAdmin.from('tipos_animais').select('id, nome').order('nome').then(({ data }) => {
                     document.getElementById('itemTipoId').innerHTML = data?.map(t => `<option value="${t.id}">${t.nome}</option>`).join('') || '';
                 });
             }
@@ -1765,11 +1782,11 @@
             if (!nome) { alert('Preenche o nome.'); return; }
 
             if (currentItemType === 'tipo') {
-                const { error } = await sb.from('tipos_animais').insert([{ nome }]);
+                const { error } = await sbAdmin.from('tipos_animais').insert([{ nome, id: nome.toLowerCase().replace(/\s+/g, '') }]);
                 if (error) { alert('Erro: ' + error.message); return; }
             } else if (currentItemType === 'raca') {
                 const tipoId = document.getElementById('itemTipoId')?.value;
-                const { error } = await sb.from('racas').insert([{ nome_raca: nome, id_tipo_animal: tipoId }]);
+                const { error } = await sbAdmin.from('racas').insert([{ nome: nome, tipo_animal_id: tipoId }]);
                 if (error) { alert('Erro: ' + error.message); return; }
             } else if (currentItemType === 'especialidade') {
                 // Especialidade: stored in vet profiles; just show as reference
@@ -1784,7 +1801,7 @@
 
         async function deleteItem(table, id) {
             if (!confirm('Eliminar este item?')) return;
-            await sb.from(table).delete().eq('id', id);
+            await sbAdmin.from(table).delete().eq('id', id);
             loadSettings();
         }
 

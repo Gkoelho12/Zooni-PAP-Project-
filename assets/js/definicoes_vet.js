@@ -184,31 +184,21 @@ async function savePerfil() {
 }
 
 // ── AVATAR ───────────────────────────────────────────────────
-async function previewAvatar(event) {
+function previewAvatar(event) {
     const file = event.target.files[0];
     if (!file) return;
-    if (file.size > 5 * 1024 * 1024) { showToast('Máximo 5MB.', 'error'); return; }
-    const reader = new FileReader();
-    reader.onload = async (e) => {
-        const img = new Image();
-        img.onload = async () => {
-            const canvas = document.createElement('canvas');
-            const MAX = 300;
-            let w = img.width, h = img.height;
-            if (w > h) { if (w > MAX) { h = Math.round(h * MAX / w); w = MAX; } }
-            else { if (h > MAX) { w = Math.round(w * MAX / h); h = MAX; } }
-            canvas.width = w; canvas.height = h;
-            canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-            const base64 = canvas.toDataURL('image/jpeg', 0.82);
-            document.getElementById('avatarPreview').src = base64;
-            const { error } = await supabaseClient.from('veterinarios').update({ foto_url: base64 }).eq('user_id', VET_USER_ID);
-            if (!error) showToast('Foto atualizada!');
-            else showToast('Erro ao guardar foto.', 'error');
-        };
-        img.src = e.target.result;
-    };
-    reader.readAsDataURL(file);
+    if (file.size > 5 * 1024 * 1024) { showToast('Máximo 5MB.', 'error'); event.target.value = ''; return; }
+
+    // Abrir modal de crop (1:1 para avatar circular)
+    ZooniCropper.open(file, { aspectRatio: 1, maxSize: 400, quality: 0.88 }, async (blob, dataUrl) => {
+        document.getElementById('avatarPreview').src = dataUrl;
+        const { error } = await supabaseClient.from('veterinarios').update({ foto_url: dataUrl }).eq('user_id', VET_USER_ID);
+        if (!error) showToast('Foto atualizada!');
+        else showToast('Erro ao guardar foto.', 'error');
+        event.target.value = '';
+    });
 }
+
 
 // ── WEEK SCHEDULE ────────────────────────────────────────────
 function buildWeekSchedule() {

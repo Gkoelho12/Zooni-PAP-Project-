@@ -160,6 +160,7 @@
             display: flex;
             gap: 15px;
             align-items: center;
+            margin-top: auto;
         }
 
         .chat-input {
@@ -287,6 +288,35 @@
             justify-content: center;
             color: var(--text-muted);
         }
+
+        /* ── MOBILE RESPONSIVE ── */
+        @media (max-width: 768px) {
+            body, .app-container {
+                height: 100dvh !important;
+            }
+            .panel-left {
+                width: 100% !important;
+                border-right: none;
+            }
+            .panel-center {
+                width: 100% !important;
+            }
+            .panel-right {
+                display: none !important;
+            }
+
+            /* Navigation State */
+            .app-container.chat-active .panel-left {
+                display: none !important;
+            }
+            .app-container:not(.chat-active) .panel-center,
+            .app-container:not(.chat-active) .empty-chat {
+                display: none !important;
+            }
+
+            /* Adjust Bubble Widths */
+            .bubble { max-width: 85%; }
+        }
     </style>
 </head>
 
@@ -316,9 +346,12 @@
         <!-- Centro: Chat -->
         <div class="panel-center" id="chatArea" style="display:none;">
             <div class="chat-header">
-                <div>
-                    <h5 class="fw-bold mb-0" id="chatTitle">Motivo</h5>
-                    <span class="small text-muted" id="chatTutor">Dono</span>
+                <div class="d-flex align-items-center gap-2">
+                    <button class="btn btn-sm d-md-none" onclick="backToList()" style="background:transparent; border:none; font-size:1.2rem; color:var(--text-main);"><i class="fa-solid fa-arrow-left"></i></button>
+                    <div>
+                        <h5 class="fw-bold mb-0" id="chatTitle">Motivo</h5>
+                        <span class="small text-muted" id="chatTutor">Dono</span>
+                    </div>
                 </div>
                 <div>
                     <button class="btn btn-outline-danger btn-sm rounded-pill fw-bold" id="btnEncerrar"
@@ -537,6 +570,9 @@
             document.querySelectorAll('.ticket-item').forEach(i => i.classList.remove('active'));
             document.getElementById(`dono-row-${c.id}`)?.classList.add('active');
 
+            // Add mobile chat-active state
+            document.querySelector('.app-container').classList.add('chat-active');
+
             document.getElementById('emptyState').style.display = 'none';
             document.getElementById('chatArea').style.display = 'flex';
             document.getElementById('contextArea').style.display = 'flex';
@@ -684,6 +720,16 @@
 
         function setFilter(f, btn) { } // No longer relevant but kept to prevent errors
         function closeTicket() { } // Deprecated by continuous chat
+
+        function backToList() {
+            activeDonoId = null;
+            document.querySelector('.app-container').classList.remove('chat-active');
+            document.querySelectorAll('.ticket-item').forEach(i => i.classList.remove('active'));
+            
+            document.getElementById('chatArea').style.display = 'none';
+            document.getElementById('contextArea').style.display = 'none';
+            document.getElementById('emptyState').style.display = 'flex';
+        }
 
         initAuth();
     </script>

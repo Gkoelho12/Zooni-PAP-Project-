@@ -1319,6 +1319,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <script src="assets/js/image_cropper.js"></script>
     <script>
         const SUPABASE_URL = 'https://xqtbtggmwejnkhckduti.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhxdGJ0Z2dtd2VqbmtoY2tkdXRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc2OTU5NjEsImV4cCI6MjA4MzI3MTk2MX0.G1wG0UC6sF7r6tMxGdqLGvsHa_dxlVD1-j6QNEw32IM';
@@ -1627,6 +1628,23 @@
 
 
 
+
+        // ── FOTO ANIMAL CROPPER ────────────────────────────────
+        document.getElementById('foto').addEventListener('change', function(e) {
+            if (e.target.files && e.target.files[0]) {
+                const file = e.target.files[0];
+                ZooniCropper.open(file, { aspectRatio: 1, maxSize: 800, quality: 0.88 }, (blob, dataUrl) => {
+                    document.getElementById('previewContainer').innerHTML = `<img src="${dataUrl}" style="width:100%;height:100%;object-fit:contain;">`;
+                    document.getElementById('btnRemoverFoto').classList.remove('d-none');
+                    document.getElementById('removeFotoFlag').value = 'false';
+                    // Guardar blob cropped de volta no input
+                    const dt = new DataTransfer();
+                    dt.items.add(new File([blob], file.name, { type: 'image/jpeg' }));
+                    document.getElementById('foto').files = dt.files;
+                });
+                e.target.value = '';
+            }
+        });
 
         document.getElementById('animalForm').addEventListener('submit', async (e) => {
             e.preventDefault();
