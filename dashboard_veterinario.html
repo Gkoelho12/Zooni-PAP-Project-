@@ -667,6 +667,8 @@
 </head>
 
 <body>
+    <!-- Overlay backdrop (mobile) -->
+    <div id="sidebarOverlay" class="sidebar-overlay" onclick="closeSidebar()"></div>
     <div class="app-container">
         <!-- SIDEBAR -->
         <aside class="sidebar">
@@ -704,9 +706,6 @@
         </aside>
 
         <!-- MAIN -->
-        <!-- Overlay backdrop (mobile) -->
-        <div id="sidebarOverlay" class="sidebar-overlay" onclick="closeSidebar()"></div>
-
         <main class="main-content">
             <div class="navbar-area d-flex align-items-center">
                 <button class="btn d-md-none" onclick="openSidebar()" title="Abrir Menu" style="flex-shrink: 0; width: 45px; height: 45px; border-radius: 50%; background: white; border: 1px solid #f1f2f6; display: flex; align-items: center; justify-content: center;">
