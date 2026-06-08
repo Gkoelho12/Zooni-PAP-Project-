@@ -720,16 +720,21 @@
             <div class="section" id="section-vets">
                 <div class="panel">
                     <div class="panel-header">
-                        <span class="panel-title"><i
-                                class="fa-solid fa-user-doctor me-2 text-muted"></i>Veterinários</span>
-                        <button class="btn-primary-zooni" onclick="openAddVetModal()">
-                            <i class="fa-solid fa-plus"></i> Adicionar Veterinário
-                        </button>
+                        <span class="panel-title"><i class="fa-solid fa-user-doctor me-2 text-muted"></i>Veterinários</span>
+                        <div class="d-flex gap-2 flex-wrap align-items-center">
+                            <button class="btn-action btn-danger-action" id="btnDeleteSelectedVets" style="display:none;padding:7px 14px;font-size:0.82rem;" onclick="deleteSelectedVets()">
+                                <i class="fa-solid fa-trash"></i> Apagar Selecionados (<span id="vetsSelCount">0</span>)
+                            </button>
+                            <button class="btn-primary-zooni" onclick="openAddVetModal()">
+                                <i class="fa-solid fa-plus"></i> Adicionar Veterinário
+                            </button>
+                        </div>
                     </div>
                     <div class="panel-body p-0">
                         <table class="zooni-table">
                             <thead>
                                 <tr>
+                                    <th><input type="checkbox" id="checkAllVets" onchange="toggleAllVets(this)" title="Selecionar todos"></th>
                                     <th>Nome</th>
                                     <th>Email</th>
                                     <th>Especialidade</th>
@@ -740,7 +745,7 @@
                             </thead>
                             <tbody id="vetsTbody">
                                 <tr>
-                                    <td colspan="6" class="text-center text-muted py-4">A carregar...</td>
+                                    <td colspan="7" class="text-center text-muted py-4">A carregar...</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -752,13 +757,16 @@
             <div class="section" id="section-owners">
                 <div class="panel">
                     <div class="panel-header">
-                        <span class="panel-title"><i class="fa-solid fa-users me-2 text-muted"></i>Donos /
-                            Tutores</span>
+                        <span class="panel-title"><i class="fa-solid fa-users me-2 text-muted"></i>Donos / Tutores</span>
+                        <button class="btn-action btn-danger-action" id="btnDeleteSelectedOwners" style="display:none;padding:7px 14px;font-size:0.82rem;" onclick="deleteSelectedOwners()">
+                            <i class="fa-solid fa-trash"></i> Apagar Selecionados (<span id="ownersSelCount">0</span>)
+                        </button>
                     </div>
                     <div class="panel-body p-0">
                         <table class="zooni-table">
                             <thead>
                                 <tr>
+                                    <th><input type="checkbox" id="checkAllOwners" onchange="toggleAllOwners(this)" title="Selecionar todos"></th>
                                     <th>Nome</th>
                                     <th>Email</th>
                                     <th>Animais</th>
@@ -769,7 +777,7 @@
                             </thead>
                             <tbody id="ownersTbody">
                                 <tr>
-                                    <td colspan="6" class="text-center text-muted py-4">A carregar...</td>
+                                    <td colspan="7" class="text-center text-muted py-4">A carregar...</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -811,8 +819,8 @@
 
         <!-- ═══ SECTION: TICKETS ═══ -->
         <div class="section" id="section-tickets">
-            <!-- Filter pills -->
-            <div class="mb-3 d-flex gap-2 flex-wrap">
+            <!-- Filter pills + bulk delete -->
+            <div class="mb-3 d-flex gap-2 flex-wrap align-items-center">
                 <button class="btn btn-sm btn-outline-secondary rounded-pill active"
                     onclick="filterTickets('all', this)">Todos</button>
                 <button class="btn btn-sm btn-outline-warning rounded-pill"
@@ -823,17 +831,20 @@
                     onclick="filterTickets('recusado', this)">Recusados</button>
                 <button class="btn btn-sm btn-outline-secondary rounded-pill"
                     onclick="filterTickets('arquivado', this)">Finalizados</button>
+                <button class="btn-action btn-danger-action ms-auto" id="btnDeleteSelectedTickets" style="display:none;padding:7px 14px;font-size:0.82rem;" onclick="deleteSelectedTickets()">
+                    <i class="fa-solid fa-trash"></i> Apagar Selecionados (<span id="ticketsSelCount">0</span>)
+                </button>
             </div>
             <div class="panel">
                 <div class="panel-header">
-                    <span class="panel-title"><i class="fa-solid fa-ticket me-2 text-muted"></i>Monitorização de
-                        Tickets</span>
+                    <span class="panel-title"><i class="fa-solid fa-ticket me-2 text-muted"></i>Monitorização de Tickets</span>
                     <span class="text-muted small" id="ticketsCount"></span>
                 </div>
                 <div class="panel-body p-0">
                     <table class="zooni-table">
                         <thead>
                             <tr>
+                                <th><input type="checkbox" id="checkAllTickets" onchange="toggleAllTickets(this)" title="Selecionar todos"></th>
                                 <th>#</th>
                                 <th>Motivo</th>
                                 <th>Dono</th>
@@ -841,11 +852,12 @@
                                 <th>Veterinário</th>
                                 <th>Estado</th>
                                 <th>Data</th>
+                                <th>Ação</th>
                             </tr>
                         </thead>
                         <tbody id="ticketsTbody">
                             <tr>
-                                <td colspan="7" class="text-center text-muted py-4">A carregar...</td>
+                                <td colspan="9" class="text-center text-muted py-4">A carregar...</td>
                             </tr>
                         </tbody>
                     </table>
@@ -896,6 +908,15 @@
                             <button class="btn-primary-zooni" onclick="openAddModal('raca')">
                                 <i class="fa-solid fa-plus"></i> Adicionar Raça
                             </button>
+                        </div>
+                        <!-- Filter buttons by animal type -->
+                        <div class="px-3 pt-3 pb-1 d-flex flex-wrap gap-2" id="racaFilterBtns">
+                            <button class="btn btn-sm active" id="filterBtn-all"
+                                onclick="filterRacas('all', this)"
+                                style="border-radius:20px;font-size:0.78rem;font-weight:600;padding:4px 14px;border:1.5px solid #3D8B3D;background:#3D8B3D;color:#fff;transition:all .2s;">
+                                Todos
+                            </button>
+                            <!-- Type buttons injected by JS -->
                         </div>
                         <div class="panel-body p-0">
                             <table class="zooni-table">
@@ -1130,6 +1151,120 @@
                     <button type="button" class="btn-primary-zooni rounded-pill" onclick="saveItem()" id="btnSaveItem">
                         <i class="fa-solid fa-plus"></i> Guardar
                     </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══ MODAL: Animais do Dono ═══ -->
+    <div class="modal fade" id="ownerAnimaisModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold"><i class="fa-solid fa-paw me-2"></i>Animais Registados de <span id="ownerAnimaisNome"></span></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-0">
+                    <table class="zooni-table">
+                        <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>Espécie / Raça</th>
+                                <th>Cor</th>
+                                <th>Data de Nasc.</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ownerAnimaisTbody">
+                            <tr><td colspan="4" class="text-center text-muted py-4">A carregar...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light rounded-pill" data-bs-dismiss="modal">Fechar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══ MODAL: Detalhe do Ticket (Admin — só leitura) ═══ -->
+    <div class="modal fade" id="adminTicketDetailModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable">
+            <div class="modal-content border-0 rounded-4 overflow-hidden" style="background:#fff;color:#212529;">
+                <div class="modal-header" style="background:#FAFAFB;border-bottom:1px solid #f1f2f6;padding:1.5rem;">
+                    <div>
+                        <div class="d-flex align-items-center gap-2 mb-1">
+                            <span class="fw-bold" id="adTicketId">#---</span>
+                            <span id="adTicketStatus"></span>
+                        </div>
+                        <div class="text-muted small" id="adTicketDate">—</div>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="row g-4">
+                        <!-- Esquerda: dados do pedido -->
+                        <div class="col-lg-7">
+                            <div class="d-flex align-items-center gap-3 mb-4 p-3 rounded-3" style="background:#f8f9fa;">
+                                <img src="" id="adPetPhoto" class="rounded-circle border"
+                                    style="width:60px;height:60px;object-fit:cover;display:none;">
+                                <div id="adPetEmoji" class="rounded-circle bg-white d-flex align-items-center justify-content-center border"
+                                    style="width:60px;height:60px;font-size:1.8rem;">🐾</div>
+                                <div>
+                                    <h6 class="fw-bold mb-0" id="adPetName">—</h6>
+                                    <p class="text-muted small mb-0">
+                                        <span id="adPetBreed">—</span> •
+                                        Dono: <span class="fw-semibold" id="adOwnerName">—</span>
+                                    </p>
+                                </div>
+                                <div id="adUrgentBadge" class="ms-auto" style="display:none;">
+                                    <span class="badge bg-danger rounded-pill"><i class="fa-solid fa-bolt"></i> URGENTE</span>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <h5 class="fw-bold mb-3" id="adMotivo">—</h5>
+                                <div class="p-3 border rounded-3 bg-white mb-3">
+                                    <p class="mb-0" id="adDescricao" style="white-space:pre-wrap;">—</p>
+                                </div>
+                            </div>
+
+                            <div class="mb-2">
+                                <label class="small text-muted fw-bold mb-2 d-block">Média enviada pelo dono:</label>
+                                <div id="adMediaGallery" style="display:flex;flex-wrap:wrap;gap:10px;">
+                                    <span class="text-muted small">Sem anexos.</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Direita: info temporal e notas -->
+                        <div class="col-lg-5">
+                            <div class="p-4 border rounded-4 h-100" style="background:#f8f9fa;">
+                                <label class="small text-muted fw-bold mb-2 d-block">Sugestão de Horário do Dono:</label>
+                                <div class="d-flex align-items-center gap-2 mb-4 p-3 bg-white rounded-3 border">
+                                    <i class="fa-regular fa-calendar-days text-primary fs-4"></i>
+                                    <span class="fw-bold" id="adSuggestedTime">—</span>
+                                </div>
+
+                                <label class="small text-muted fw-bold mb-2 d-block">Veterinário Atribuído:</label>
+                                <div class="p-3 bg-white rounded-3 border mb-4">
+                                    <span id="adVetName" class="fw-semibold">—</span>
+                                </div>
+
+                                <label class="small text-muted fw-bold mb-2 d-block">Notas Clínicas (Privadas):</label>
+                                <div class="p-3 bg-white rounded-3 border mb-3" style="min-height:80px;">
+                                    <p class="mb-0 text-muted small" id="adClinicalNotes" style="white-space:pre-wrap;">Sem notas.</p>
+                                </div>
+
+                                <label class="small text-muted fw-bold mb-2 d-block">Resumo para o Dono:</label>
+                                <div class="p-3 bg-white rounded-3 border" style="min-height:60px;">
+                                    <p class="mb-0 small" id="adPublicFeedback" style="white-space:pre-wrap;">—</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer" style="border-top:1px solid #f1f2f6;">
+                    <button type="button" class="btn btn-light rounded-pill" data-bs-dismiss="modal">Fechar</button>
                 </div>
             </div>
         </div>
@@ -1461,14 +1596,15 @@
 
         async function loadVets() {
             const { data, error } = await sbAdmin.from('veterinarios').select('*').order('nome');
-            currentVets = data || []; // Store fetched vets
+            currentVets = data || [];
             const tbody = document.getElementById('vetsTbody');
             if (!currentVets || currentVets.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted py-4">Nenhum veterinário registado.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted py-4">Nenhum veterinário registado.</td></tr>';
                 return;
             }
             tbody.innerHTML = currentVets.map(v => `
                 <tr>
+                    <td><input type="checkbox" class="vet-check" value="${v.user_id}" onchange="updateVetsSelection()"></td>
                     <td><strong>${v.nome}</strong></td>
                     <td class="text-muted small">${v.email || '—'}</td>
                     <td>${formatEspecialidade(v.especialidade)}</td>
@@ -1482,6 +1618,7 @@
                     : `<button class="btn-action btn-suspend" onclick="changeVetStatus('${v.user_id}','suspenso')"><i class="fa-solid fa-ban"></i> Suspender</button>`
                 }
                             ${v.user_id ? `<button class="btn-action btn-suspend" style="background:#fef08a; color:#854d0e" onclick="openResetPasswordModal('${v.user_id}', '${v.nome.replace(/'/g, "\\'")}')" ><i class="fa-solid fa-key"></i> Passe</button>` : ''}
+                            <button class="btn-action btn-danger-action" onclick="deleteVet('${v.user_id}', '${v.nome.replace(/'/g, "\\'")}')" title="Apagar conta"><i class="fa-solid fa-trash"></i></button>
                         </div>
                     </td>
                 </tr>`).join('');
@@ -1613,6 +1750,44 @@
             loadVets();
         }
 
+        async function deleteVet(userId, nome) {
+            if (!confirm(`Tens a certeza que queres APAGAR a conta de "${nome}"?\n\nEsta ação é irreversível e eliminará o perfil do veterinário.`)) return;
+            const { error } = await sbAdmin.from('veterinarios').delete().eq('user_id', userId);
+            if (error) { alert('Erro ao apagar: ' + error.message); return; }
+            // Optionally also delete auth user:
+            await sbAdmin.auth.admin.deleteUser(userId).catch(() => {});
+            loadVets();
+            loadStats();
+        }
+
+        // ─── VETS MULTI-SELECT ───
+        function toggleAllVets(masterCb) {
+            document.querySelectorAll('.vet-check').forEach(cb => cb.checked = masterCb.checked);
+            updateVetsSelection();
+        }
+
+        function updateVetsSelection() {
+            const selected = document.querySelectorAll('.vet-check:checked').length;
+            const btn = document.getElementById('btnDeleteSelectedVets');
+            document.getElementById('vetsSelCount').textContent = selected;
+            btn.style.display = selected > 0 ? 'inline-flex' : 'none';
+            const all = document.querySelectorAll('.vet-check').length;
+            document.getElementById('checkAllVets').indeterminate = selected > 0 && selected < all;
+            document.getElementById('checkAllVets').checked = selected === all && all > 0;
+        }
+
+        async function deleteSelectedVets() {
+            const ids = [...document.querySelectorAll('.vet-check:checked')].map(cb => cb.value);
+            if (!ids.length) return;
+            if (!confirm(`Apagar ${ids.length} veterinário(s) selecionado(s)?\n\nEsta ação é irreversível.`)) return;
+            for (const id of ids) {
+                await sbAdmin.from('veterinarios').delete().eq('user_id', id);
+                await sbAdmin.auth.admin.deleteUser(id).catch(() => {});
+            }
+            loadVets();
+            loadStats();
+        }
+
         function generatePassword() {
             const chars = 'ABCDEFGHJKMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789@#!';
             let pwd = '';
@@ -1625,7 +1800,7 @@
             const { data: owners } = await sb.from('clientes').select('*').order('nome');
             const tbody = document.getElementById('ownersTbody');
             if (!owners || owners.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted py-4">Nenhum dono registado.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted py-4">Nenhum dono registado.</td></tr>';
                 return;
             }
 
@@ -1640,33 +1815,161 @@
 
             tbody.innerHTML = owners.map(o => `
                 <tr>
+                    <td><input type="checkbox" class="owner-check" value="${o.id}" onchange="updateOwnersSelection()"></td>
                     <td><strong>${o.nome}</strong></td>
                     <td class="text-muted small">${o.email || '—'}</td>
                     <td><span class="badge bg-light text-dark">${animaisCount[o.id] || 0} <i class="fa-solid fa-paw small"></i></span></td>
                     <td><span class="badge bg-light text-dark">${ticketsCount[o.id] || 0} <i class="fa-solid fa-ticket small"></i></span></td>
                     <td>${o.bloqueado ? '<span class="badge-status badge-bloqueado">Bloqueado</span>' : '<span class="badge-status badge-ativo">Ativo</span>'}</td>
                     <td>
-                        ${o.bloqueado
-                    ? `<button class="btn-action btn-view" onclick="toggleOwnerBlock(${o.id}, false)"><i class="fa-solid fa-lock-open"></i> Desbloquear</button>`
-                    : `<button class="btn-action btn-danger-action" onclick="toggleOwnerBlock(${o.id}, true)"><i class="fa-solid fa-lock"></i> Bloquear</button>`
+                        <div class="d-flex gap-1 flex-wrap">
+                            <button class="btn-action btn-view" onclick="viewOwnerAnimais('${o.id}', '${o.nome.replace(/'/g, "\\'")}')" title="Ver animais"><i class="fa-solid fa-paw"></i> Animais</button>
+                            ${o.bloqueado
+                    ? `<button class="btn-action btn-view" onclick="toggleOwnerBlock('${o.id}', false)"><i class="fa-solid fa-lock-open"></i> Desbloquear</button>`
+                    : `<button class="btn-action btn-danger-action" onclick="toggleOwnerBlock('${o.id}', true)"><i class="fa-solid fa-lock"></i> Bloquear</button>`
                 }
+                            <button class="btn-action btn-danger-action" onclick="deleteOwner('${o.id}', '${o.nome.replace(/'/g, "\\'")}')" title="Apagar conta"><i class="fa-solid fa-trash"></i></button>
+                        </div>
                     </td>
                 </tr>`).join('');
+        }
+
+        async function viewOwnerAnimais(ownerId, ownerNome) {
+            document.getElementById('ownerAnimaisNome').textContent = ownerNome;
+            document.getElementById('ownerAnimaisTbody').innerHTML = '<tr><td colspan="4" class="text-center text-muted py-4">A carregar...</td></tr>';
+            new bootstrap.Modal(document.getElementById('ownerAnimaisModal')).show();
+
+            const { data: animais, error } = await sbAdmin.from('animais')
+                .select('*')
+                .eq('id_dono', ownerId)
+                .order('nome');
+
+            console.log('viewOwnerAnimais:', { ownerId, animais, error });
+
+            const tbody = document.getElementById('ownerAnimaisTbody');
+            if (error) {
+                tbody.innerHTML = `<tr><td colspan="4" class="text-center py-4" style="color:#dc2626;">Erro: ${error.message}</td></tr>`;
+                return;
+            }
+            if (!animais || animais.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted py-4">Sem animais registados.</td></tr>';
+                return;
+            }
+            tbody.innerHTML = animais.map(a => `
+                <tr>
+                    <td><strong>${a.nome}</strong></td>
+                    <td>${a.tipo_animal || a.especie || '—'} ${a.raca ? '/ ' + a.raca : ''}</td>
+                    <td>${a.cor || '—'}</td>
+                    <td class="text-muted small">${a.data_nascimento ? new Date(a.data_nascimento).toLocaleDateString('pt-PT') : '—'}</td>
+                </tr>`).join('');
+        }
+
+        async function deleteOwner(ownerId, nome) {
+            if (!confirm(`Tens a certeza que queres APAGAR a conta de "${nome}"?\n\nEsta ação elimina:\n• Os animais registados\n• Os tickets\n• A conta de acesso\n\nEsta ação é irreversível.`)) return;
+            try {
+                await deleteOwnerSafe(ownerId);
+                loadOwners();
+                loadStats();
+                alert(`✅ Conta de "${nome}" eliminada com sucesso.`);
+            } catch (err) {
+                alert('Erro ao apagar conta: ' + err.message);
+            }
         }
 
         async function toggleOwnerBlock(id, block) {
             const msg = block ? 'Bloquear este utilizador?' : 'Desbloquear este utilizador?';
             if (!confirm(msg)) return;
-            await sb.from('clientes').update({ bloqueado: block }).eq('id', id);
+            await sbAdmin.from('clientes').update({ bloqueado: block }).eq('id', id);
             loadOwners();
         }
 
+        // ─── OWNERS MULTI-SELECT ───
+        function toggleAllOwners(masterCb) {
+            document.querySelectorAll('.owner-check').forEach(cb => cb.checked = masterCb.checked);
+            updateOwnersSelection();
+        }
+
+        function updateOwnersSelection() {
+            const selected = document.querySelectorAll('.owner-check:checked').length;
+            const btn = document.getElementById('btnDeleteSelectedOwners');
+            document.getElementById('ownersSelCount').textContent = selected;
+            btn.style.display = selected > 0 ? 'inline-flex' : 'none';
+            const all = document.querySelectorAll('.owner-check').length;
+            document.getElementById('checkAllOwners').indeterminate = selected > 0 && selected < all;
+            document.getElementById('checkAllOwners').checked = selected === all && all > 0;
+        }
+
+        async function deleteOwnerSafe(ownerId) {
+            // Buscar animais e apagar fotos do Storage
+            const { data: animais } = await sbAdmin.from('animais').select('id, foto_url').eq('id_dono', ownerId);
+            if (animais && animais.length > 0) {
+                const byBucket = {};
+                animais
+                    .filter(a => a.foto_url && a.foto_url.includes('/storage/v1/object/public/'))
+                    .forEach(a => {
+                        const parts = a.foto_url.split('/storage/v1/object/public/');
+                        if (parts.length < 2) return;
+                        const [bucket, ...rest] = parts[1].split('/');
+                        if (!byBucket[bucket]) byBucket[bucket] = [];
+                        byBucket[bucket].push(rest.join('/'));
+                    });
+                for (const [bucket, paths] of Object.entries(byBucket)) {
+                    await sbAdmin.storage.from(bucket).remove(paths);
+                }
+                await sbAdmin.from('animais').delete().eq('id_dono', ownerId);
+            }
+            await sbAdmin.from('tickets').delete().eq('id_dono', ownerId);
+            const { data: cliente } = await sbAdmin.from('clientes').select('user_id').eq('id', ownerId).single();
+            await sbAdmin.from('clientes').delete().eq('id', ownerId);
+            if (cliente?.user_id) await sbAdmin.auth.admin.deleteUser(cliente.user_id).catch(() => {});
+        }
+
+        async function deleteSelectedOwners() {
+            const ids = [...document.querySelectorAll('.owner-check:checked')].map(cb => cb.value);
+            if (!ids.length) return;
+            if (!confirm(`Apagar ${ids.length} conta(s) de dono selecionada(s)?\n\nIsto elimina os animais, tickets e contas de acesso associadas.\n\nEsta ação é irreversível.`)) return;
+            try {
+                for (const id of ids) {
+                    await deleteOwnerSafe(id);
+                }
+                loadOwners();
+                loadStats();
+                alert(`✅ ${ids.length} conta(s) eliminada(s) com sucesso.`);
+            } catch (err) {
+                alert('Erro durante a eliminação: ' + err.message);
+                loadOwners();
+            }
+        }
+
+
         // ─── TICKETS ───
         async function loadTickets() {
-            const { data } = await sb.from('tickets')
-                .select('id, motivo, estado, criado_em, animais(nome), clientes(nome)')
+            const { data } = await sbAdmin.from('tickets')
+                .select('id, motivo, estado, criado_em, id_dono, id_animal, id_veterinario, animais!id_animal(nome), clientes!id_dono(nome)')
                 .order('criado_em', { ascending: false });
             allTickets = data || [];
+
+            // Fetch owner names if FK join didn't work
+            const missingOwner = allTickets.some(t => !t.clientes?.nome);
+            if (missingOwner) {
+                const ownerIds = [...new Set(allTickets.map(t => t.id_dono).filter(Boolean))];
+                const ownerMap = {};
+                if (ownerIds.length) {
+                    const { data: owners } = await sbAdmin.from('clientes').select('id, nome').in('id', ownerIds);
+                    owners?.forEach(o => ownerMap[o.id] = o.nome);
+                }
+                allTickets = allTickets.map(t => ({ ...t, _donome: t.clientes?.nome || ownerMap[t.id_dono] || null }));
+            }
+
+            // Fetch vet names — id_veterinario maps to veterinarios.user_id
+            const vetIds = [...new Set(allTickets.map(t => t.id_veterinario).filter(Boolean))];
+            const vetMap = {};
+            if (vetIds.length) {
+                const { data: vets } = await sbAdmin.from('veterinarios').select('user_id, nome').in('user_id', vetIds);
+                vets?.forEach(v => vetMap[v.user_id] = v.nome);
+            }
+            allTickets = allTickets.map(t => ({ ...t, _vetnome: vetMap[t.id_veterinario] || null }));
+
             renderTickets(allTickets);
         }
 
@@ -1674,19 +1977,28 @@
             const tbody = document.getElementById('ticketsTbody');
             document.getElementById('ticketsCount').textContent = `${tickets.length} ticket(s)`;
             if (!tickets.length) {
-                tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted py-4">Sem tickets.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="9" class="text-center text-muted py-4">Sem tickets.</td></tr>';
                 return;
             }
             tbody.innerHTML = tickets.map(t => `
                 <tr>
+                    <td><input type="checkbox" class="ticket-check" value="${t.id}" onchange="updateTicketsSelection()"></td>
                     <td><strong>#${t.id}</strong></td>
                     <td>${t.motivo}</td>
-                    <td>${t.clientes?.nome || '—'}</td>
+                    <td>${t.clientes?.nome || t._donome || '<span class="text-muted">—</span>'}</td>
                     <td>${t.animais?.nome || '—'}</td>
-                    <td><span class="text-muted">Desconhecido</span></td>
+                    <td>${t._vetnome ? t._vetnome : '<span class="text-muted">—</span>'}</td>
                     <td>${badgeEstado(t.estado)}</td>
                     <td class="text-muted small">${new Date(t.criado_em).toLocaleDateString('pt-PT')}</td>
+                    <td>
+                        <div class="d-flex gap-1">
+                            <button class="btn-action btn-view" onclick="openAdminTicketDetail(${t.id})" title="Ver detalhes"><i class="fa-solid fa-eye"></i></button>
+                            <button class="btn-action btn-danger-action" onclick="deleteTicket(${t.id})" title="Apagar ticket"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                    </td>
                 </tr>`).join('');
+            // re-sync checkboxes after re-render
+            updateTicketsSelection();
         }
 
         function filterTickets(estado, btn) {
@@ -1694,6 +2006,146 @@
             btn.classList.add('active');
             if (estado === 'all') renderTickets(allTickets);
             else renderTickets(allTickets.filter(t => t.estado === estado));
+        }
+
+        async function deleteTicket(id) {
+            if (!confirm(`Apagar o ticket #${id}?\n\nEsta ação é irreversível.`)) return;
+            const { error } = await sbAdmin.from('tickets').delete().eq('id', id);
+            if (error) { alert('Erro ao apagar: ' + error.message); return; }
+            await loadTickets();
+            loadStats();
+        }
+
+        async function openAdminTicketDetail(ticketId) {
+            // Reset modal
+            document.getElementById('adTicketId').textContent = '#' + ticketId;
+            document.getElementById('adTicketStatus').innerHTML = '';
+            document.getElementById('adTicketDate').textContent = '—';
+            document.getElementById('adPetName').textContent = '—';
+            document.getElementById('adPetBreed').textContent = '—';
+            document.getElementById('adOwnerName').textContent = '—';
+            document.getElementById('adMotivo').textContent = '—';
+            document.getElementById('adDescricao').textContent = 'A carregar...';
+            document.getElementById('adSuggestedTime').textContent = '—';
+            document.getElementById('adVetName').textContent = '—';
+            document.getElementById('adClinicalNotes').textContent = 'Sem notas.';
+            document.getElementById('adPublicFeedback').textContent = '—';
+            document.getElementById('adMediaGallery').innerHTML = '<span class="text-muted small">A carregar...</span>';
+            document.getElementById('adUrgentBadge').style.display = 'none';
+            document.getElementById('adPetPhoto').style.display = 'none';
+            document.getElementById('adPetEmoji').style.display = 'flex';
+
+            new bootstrap.Modal(document.getElementById('adminTicketDetailModal')).show();
+
+            // Fetch full ticket with FK hints
+            const { data: t, error } = await sbAdmin.from('tickets')
+                .select('*, animais!id_animal(nome, foto_url, tipo_animal, raca), clientes!id_dono(nome)')
+                .eq('id', ticketId)
+                .single();
+
+            if (error || !t) {
+                document.getElementById('adDescricao').textContent = 'Erro ao carregar dados do ticket.';
+                return;
+            }
+
+            // Header
+            document.getElementById('adTicketId').textContent = '#' + t.id;
+            document.getElementById('adTicketStatus').innerHTML = badgeEstado(t.estado);
+            document.getElementById('adTicketDate').textContent =
+                t.criado_em ? 'Enviado em ' + new Date(t.criado_em).toLocaleString('pt-PT') : '—';
+
+            // Pet info
+            const pet = t.animais;
+            if (pet) {
+                document.getElementById('adPetName').textContent = pet.nome || '—';
+                document.getElementById('adPetBreed').textContent =
+                    [pet.tipo_animal, pet.raca].filter(Boolean).join(' / ') || '—';
+
+                // Emoji or photo
+                let emoji = '🐾';
+                if (pet.tipo_animal?.toLowerCase().includes('cão')) emoji = '🐶';
+                else if (pet.tipo_animal?.toLowerCase().includes('gato')) emoji = '🐱';
+                else if (pet.tipo_animal?.toLowerCase().includes('coelho')) emoji = '🐰';
+
+                if (pet.foto_url) {
+                    document.getElementById('adPetPhoto').src = pet.foto_url;
+                    document.getElementById('adPetPhoto').style.display = 'block';
+                    document.getElementById('adPetEmoji').style.display = 'none';
+                } else {
+                    document.getElementById('adPetEmoji').textContent = emoji;
+                    document.getElementById('adPetEmoji').style.display = 'flex';
+                    document.getElementById('adPetPhoto').style.display = 'none';
+                }
+            }
+
+            // Owner name (from FK join or fallback)
+            document.getElementById('adOwnerName').textContent = t.clientes?.nome || '—';
+
+            // Vet name — tickets stores id_veterinario (UUID) referencing veterinarios.user_id
+            if (t.id_veterinario) {
+                const { data: vet } = await sbAdmin.from('veterinarios')
+                    .select('nome').eq('user_id', t.id_veterinario).single();
+                document.getElementById('adVetName').textContent = vet?.nome || 'Não identificado';
+            } else {
+                document.getElementById('adVetName').textContent = 'Não atribuído';
+            }
+
+            // Ticket content
+            document.getElementById('adMotivo').textContent = t.motivo || '—';
+            document.getElementById('adDescricao').textContent = t.descricao || 'Sem descrição.';
+
+            // Urgent badge
+            if (t.urgente) document.getElementById('adUrgentBadge').style.display = 'block';
+
+            // Suggested time
+            if (t.data_sugerida) {
+                try {
+                    document.getElementById('adSuggestedTime').textContent =
+                        new Date(t.data_sugerida).toLocaleString('pt-PT', { dateStyle: 'full', timeStyle: 'short' });
+                } catch { document.getElementById('adSuggestedTime').textContent = t.data_sugerida; }
+            }
+
+            // Clinical notes & public feedback (correct field names from vet dashboard)
+            document.getElementById('adClinicalNotes').textContent = t.notas_privadas || 'Sem notas.';
+            document.getElementById('adPublicFeedback').textContent = t.feedback_publico || '—';
+
+            // Media gallery — evidencias_url is a comma-separated string
+            const gallery = document.getElementById('adMediaGallery');
+            if (t.evidencias_url && t.evidencias_url.trim()) {
+                const urls = t.evidencias_url.split(',').map(u => u.trim()).filter(Boolean);
+                gallery.innerHTML = urls.map(url => `
+                    <a href="${url}" target="_blank">
+                        <img src="${url}" style="width:100px;height:100px;object-fit:cover;border-radius:8px;border:2px solid #e0ede0;cursor:pointer;" onerror="this.style.display='none'">
+                    </a>`).join('');
+            } else {
+                gallery.innerHTML = '<span class="text-muted small">Sem anexos.</span>';
+            }
+        }
+
+        // ─── TICKETS MULTI-SELECT ───
+        function toggleAllTickets(masterCb) {
+            document.querySelectorAll('.ticket-check').forEach(cb => cb.checked = masterCb.checked);
+            updateTicketsSelection();
+        }
+
+        function updateTicketsSelection() {
+            const selected = document.querySelectorAll('.ticket-check:checked').length;
+            const btn = document.getElementById('btnDeleteSelectedTickets');
+            document.getElementById('ticketsSelCount').textContent = selected;
+            btn.style.display = selected > 0 ? 'inline-flex' : 'none';
+            const all = document.querySelectorAll('.ticket-check').length;
+            document.getElementById('checkAllTickets').indeterminate = selected > 0 && selected < all;
+            document.getElementById('checkAllTickets').checked = selected === all && all > 0;
+        }
+
+        async function deleteSelectedTickets() {
+            const ids = [...document.querySelectorAll('.ticket-check:checked')].map(cb => Number(cb.value));
+            if (!ids.length) return;
+            if (!confirm(`Apagar ${ids.length} ticket(s) selecionado(s)?\n\nEsta ação é irreversível.`)) return;
+            const { error } = await sbAdmin.from('tickets').delete().in('id', ids);
+            if (error) { alert('Erro ao apagar: ' + error.message); return; }
+            await loadTickets();
+            loadStats();
         }
 
         // ─── SETTINGS ───
@@ -1735,11 +2187,70 @@
 
             // Raças
             const { data: racas } = await sbAdmin.from('racas').select('*, tipos_animais(nome)').order('nome');
+            allRacas = racas || [];
+
+            // Build type filter buttons dynamically
+            const tipos_unicos = [...new Map(allRacas
+                .filter(r => r.tipos_animais?.nome)
+                .map(r => [r.tipos_animais.nome, r.tipos_animais.nome]))
+                .entries()].sort((a,b) => a[0].localeCompare(b[0]));
+
+            const filterContainer = document.getElementById('racaFilterBtns');
+            // Remove old type buttons (keep only the first "Todos" button)
+            filterContainer.querySelectorAll('button:not(#filterBtn-all)').forEach(b => b.remove());
+
+            tipos_unicos.forEach(([nome]) => {
+                const btn = document.createElement('button');
+                btn.className = 'btn btn-sm';
+                btn.dataset.tipo = nome;
+                btn.textContent = nome;
+                btn.style.cssText = 'border-radius:20px;font-size:0.78rem;font-weight:600;padding:4px 14px;border:1.5px solid #c8e6c8;background:transparent;color:#3D8B3D;transition:all .2s;';
+                btn.onclick = function() { filterRacas(nome, this); };
+                btn.onmouseover = function() { if (!this.classList.contains('active')) this.style.background = '#e8f5e9'; };
+                btn.onmouseout  = function() { if (!this.classList.contains('active')) this.style.background = 'transparent'; };
+                filterContainer.appendChild(btn);
+            });
+
+            // Reset "Todos" button to active state
+            const allBtn = document.getElementById('filterBtn-all');
+            if (allBtn) {
+                allBtn.style.background = '#3D8B3D';
+                allBtn.style.color = '#fff';
+                allBtn.style.borderColor = '#3D8B3D';
+            }
+
+            renderRacas(allRacas);
+        }
+
+        let allRacas = [];
+
+        function filterRacas(tipo, btn) {
+            // Update active button style
+            document.querySelectorAll('#racaFilterBtns button').forEach(b => {
+                b.classList.remove('active');
+                b.style.background = 'transparent';
+                b.style.color = '#3D8B3D';
+                b.style.borderColor = '#c8e6c8';
+            });
+            btn.classList.add('active');
+            btn.style.background = '#3D8B3D';
+            btn.style.color = '#fff';
+            btn.style.borderColor = '#3D8B3D';
+
+            if (tipo === 'all') {
+                renderRacas(allRacas);
+            } else {
+                renderRacas(allRacas.filter(r => r.tipos_animais?.nome === tipo));
+            }
+        }
+
+        function renderRacas(racas) {
             const racasTbody = document.getElementById('racasTbody');
             racasTbody.innerHTML = racas?.length
                 ? racas.map(r => `<tr>
                     <td>${r.nome}</td>
-                    <td>${r.tipos_animais?.nome || '—'}</td>
+                    <td><span style="display:inline-flex;align-items:center;gap:5px;background:#e8f5e9;color:#2e7d32;border-radius:12px;padding:2px 10px;font-size:0.78rem;font-weight:600;">
+                        <i class="fa-solid fa-paw" style="font-size:0.7rem;"></i>${r.tipos_animais?.nome || '—'}</span></td>
                     <td><button class="btn-action btn-danger-action" onclick="deleteItem('racas',${r.id})"><i class="fa-solid fa-trash"></i></button></td>
                   </tr>`).join('')
                 : '<tr><td colspan="3" class="text-center text-muted py-3">Sem raças.</td></tr>';

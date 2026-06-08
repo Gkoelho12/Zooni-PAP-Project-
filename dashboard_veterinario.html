@@ -1246,14 +1246,21 @@
                 statusEl.className = `status-pill status-pill-${data.estado}`;
                 statusEl.textContent = data.estado;
 
-                // Date
-                const date = new Date(data.criado_em);
-                document.getElementById('detailTicketDate').textContent = `Enviado em ${date.toLocaleDateString()} às ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
-
-                // Suggested Time
+                // Date — show appointment date if marcado, otherwise show sent date
                 const sugDate = data.data_sugerida ? new Date(data.data_sugerida) : null;
+                const createdDate = new Date(data.criado_em);
+
+                if (sugDate && data.estado === 'marcado') {
+                    document.getElementById('detailTicketDate').textContent =
+                        `📅 Consulta marcada para ${sugDate.toLocaleDateString('pt-PT', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })} às ${sugDate.toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' })}`;
+                } else {
+                    document.getElementById('detailTicketDate').textContent =
+                        `Enviado em ${createdDate.toLocaleDateString('pt-PT')} às ${createdDate.toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' })}`;
+                }
+
+                // Suggested Time (secondary field)
                 document.getElementById('detailSuggestedTime').textContent = sugDate
-                    ? sugDate.toLocaleString([], { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' })
+                    ? sugDate.toLocaleString('pt-PT', { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' })
                     : 'Sem horário sugerido';
 
                 // Pet Photo
@@ -1627,13 +1634,21 @@
 
             // After it hides, open the refuse modal
             document.getElementById('ticketDetailModal').addEventListener('hidden.bs.modal', function onHidden() {
+                // Reset all fields
                 document.getElementById('refusalReasonText').value = '';
-                
-                // Reset forwarding state
-                const chkForward = document.getElementById('chkForwardTicket');
-                const forwardSection = document.getElementById('forwardVetSection');
-                if (chkForward) chkForward.checked = false;
-                if (forwardSection) forwardSection.style.display = 'none';
+                document.getElementById('remarcarSection').style.display = 'none';
+                document.getElementById('forwardVetSection').style.display = 'none';
+                if (document.getElementById('remarcarDatetime'))
+                    document.getElementById('remarcarDatetime').value = '';
+
+                // Reset radio selection
+                document.querySelectorAll('input[name="refuseAction"]').forEach(r => r.checked = false);
+                selectRefuseAction(null); // reset card styles
+
+                // Reset confirm button
+                const btn = document.getElementById('btnConfirmarRecusa');
+                btn.style.background = '#c0392b';
+                btn.innerHTML = '<i class="fa-solid fa-circle-xmark me-1"></i>Confirmar';
 
                 loadVetsForForwarding();
                 refuseModalInstance = new bootstrap.Modal(document.getElementById('refuseReasonModal'));
@@ -1641,47 +1656,94 @@
             }, { once: true });
         }
 
-        // Handle Forward Checkbox toggle
-        document.addEventListener('change', function(e) {
-            if (e.target.id === 'chkForwardTicket') {
-                const section = document.getElementById('forwardVetSection');
-                if (section) section.style.display = e.target.checked ? 'block' : 'none';
+        // Handle action card selection
+        function selectRefuseAction(action) {
+            // Reset all cards
+            const cards = { recusar: '#cardRecusar', remarcar: '#cardRemarcar', reencaminhar: '#cardReencaminhar' };
+            const colors = { recusar: '#c0392b', remarcar: '#2980b9', reencaminhar: '#27ae60' };
+            const icons  = { recusar: 'fa-circle-xmark', remarcar: 'fa-calendar-days', reencaminhar: 'fa-share-from-square' };
+            const labels = { recusar: 'Recusar definitivamente', remarcar: 'Propor novo horário', reencaminhar: 'Reencaminhar' };
+
+            Object.values(cards).forEach(sel => {
+                const el = document.querySelector(sel);
+                if (el) {
+                    el.style.borderColor = '#f0f0f0';
+                    el.style.background  = '#fafafa';
+                    el.style.boxShadow   = 'none';
+                }
+            });
+
+            document.getElementById('remarcarSection').style.display   = 'none';
+            document.getElementById('forwardVetSection').style.display = 'none';
+
+            if (!action) return;
+
+            // Highlight selected card
+            const selEl = document.querySelector(cards[action]);
+            if (selEl) {
+                selEl.style.borderColor = colors[action];
+                selEl.style.background  = colors[action] + '10';
+                selEl.style.boxShadow   = `0 2px 12px ${colors[action]}25`;
             }
-        });
+
+            // Show relevant section
+            if (action === 'remarcar')     document.getElementById('remarcarSection').style.display   = 'block';
+            if (action === 'reencaminhar') document.getElementById('forwardVetSection').style.display = 'block';
+
+            // Update confirm button
+            const btn = document.getElementById('btnConfirmarRecusa');
+            if (btn) {
+                btn.style.background = colors[action];
+                btn.innerHTML = `<i class="fa-solid fa-${icons[action]} me-1"></i>${labels[action]}`;
+            }
+        }
 
         // Event delegation — refuseReasonModal HTML is AFTER this script, so getElementById returns null
         document.addEventListener('click', async function (e) {
             const btn = e.target.closest('#btnConfirmarRecusa');
             if (!btn) return;
 
-            console.log('Confirmar Recusa clicado. currentTicketId =', currentTicketId);
+            // Determine selected action
+            const selectedRadio = document.querySelector('input[name="refuseAction"]:checked');
+            const action = selectedRadio?.value || null;
 
-            const chkForward = document.getElementById('chkForwardTicket');
-            const isForwarding = chkForward && chkForward.checked;
-            const vetSelect = document.getElementById('refusalVetRecommendation');
-            let reason = document.getElementById('refusalReasonText').value;
-            
-            let targetVetId = null;
-            if (isForwarding) {
-                targetVetId = vetSelect.value;
-                if (!targetVetId) { alert('Por favor, selecione um veterinário para encaminhar.'); return; }
-                const opt = vetSelect.options[vetSelect.selectedIndex];
-                const vetNome = opt.getAttribute('data-nome');
-                reason += `\n\n[Encaminhado para Dr/a. ${vetNome}]`;
-            }
+            if (!action) { alert('Por favor, seleciona uma opção (Recusar, Remarcar ou Reencaminhar).'); return; }
 
-            if (!reason) { alert('Por favor, indique o motivo da recusa/encaminhamento.'); return; }
+            const reason = document.getElementById('refusalReasonText').value.trim();
+            if (!reason) { alert('Por favor, indique o motivo ou mensagem para o dono.'); return; }
             if (!currentTicketId) { alert('Erro: ID do ticket não encontrado.'); return; }
 
-            const originalText = btn.textContent;
+            let updatePayload = {};
+
+            if (action === 'recusar') {
+                updatePayload = { estado: 'recusado', motivo_recusa: reason };
+
+            } else if (action === 'remarcar') {
+                const newDatetime = document.getElementById('remarcarDatetime').value;
+                if (!newDatetime) { alert('Por favor, escolhe a nova data e hora para remarcar.'); return; }
+                updatePayload = {
+                    estado: 'marcado',
+                    data_sugerida: newDatetime,
+                    motivo_recusa: null
+                };
+
+            } else if (action === 'reencaminhar') {
+                const vetSelect = document.getElementById('refusalVetRecommendation');
+                const targetVetId = vetSelect?.value;
+                if (!targetVetId) { alert('Por favor, seleciona um veterinário para reencaminhar.'); return; }
+                const vetNome = vetSelect.options[vetSelect.selectedIndex]?.getAttribute('data-nome') || '';
+                updatePayload = {
+                    id_veterinario: targetVetId,
+                    motivo_recusa: reason + `\n\n[Reencaminhado para Dr/a. ${vetNome}]`,
+                    estado: 'pendente'
+                };
+            }
+
+            const originalHTML = btn.innerHTML;
             btn.disabled = true;
-            btn.textContent = 'A processar...';
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-1"></i>A processar...';
 
             try {
-                const updatePayload = isForwarding 
-                    ? { id_veterinario: targetVetId, motivo_recusa: reason, estado: 'pendente' }
-                    : { estado: 'recusado', motivo_recusa: reason };
-
                 const { data, error } = await supabaseClient
                     .from('tickets')
                     .update(updatePayload)
@@ -1691,10 +1753,9 @@
                 if (error) {
                     alert('Erro na base de dados: ' + error.message);
                 } else if (!data || data.length === 0) {
-                    alert('Ticket não foi atualizado. ID: ' + currentTicketId);
+                    alert('Ticket não foi atualizado. Verifica as permissões RLS.');
                 } else {
                     if (refuseModalInstance) { refuseModalInstance.hide(); refuseModalInstance = null; }
-                    if (refusalReasonText) refusalReasonText.value = '';
                     loadTickets();
                 }
             } catch (err) {
@@ -1702,7 +1763,7 @@
             }
 
             btn.disabled = false;
-            btn.textContent = originalText;
+            btn.innerHTML = originalHTML;
         });
 
         const chkUrgente = document.getElementById('chkUrgente');
@@ -1847,41 +1908,93 @@
         </div>
     </div>
 
-    <!-- Modal para Motivo de Recusa -->
+    <!-- Modal para Motivo de Recusa / Remarcar / Reencaminhar -->
     <div class="modal fade force-light-theme" id="refuseReasonModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content border-0 shadow-lg rounded-4">
-                <div class="modal-header border-0 pb-0">
-                    <h5 class="modal-title fw-bold text-danger">Recusar Ticket</h5>
+                <div class="modal-header border-0 pb-0" style="background:linear-gradient(135deg,#fff5f5,#fff);">
+                    <h5 class="modal-title fw-bold" style="color:#c0392b;">
+                        <i class="fa-solid fa-circle-xmark me-2"></i>Recusar / Gerir Pedido
+                    </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
-                    <p class="text-muted small mb-3">Por favor, explique ao dono o motivo da recusa deste pedido
-                        de consulta.</p>
-                    <textarea id="refusalReasonText" class="form-control rounded-3" rows="4"
-                        placeholder="Ex: Não temos disponibilidade nesta horário, por favor sugira outro..."></textarea>
+                <div class="modal-body px-4 pb-2">
 
-                    <div class="mt-4">
-                        <div class="form-check form-switch mb-2">
-                            <input class="form-check-input" type="checkbox" id="chkForwardTicket" style="cursor:pointer;">
-                            <label class="form-check-label small fw-bold text-primary" for="chkForwardTicket" style="cursor:pointer;">
-                                <i class="fa-solid fa-share-from-square me-1"></i> Encaminhar para outro veterinário
-                            </label>
-                        </div>
+                    <!-- Step 1: Choose action -->
+                    <p class="text-muted small mb-3">Escolhe o que deseja fazer com este pedido de consulta:</p>
 
-                        <div id="forwardVetSection" style="display: none;">
-                            <p class="text-muted small mb-2" style="font-size: 0.8rem;">O ticket será transferido para o veterinário escolhido e ficará pendente na agenda dele.</p>
-                            <select id="refusalVetRecommendation" class="form-select rounded-3">
-                                <option value="">Selecione um veterinário...</option>
-                            </select>
-                        </div>
+                    <div class="d-flex flex-column gap-2 mb-4" id="refuseActionCards">
+                        <!-- Option A: Refuse definitively -->
+                        <label class="d-flex align-items-start gap-3 p-3 rounded-3 border border-2 cursor-pointer"
+                            id="cardRecusar"
+                            style="border-color:#f0f0f0 !important;cursor:pointer;transition:all .2s;background:#fafafa;"
+                            onclick="selectRefuseAction('recusar')">
+                            <input type="radio" name="refuseAction" value="recusar" class="mt-1" style="accent-color:#e74c3c;">
+                            <div>
+                                <div class="fw-bold" style="color:#c0392b;"><i class="fa-solid fa-ban me-2"></i>Recusar definitivamente</div>
+                                <div class="text-muted small mt-1">O pedido será marcado como recusado e o dono será notificado.</div>
+                            </div>
+                        </label>
+
+                        <!-- Option B: Propose new schedule -->
+                        <label class="d-flex align-items-start gap-3 p-3 rounded-3 border border-2 cursor-pointer"
+                            id="cardRemarcar"
+                            style="border-color:#f0f0f0 !important;cursor:pointer;transition:all .2s;background:#fafafa;"
+                            onclick="selectRefuseAction('remarcar')">
+                            <input type="radio" name="refuseAction" value="remarcar" class="mt-1" style="accent-color:#2980b9;">
+                            <div>
+                                <div class="fw-bold" style="color:#2980b9;"><i class="fa-solid fa-calendar-days me-2"></i>Remarcar para outro horário</div>
+                                <div class="text-muted small mt-1">Propõe uma nova data/hora ao dono. O ticket fica pendente aguardando confirmação.</div>
+                            </div>
+                        </label>
+
+                        <!-- Option C: Forward to another vet -->
+                        <label class="d-flex align-items-start gap-3 p-3 rounded-3 border border-2 cursor-pointer"
+                            id="cardReencaminhar"
+                            style="border-color:#f0f0f0 !important;cursor:pointer;transition:all .2s;background:#fafafa;"
+                            onclick="selectRefuseAction('reencaminhar')">
+                            <input type="radio" name="refuseAction" value="reencaminhar" class="mt-1" style="accent-color:#27ae60;">
+                            <div>
+                                <div class="fw-bold" style="color:#27ae60;"><i class="fa-solid fa-share-from-square me-2"></i>Reencaminhar para outro veterinário</div>
+                                <div class="text-muted small mt-1">O ticket é transferido para outro veterinário e aparece na agenda dele como pendente.</div>
+                            </div>
+                        </label>
                     </div>
+
+                    <!-- Reason textarea (always visible) -->
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small text-muted" id="refuseReasonLabel">Motivo / Mensagem para o dono *</label>
+                        <textarea id="refusalReasonText" class="form-control rounded-3" rows="3"
+                            placeholder="Ex: Não temos disponibilidade nesta data..."></textarea>
+                    </div>
+
+                    <!-- Section B: New date picker (only for 'remarcar') -->
+                    <div id="remarcarSection" style="display:none;" class="mb-3 p-3 rounded-3" style="background:#f0f7ff;border:1.5px solid #bbd6f5;">
+                        <label class="form-label fw-bold small" style="color:#2980b9;"><i class="fa-solid fa-calendar-plus me-1"></i>Nova data/hora proposta</label>
+                        <input type="datetime-local" id="remarcarDatetime" class="form-control rounded-3"
+                            style="border:1.5px solid #bbd6f5;">
+                        <div class="text-muted mt-1" style="font-size:0.77rem;">O dono verá esta nova sugestão de horário no seu dashboard.</div>
+                    </div>
+
+                    <!-- Section C: Vet forward selector (only for 'reencaminhar') -->
+                    <div id="forwardVetSection" style="display:none;" class="mb-3 p-3 rounded-3" style="background:#f0fff4;border:1.5px solid #b2dfdb;">
+                        <label class="form-label fw-bold small" style="color:#27ae60;"><i class="fa-solid fa-user-doctor me-1"></i>Veterinário de destino</label>
+                        <select id="refusalVetRecommendation" class="form-select rounded-3"
+                            style="border:1.5px solid #b2dfdb;">
+                            <option value="">A carregar veterinários...</option>
+                        </select>
+                        <div class="text-muted mt-1" style="font-size:0.77rem;">O ticket ficará pendente na agenda do veterinário escolhido.</div>
+                    </div>
+
                 </div>
-                <div class="modal-footer border-0 pt-0">
+                <div class="modal-footer border-0 pt-0 px-4 pb-4 gap-2">
                     <button type="button" class="btn btn-light rounded-pill px-4 fw-bold"
                         data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-danger rounded-pill px-4 fw-bold"
-                        id="btnConfirmarRecusa">Confirmar Recusa</button>
+                    <button type="button" class="btn rounded-pill px-4 fw-bold"
+                        id="btnConfirmarRecusa"
+                        style="background:#c0392b;color:#fff;">
+                        <i class="fa-solid fa-circle-xmark me-1"></i>Confirmar
+                    </button>
                 </div>
             </div>
         </div>

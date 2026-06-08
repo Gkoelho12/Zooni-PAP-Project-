@@ -1873,7 +1873,24 @@
 
                         // Status Logic
                         if (t.estado === 'pendente') {
-                            statusHtml = `<div class="status-badge status-pendente"><i class="fa-regular fa-clock"></i> ${ZOONI_I18N.t('status_pending') || 'Pendente'}</div>`;
+                            // Check if vet proposed a reschedule
+                            const isRemarcado = t.motivo_recusa && t.motivo_recusa.startsWith('[Remarcado]');
+                            if (isRemarcado) {
+                                statusHtml = `<div class="status-badge" style="color:#2980b9;background:#ebf5fb;border:1.5px solid #aed6f1;"><i class="fa-solid fa-calendar-days"></i> Nova Proposta de Horário</div>`;
+                                const vetMsg = t.motivo_recusa.replace('[Remarcado]', '').trim();
+                                const novaData = t.data_sugerida
+                                    ? new Date(t.data_sugerida).toLocaleString('pt-PT', { dateStyle: 'full', timeStyle: 'short' })
+                                    : null;
+                                refusalReasonHtml = `
+                                    <div class="mt-2 p-3 rounded-3 border" style="background:#ebf5fb;border-color:#aed6f1 !important;">
+                                        <div class="fw-bold small mb-1" style="color:#1a5276;"><i class="fa-solid fa-calendar-plus me-1"></i>O veterinário propõe remarcar</div>
+                                        ${novaData ? `<div class="small mb-1" style="color:#2471a3;"><i class="fa-regular fa-clock me-1"></i><strong>${novaData}</strong></div>` : ''}
+                                        ${vetMsg ? `<div class="small text-muted">${vetMsg}</div>` : ''}
+                                    </div>`;
+                                showDeleteBtn = true;
+                            } else {
+                                statusHtml = `<div class="status-badge status-pendente"><i class="fa-regular fa-clock"></i> ${ZOONI_I18N.t('status_pending') || 'Pendente'}</div>`;
+                            }
                         }
                         else if (t.estado === 'aguarda_confirmacao') {
                             statusHtml = `<div class="status-badge" style="color:#0984e3;"><i class="fa-solid fa-circle-info"></i> ${ZOONI_I18N.t('status_waiting') || 'A confirmar'}</div>`;
@@ -1887,21 +1904,24 @@
                             if (t.motivo_recusa) {
                                 let reasonText = t.motivo_recusa;
                                 let vetRecMatch = reasonText.match(/\|VET_REC:([^:]+):([^|]+)\|/);
+                                // Also check for [Reencaminhado] pattern
+                                const fwdMatch = reasonText.match(/\[Reencaminhado para Dr\/a\. ([^\]]+)\]/);
                                 let recBtn = '';
 
                                 if (vetRecMatch) {
                                     let vetId = vetRecMatch[1];
                                     let vetNome = vetRecMatch[2].replace(/'/g, "\\'");
                                     reasonText = reasonText.replace(vetRecMatch[0], '').trim();
-
                                     recBtn = `
                                         <div class="mt-3 text-center">
                                             <div class="text-muted small mb-2"><i class="fa-solid fa-info-circle text-primary"></i> O veterinário recomendou um colega:</div>
                                             <button class="btn btn-sm btn-outline-primary fw-bold px-3 py-2 w-100 rounded-pill" onclick="openNewTicketModalWithVet(${t.id}, '${vetId}', '${vetNome}')">
                                                 <i class="fa-solid fa-user-doctor me-1"></i> Marcar com Dr/a. ${vetNome}
                                             </button>
-                                        </div>
-                                    `;
+                                        </div>`;
+                                } else if (fwdMatch) {
+                                    const vetNomeEnc = fwdMatch[1];
+                                    recBtn = `<div class="mt-2 p-2 rounded" style="background:#e8f8f5;color:#1e8449;font-size:0.8rem;"><i class="fa-solid fa-share-from-square me-1"></i>Reencaminhado para Dr/a. <strong>${vetNomeEnc}</strong>. Aguarda contacto.</div>`;
                                 }
 
                                 refusalReasonHtml = `<div class="mt-2 p-3 bg-danger-subtle text-danger small rounded border border-danger-subtle"><strong>Motivo:</strong> ${reasonText}${recBtn}</div>`;
