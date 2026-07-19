@@ -9,6 +9,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="assets/js/theme.js"></script>
     <script src="assets/js/i18n.js"></script>
     <link rel="stylesheet" href="assets/css/theme.css">
@@ -615,6 +616,266 @@
                 grid-template-columns: 1fr;
             }
         }
+
+        /* ── Vet Profile Modal ───────────────────────────────── */
+        .vet-card {
+            cursor: pointer;
+        }
+
+        #vetProfileModal .modal-content {
+            border: none;
+            border-radius: 24px;
+            overflow: hidden;
+            background: var(--card-bg);
+        }
+
+        .vpm-header {
+            position: relative;
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+            padding: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1.2rem;
+        }
+
+        .vpm-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid rgba(255,255,255,0.5);
+            flex-shrink: 0;
+        }
+
+        .vpm-avatar-placeholder {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.25);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: 700;
+            color: white;
+            flex-shrink: 0;
+            border: 4px solid rgba(255,255,255,0.4);
+        }
+
+        .vpm-title {
+            color: white;
+            flex: 1;
+        }
+
+        .vpm-title h2 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin: 0 0 4px;
+        }
+
+        .vpm-title p {
+            font-size: 0.88rem;
+            opacity: 0.85;
+            margin: 0;
+        }
+
+        .vpm-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background 0.2s;
+        }
+
+        .vpm-close:hover { background: rgba(255,255,255,0.35); }
+
+        .vpm-body {
+            padding: 1.5rem 1.8rem;
+        }
+
+        .vpm-status-bar {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 1rem 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            margin-bottom: 1.4rem;
+            flex-wrap: wrap;
+        }
+
+        .vpm-info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 1.4rem;
+        }
+
+        .vpm-info-item {
+            background: var(--bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 0.9rem 1rem;
+        }
+
+        .vpm-info-item .label {
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: var(--text-sec);
+            margin-bottom: 4px;
+        }
+
+        .vpm-info-item .value {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .vpm-section-title {
+            font-size: 0.78rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-sec);
+            margin-bottom: 10px;
+        }
+
+        /* Schedule grid */
+        .schedule-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 6px;
+            margin-bottom: 1.4rem;
+        }
+
+        .sched-day {
+            background: var(--bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 8px 4px;
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+        .sched-day.today {
+            border-color: var(--primary);
+            background: rgba(61,139,61,0.08);
+        }
+
+        .sched-day.today .sched-day-name {
+            color: var(--primary);
+        }
+
+        .sched-day.open .sched-day-dot {
+            background: #00B894;
+        }
+
+        .sched-day.closed .sched-day-dot {
+            background: var(--border-color);
+        }
+
+        .sched-day-name {
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--text-sec);
+            margin-bottom: 4px;
+        }
+
+        .sched-day-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin: 0 auto 4px;
+        }
+
+        .sched-day-hours {
+            font-size: 0.58rem;
+            color: var(--text-sec);
+            line-height: 1.3;
+        }
+
+        /* Mini Map */
+        #vetProfileMap {
+            height: 180px;
+            border-radius: 14px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 1.4rem;
+            overflow: hidden;
+            z-index: 0;
+        }
+
+        .vpm-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-vpm-book {
+            flex: 1;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 12px;
+            font-weight: 700;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .btn-vpm-book:hover { opacity: 0.85; }
+        .btn-vpm-book:disabled { opacity: 0.4; cursor: not-allowed; }
+
+        .btn-vpm-chat {
+            flex: 1;
+            background: var(--bg-color);
+            border: 1.5px solid var(--primary);
+            color: var(--primary);
+            border-radius: 12px;
+            padding: 12px;
+            font-weight: 700;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-vpm-chat:hover { background: var(--primary); color: white; }
+
+        .btn-vpm-fav {
+            background: var(--bg-color);
+            border: 1.5px solid var(--border-color);
+            color: var(--text-sec);
+            border-radius: 12px;
+            padding: 12px 18px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            line-height: 1;
+        }
+
+        .btn-vpm-fav.active { color: #e74c3c; border-color: #e74c3c; background: rgba(231,76,60,0.05); }
+        .btn-vpm-fav:hover { color: #e74c3c; border-color: #e74c3c; }
+
+        [data-theme="dark"] .vpm-info-item { background: rgba(255,255,255,0.04); }
+        [data-theme="dark"] .sched-day { background: rgba(255,255,255,0.04); }
+        [data-theme="dark"] .sched-day.today { background: rgba(52,211,153,0.1); }
+        [data-theme="dark"] .btn-vpm-fav { background: rgba(255,255,255,0.05); }
     </style>
 </head>
 
@@ -695,6 +956,29 @@
                 <select class="filter-select" id="filterEspecialidade" onchange="filterAndRender()">
                     <option value="" data-i18n="vet_all_specs">Todas as Especialidades</option>
                 </select>
+                <select class="filter-select" id="filterDistrito" onchange="filterAndRender()">
+                    <option value="">Todos os Distritos</option>
+                    <option value="Aveiro">Aveiro</option>
+                    <option value="Beja">Beja</option>
+                    <option value="Braga">Braga</option>
+                    <option value="Bragança">Bragança</option>
+                    <option value="Castelo Branco">Castelo Branco</option>
+                    <option value="Coimbra">Coimbra</option>
+                    <option value="Évora">Évora</option>
+                    <option value="Faro">Faro</option>
+                    <option value="Guarda">Guarda</option>
+                    <option value="Leiria">Leiria</option>
+                    <option value="Lisboa">Lisboa</option>
+                    <option value="Portalegre">Portalegre</option>
+                    <option value="Porto">Porto</option>
+                    <option value="Santarém">Santarém</option>
+                    <option value="Setúbal">Setúbal</option>
+                    <option value="Viana do Castelo">Viana do Castelo</option>
+                    <option value="Vila Real">Vila Real</option>
+                    <option value="Viseu">Viseu</option>
+                    <option value="Açores">Região Autónoma dos Açores</option>
+                    <option value="Madeira">Região Autónoma da Madeira</option>
+                </select>
                 <select class="filter-select" id="filterStatus" onchange="filterAndRender()">
                     <option value="" data-i18n="vet_any_status">Qualquer Estado</option>
                     <option value="disponivel">🟢 Disponível</option>
@@ -723,6 +1007,75 @@
                 </div>
             </div>
         </main>
+    </div>
+
+    <!-- ─── VET PROFILE MODAL ──────────────────────────────────── -->
+    <div class="modal fade" id="vetProfileModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+            <div class="modal-content">
+                <!-- Header (green gradient banner with avatar) -->
+                <div class="vpm-header" id="vpmHeader">
+                    <div id="vpmAvatar"></div>
+                    <div class="vpm-title">
+                        <h2 id="vpmName">—</h2>
+                        <p id="vpmSpec">—</p>
+                    </div>
+                    <button class="vpm-close" data-bs-dismiss="modal" title="Fechar">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+
+                <!-- Body -->
+                <div class="modal-body vpm-body">
+                    <!-- Status pill + 24h badge -->
+                    <div class="vpm-status-bar">
+                        <div id="vpmStatusBadge"></div>
+                        <div id="vpm24hBadge"></div>
+                    </div>
+
+                    <!-- Info cards -->
+                    <div class="vpm-info-grid">
+                        <div class="vpm-info-item">
+                            <div class="label"><i class="fa-solid fa-hospital me-1"></i> Clínica</div>
+                            <div class="value" id="vpmClinica">—</div>
+                        </div>
+                        <div class="vpm-info-item">
+                            <div class="label"><i class="fa-solid fa-stethoscope me-1"></i> Especialidade</div>
+                            <div class="value" id="vpmEspecialidade">—</div>
+                        </div>
+                        <div class="vpm-info-item">
+                            <div class="label"><i class="fa-solid fa-location-dot me-1"></i> Morada</div>
+                            <div class="value" id="vpmMorada">—</div>
+                        </div>
+                        <div class="vpm-info-item">
+                            <div class="label"><i class="fa-solid fa-phone me-1"></i> Contacto Emergência</div>
+                            <div class="value" id="vpmContacto">—</div>
+                        </div>
+                    </div>
+
+                    <!-- Weekly schedule -->
+                    <div class="vpm-section-title"><i class="fa-regular fa-calendar me-1"></i> Horário Semanal</div>
+                    <div class="schedule-grid" id="vpmScheduleGrid"></div>
+
+                    <!-- Mini map -->
+                    <div class="vpm-section-title"><i class="fa-solid fa-map-location-dot me-1"></i> Localização da Clínica</div>
+                    <div id="vetProfileMap"></div>
+
+                    <!-- Actions -->
+                    <div class="vpm-actions">
+                        <button class="btn-vpm-fav" id="vpmFavBtn" title="Favorito">
+                            <i class="fa-solid fa-heart"></i>
+                        </button>
+                        <button class="btn-vpm-chat" id="vpmChatBtn">
+                            <i class="fa-solid fa-comments me-1"></i> Conversar
+                        </button>
+                        <button class="btn-vpm-book" id="vpmBookBtn">
+                            <i class="fa-solid fa-calendar-plus me-1"></i> Marcar Consulta
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- ─── TICKET MODAL (exato de meus_animais.html) ──────────── -->
@@ -804,6 +1157,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
         const SUPABASE_URL = 'https://xqtbtggmwejnkhckduti.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhxdGJ0Z2dtd2VqbmtoY2tkdXRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc2OTU5NjEsImV4cCI6MjA4MzI3MTk2MX0.G1wG0UC6sF7r6tMxGdqLGvsHa_dxlVD1-j6QNEw32IM';
@@ -839,6 +1193,8 @@
                     const parsed = JSON.parse(esp);
                     if (Array.isArray(parsed)) return parsed.join(', ');
                 } catch(e) {}
+                // Fallback: strip JSON array chars [ ] " and split by comma
+                return esp.replace(/[\[\]"]/g, '').split(',').map(s => s.trim()).filter(Boolean).join(', ');
             }
             return esp;
         }
@@ -846,20 +1202,57 @@
         async function loadVets() {
             const { data, error } = await sb
                 .from('veterinarios')
-                .select('user_id, nome, especialidade, clinica, foto_url, tem_servico_24h, contacto_24h, modo_ferias')
+                .select('user_id, nome, especialidade, clinica, foto_url, tem_servico_24h, contacto_24h, modo_ferias, distrito, morada')
                 .eq('status', 'ativo')
                 .order('nome');
 
             if (error || !data) {
+                // If error is about unknown column 'distrito', retry without it
+                if (error?.message?.includes('distrito')) {
+                    const { data: data2, error: error2 } = await sb
+                        .from('veterinarios')
+                        .select('user_id, nome, especialidade, clinica, foto_url, tem_servico_24h, contacto_24h, modo_ferias, morada')
+                        .eq('status', 'ativo')
+                        .order('nome');
+                    if (error2 || !data2) {
+                        console.error('Erro ao carregar veterinários:', error2);
+                        document.getElementById('vetsGrid').innerHTML = `<div class="empty-state"><i class="fa-solid fa-circle-exclamation"></i><p>Erro ao carregar veterinários.</p></div>`;
+                        return;
+                    }
+                    return _processVets(data2);
+                }
+                console.error('Erro ao carregar veterinários:', error);
                 document.getElementById('vetsGrid').innerHTML = `<div class="empty-state"><i class="fa-solid fa-circle-exclamation"></i><p>Erro ao carregar veterinários.</p></div>`;
                 return;
             }
 
+            _processVets(data);
+        }
+
+        function _parseEspecialidadeArray(esp) {
+            if (!esp) return [];
+            if (Array.isArray(esp)) return esp.map(s => s.trim()).filter(Boolean);
+            if (typeof esp === 'string') {
+                try {
+                    const parsed = JSON.parse(esp);
+                    if (Array.isArray(parsed)) return parsed.map(s => s.trim()).filter(Boolean);
+                } catch(e) {}
+                return esp.replace(/[\[\]"]/g, '').split(',').map(s => s.trim()).filter(Boolean);
+            }
+            return [String(esp).trim()].filter(Boolean);
+        }
+
+        async function _processVets(data) {
+
             allVets = data;
 
-            // Populate specialty filter
-            const specs = [...new Set(data.map(v => v.especialidade).filter(Boolean))].sort();
+            // Populate specialty filter — flatten all parsed arrays
+            const allSpecsSet = new Set();
+            data.forEach(v => _parseEspecialidadeArray(v.especialidade).forEach(s => allSpecsSet.add(s)));
+            const specs = [...allSpecsSet].sort();
             const sel = document.getElementById('filterEspecialidade');
+            // Keep first default option, remove any previously added ones
+            while (sel.options.length > 1) sel.remove(1);
             specs.forEach(s => {
                 const o = document.createElement('option');
                 o.value = s; o.textContent = s;
@@ -995,14 +1388,30 @@
         function filterAndRender() {
             const query = document.getElementById('searchVetInput').value.toLowerCase();
             const spec = document.getElementById('filterEspecialidade').value;
+            const distrito = document.getElementById('filterDistrito').value;
             const statusF = document.getElementById('filterStatus').value;
 
             let filtered = allVets.filter(v => {
                 const matchSearch = !query || v.nome?.toLowerCase().includes(query) || v.clinica?.toLowerCase().includes(query);
-                const matchSpec = !spec || (Array.isArray(v.especialidade) ? v.especialidade.includes(spec) : v.especialidade?.includes(spec));
+                // Per-specialty matching — checks each individual specialty
+                const vetSpecs = _parseEspecialidadeArray(v.especialidade);
+                const matchSpec = !spec || vetSpecs.some(s => s.toLowerCase() === spec.toLowerCase());
+                // District match: check distrito column first, then fallback to clinica/morada text
+                let matchDistrito = true;
+                if (distrito) {
+                    const normalize = s => (s || '').toLowerCase()
+                        .normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+                    const d = normalize(distrito);
+                    const vetDistrito   = normalize(v.distrito);
+                    const vetClinica    = normalize(v.clinica);
+                    const vetMorada     = normalize(v.morada);
+                    matchDistrito = vetDistrito.includes(d)
+                        || vetClinica.includes(d)
+                        || vetMorada.includes(d);
+                }
                 const matchStatus = !statusF || vetStatusMap[v.user_id] === statusF;
                 const matchFav = !showOnlyFavs || favoritosSet.has(v.user_id);
-                return matchSearch && matchSpec && matchStatus && matchFav;
+                return matchSearch && matchSpec && matchDistrito && matchStatus && matchFav;
             });
 
             renderVets(filtered);
@@ -1081,8 +1490,215 @@
                         </button>
                     </div>
                 `;
+                // Open profile on card click (exclude fav btn and book btn)
+                card.addEventListener('click', (e) => {
+                    if (e.target.closest('.btn-fav') || e.target.closest('.btn-marcar')) return;
+                    openVetProfile(v);
+                });
+
                 grid.appendChild(card);
             });
+        }
+
+        // ── VET PROFILE MODAL ─────────────────────────────────────────────
+        let profileMap = null;
+
+        const DAY_NAMES_PT = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+
+        async function openVetProfile(v) {
+            // --- Fill header ---
+            const avatarEl = document.getElementById('vpmAvatar');
+            if (v.foto_url) {
+                avatarEl.innerHTML = `<img src="${v.foto_url}" alt="${v.nome}" class="vpm-avatar">`;
+            } else {
+                avatarEl.className = 'vpm-avatar-placeholder';
+                avatarEl.textContent = (v.nome || '?').charAt(0).toUpperCase();
+            }
+
+            document.getElementById('vpmName').textContent = v.nome || '—';
+            document.getElementById('vpmSpec').textContent = formatEspecialidade(v.especialidade) || 'Medicina Geral';
+
+            // --- Status ---
+            const status = vetStatusMap[v.user_id] || 'disponivel';
+            const statusMap = {
+                disponivel: `<span class="status-light status-disponivel"><span class="dot"></span> Disponível</span>`,
+                consulta:   `<span class="status-light status-consulta"><span class="dot"></span> Em Consulta</span>`,
+                ausente:    `<span class="status-light status-ausente"><span class="dot"></span> Ausente / Férias</span>`
+            };
+            document.getElementById('vpmStatusBadge').innerHTML = statusMap[status] || '';
+            document.getElementById('vpm24hBadge').innerHTML = v.tem_servico_24h
+                ? `<span class="badge-24h"><i class="fa-solid fa-clock"></i> Urgências 24h</span>`
+                : '';
+
+            // --- Info grid ---
+            document.getElementById('vpmClinica').textContent = v.clinica || '—';
+            document.getElementById('vpmEspecialidade').textContent = formatEspecialidade(v.especialidade) || '—';
+            document.getElementById('vpmMorada').textContent = v.morada || v.clinica || '—';
+            document.getElementById('vpmContacto').textContent =
+                v.tem_servico_24h && v.contacto_24h ? v.contacto_24h : '—';
+
+            // --- Fav button ---
+            const favBtn = document.getElementById('vpmFavBtn');
+            favBtn.className = 'btn-vpm-fav' + (favoritosSet.has(v.user_id) ? ' active' : '');
+            favBtn.onclick = async () => {
+                await toggleFav(v.user_id, favBtn);
+                // Sync icon between modal and card
+                const cardFavBtn = document.querySelector(`[data-vet-id="${v.id}"] .btn-fav`);
+                if (cardFavBtn) cardFavBtn.classList.toggle('active', favoritosSet.has(v.user_id));
+            };
+
+            // --- Book button ---
+            const bookBtn = document.getElementById('vpmBookBtn');
+            if (status === 'ausente') {
+                bookBtn.disabled = true;
+                bookBtn.innerHTML = '<i class="fa-solid fa-ban me-1"></i> Indisponível';
+            } else {
+                bookBtn.disabled = false;
+                bookBtn.innerHTML = '<i class="fa-solid fa-calendar-plus me-1"></i> Marcar Consulta';
+            }
+            bookBtn.onclick = () => {
+                bootstrap.Modal.getInstance(document.getElementById('vetProfileModal')).hide();
+                marcarConsulta(v.user_id, v.nome);
+            };
+
+            // --- Chat button ---
+            const chatBtn = document.getElementById('vpmChatBtn');
+            chatBtn.onclick = () => {
+                bootstrap.Modal.getInstance(document.getElementById('vetProfileModal')).hide();
+                window.location.href = `chat_dono.html?vet=${encodeURIComponent(v.user_id)}&nome=${encodeURIComponent(v.nome || '')}`;
+            };
+
+            // --- Schedule ---
+            await renderSchedule(v.user_id);
+
+            // Show modal
+            const modal = new bootstrap.Modal(document.getElementById('vetProfileModal'));
+            modal.show();
+
+            // --- Map (after modal shown so DOM has size) ---
+            document.getElementById('vetProfileModal').addEventListener('shown.bs.modal', () => {
+                renderMap(v);
+            }, { once: true });
+        }
+
+        async function renderSchedule(vetId) {
+            const grid = document.getElementById('vpmScheduleGrid');
+            grid.innerHTML = DAY_NAMES_PT.map(d => `
+                <div class="sched-day">
+                    <div class="sched-day-name">${d}</div>
+                    <div class="sched-day-dot"></div>
+                    <div class="sched-day-hours">—</div>
+                </div>`).join('');
+
+            const { data: horarios } = await sb
+                .from('zooni_horarios_padrao')
+                .select('dia_semana, hora_inicio, hora_fim')
+                .eq('id_vet', vetId)
+                .order('dia_semana');
+
+            // Build a map: dayOfWeek -> [{inicio, fim}]
+            const schedByDay = {};
+            (horarios || []).forEach(h => {
+                if (!schedByDay[h.dia_semana]) schedByDay[h.dia_semana] = [];
+                schedByDay[h.dia_semana].push({
+                    inicio: h.hora_inicio.substring(0, 5),
+                    fim: h.hora_fim.substring(0, 5)
+                });
+            });
+
+            const today = new Date().getDay();
+            const cards = grid.querySelectorAll('.sched-day');
+            cards.forEach((card, i) => {
+                const slots = schedByDay[i];
+                if (i === today) card.classList.add('today');
+                if (slots && slots.length > 0) {
+                    card.classList.add('open');
+                    card.querySelector('.sched-day-hours').innerHTML =
+                        slots.map(s => `${s.inicio}<br>${s.fim}`).join('<br>');
+                } else {
+                    card.classList.add('closed');
+                    card.querySelector('.sched-day-hours').textContent = 'Fechado';
+                }
+            });
+        }
+
+        async function renderMap(v) {
+            const mapEl = document.getElementById('vetProfileMap');
+
+            // Destroy previous map instance
+            if (profileMap) {
+                profileMap.remove();
+                profileMap = null;
+            }
+
+            // Default: Lisbon centre
+            let lat = 38.7169, lng = -9.1399;
+
+            // ⚠️ NEVER use v.morada for geocoding — it may contain non-PT addresses.
+            // Build a safe query from clinic name + district only, always appending "Portugal".
+            const parts = [v.clinica, v.distrito].filter(Boolean);
+            const query = parts.length > 0 ? `${parts.join(', ')}, Portugal` : null;
+
+            // Validate coordinate is inside Portugal (mainland + Azores + Madeira)
+            const isInPortugal = (la, lo) => la >= 29.0 && la <= 42.5 && lo >= -32.0 && lo <= -6.0;
+
+            if (query) {
+                try {
+                    const ptBbox = '-31.27,30.00,-6.18,42.15';
+                    const url = `https://nominatim.openstreetmap.org/search?format=json`
+                        + `&q=${encodeURIComponent(query)}`
+                        + `&countrycodes=pt`
+                        + `&viewbox=${ptBbox}`
+                        + `&bounded=1`
+                        + `&limit=5`;
+
+                    const res = await fetch(url, { headers: { 'Accept-Language': 'pt-PT,pt;q=0.9' } });
+                    const results = await res.json();
+
+                    // Only accept a coordinate that is geographically inside Portugal
+                    const valid = (results || []).find(r => isInPortugal(parseFloat(r.lat), parseFloat(r.lon)));
+
+                    if (valid) {
+                        lat = parseFloat(valid.lat);
+                        lng = parseFloat(valid.lon);
+                    } else if (v.distrito) {
+                        // Fallback: try just the district name (still PT-restricted)
+                        const r2 = await fetch(
+                            `https://nominatim.openstreetmap.org/search?format=json`
+                            + `&q=${encodeURIComponent(v.distrito + ', Portugal')}`
+                            + `&countrycodes=pt&limit=1`,
+                            { headers: { 'Accept-Language': 'pt-PT,pt;q=0.9' } }
+                        );
+                        const res2 = await r2.json();
+                        if (res2?.[0] && isInPortugal(parseFloat(res2[0].lat), parseFloat(res2[0].lon))) {
+                            lat = parseFloat(res2[0].lat);
+                            lng = parseFloat(res2[0].lon);
+                        }
+                    }
+                    // If still nothing valid → keep Lisbon defaults
+                } catch(e) { /* use Lisbon defaults */ }
+            }
+
+            profileMap = L.map(mapEl, { zoomControl: true, scrollWheelZoom: false }).setView([lat, lng], 15);
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+                maxZoom: 19
+            }).addTo(profileMap);
+
+            // Custom green marker icon
+            const icon = L.divIcon({
+                className: '',
+                html: `<div style="width:36px;height:36px;background:var(--primary,#3D8B3D);border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:3px solid white;box-shadow:0 3px 12px rgba(0,0,0,0.3);"></div>`,
+                iconSize: [36, 36],
+                iconAnchor: [18, 36],
+                popupAnchor: [0, -38]
+            });
+
+            L.marker([lat, lng], { icon })
+                .addTo(profileMap)
+                .bindPopup(`<strong>${v.clinica || v.nome}</strong>${v.distrito ? '<br><i class="fa-solid fa-location-dot"></i> ' + v.distrito : ''}`)  
+                .openPopup();
         }
 
         // ── TICKET MODAL LOGIC (identical to meus_animais.html) ───────────

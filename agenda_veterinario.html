@@ -192,12 +192,14 @@
         .fc-event-main { color: #ffffff !important; }
 
         /* Dynamic Color Classes assigned by JS */
-        .color-vacina { background-color: var(--event-vacina) !important; color: white !important; }
-        .color-consulta { background-color: var(--event-consulta) !important; color: white !important; }
-        .color-cirurgia { background-color: var(--event-cirurgia) !important; color: white !important; }
-        .color-rotina { background-color: var(--event-rotina) !important; color: white !important; }
-        .color-bloqueio { background-color: var(--event-bloqueio) !important; color: white !important; opacity: 0.8; border-bottom: 2px dashed rgba(255,255,255,0.5); }
-        .color-pendente { background-color: #fdcb6e !important; color: #2d3436 !important; }
+        .color-vacina         { background-color: var(--event-vacina)         !important; color: white !important; }
+        .color-consulta       { background-color: var(--event-consulta)       !important; color: white !important; }
+        .color-cirurgia       { background-color: var(--event-cirurgia)       !important; color: white !important; }
+        .color-rotina         { background-color: var(--event-rotina)         !important; color: white !important; }
+        .color-medicacao      { background-color: var(--event-medicacao)      !important; color: white !important; }
+        .color-desparasitacao { background-color: var(--event-desparasitacao) !important; color: white !important; }
+        .color-bloqueio       { background-color: var(--event-bloqueio)       !important; color: white !important; opacity: 0.8; border-bottom: 2px dashed rgba(255,255,255,0.5); }
+        .color-pendente       { background-color: #fdcb6e                     !important; color: #2d3436 !important; }
 
         /* Offcanvas Specific */
         .pet-photo { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; margin-bottom: 10px; border: 3px solid #f1f2f6; }
@@ -225,6 +227,46 @@
         @media (max-width: 480px) {
             .agenda-layout { height: 420px !important; }
         }
+
+        /* ── CUSTOM TYPE DROPDOWN ─────────────────────────────── */
+        .type-select-wrap { position: relative; user-select: none; }
+        .type-select-btn {
+            width: 100%; display: flex; align-items: center; gap: 10px;
+            padding: 10px 14px; border: 1px solid #ced4da; border-radius: 8px;
+            background: white; cursor: pointer; font-family: 'Outfit', sans-serif;
+            font-size: 0.93rem; color: #212529; transition: border-color 0.15s;
+            text-align: left;
+        }
+        .type-select-btn:hover,
+        .type-select-btn.open { border-color: var(--primary); outline: none; }
+        .type-select-btn .chevron {
+            margin-left: auto; color: #6c757d; font-size: 0.75rem;
+            transition: transform 0.2s;
+        }
+        .type-select-btn.open .chevron { transform: rotate(180deg); }
+
+        /* Solid color circle (matches screenshot) */
+        .type-circle {
+            width: 14px; height: 14px; border-radius: 50%;
+            display: inline-block; flex-shrink: 0;
+        }
+
+        .type-dropdown {
+            position: absolute; top: calc(100% + 4px); left: 0; right: 0;
+            background: white; border: 1px solid #dee2e6; border-radius: 10px;
+            box-shadow: 0 8px 28px rgba(0,0,0,0.14); z-index: 9999;
+            overflow: hidden; display: none; animation: ddFadeIn 0.12s ease;
+        }
+        @keyframes ddFadeIn { from { opacity:0; transform:translateY(-4px); } to { opacity:1; transform:none; } }
+        .type-dropdown.open { display: block; }
+
+        .type-option {
+            display: flex; align-items: center; gap: 12px;
+            padding: 11px 16px; cursor: pointer; transition: background 0.12s;
+            font-size: 0.92rem; color: #212529;
+        }
+        .type-option:hover { background: #f0f7f0; }
+        .type-option.selected { background: #e8f4e8; font-weight: 600; }
     </style>
 </head>
 
@@ -283,14 +325,14 @@
 
             <!-- Fila de Filtros e Botão Adicionar Evento -->
             <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
-                <div class="d-flex gap-2 flex-wrap">
-                    <div class="filter-pill active">Todos</div>
-                    <div class="filter-pill"><span class="dot" style="background-color: var(--event-vacina);"></span> Vacinas</div>
-                    <div class="filter-pill"><span class="dot" style="background-color: var(--event-desparasitacao);"></span> Desparasitação</div>
-                    <div class="filter-pill"><span class="dot" style="background-color: var(--event-medicacao);"></span> Medicação</div>
-                    <div class="filter-pill"><span class="dot" style="background-color: var(--event-consulta);"></span> Consultas</div>
-                    <div class="filter-pill"><span class="dot" style="background-color: var(--event-cirurgia);"></span> Cirurgias</div>
-                    <div class="filter-pill" onclick="openBlockModal()"><span class="dot" style="background-color: var(--event-bloqueio);"></span> Bloqueio Manual</div>
+                <div class="d-flex gap-2 flex-wrap" id="filterPills">
+                    <div class="filter-pill active" onclick="filterCalendar(null, this)">Todos</div>
+                    <div class="filter-pill" onclick="filterCalendar('Vacina', this)"><span class="dot" style="background-color: var(--event-vacina);"></span> Vacinas</div>
+                    <div class="filter-pill" onclick="filterCalendar('Desparasitacao', this)"><span class="dot" style="background-color: var(--event-desparasitacao);"></span> Desparasitação</div>
+                    <div class="filter-pill" onclick="filterCalendar('Medicacao', this)"><span class="dot" style="background-color: var(--event-medicacao);"></span> Medicação</div>
+                    <div class="filter-pill" onclick="filterCalendar('Consulta', this)"><span class="dot" style="background-color: var(--event-consulta);"></span> Consultas</div>
+                    <div class="filter-pill" onclick="filterCalendar('Cirurgia', this)"><span class="dot" style="background-color: var(--event-cirurgia);"></span> Cirurgias</div>
+                    <div class="filter-pill" onclick="filterCalendar('Bloqueio', this)"><span class="dot" style="background-color: var(--event-bloqueio);"></span> Bloqueio Manual</div>
                 </div>
                 <!-- Botão Adicionar Evento -->
                 <button class="btn-add-event" onclick="openBlockModal()"><i class="fa-solid fa-plus"></i> Adicionar Evento / Bloco</button>
@@ -326,19 +368,51 @@
                 </div>
                 <div class="modal-body p-4">
                     <p class="text-muted small mb-4">Adicione um novo evento à sua agenda.</p>
+
+                    <!-- TIPO primeiro (custom colored dropdown) -->
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small text-muted">Tipo de Evento</label>
+                        <input type="hidden" id="blockType" value="Consulta">
+                        <div class="type-select-wrap">
+                            <button type="button" class="type-select-btn" id="typeSelectBtn" onclick="toggleTypeDropdown()">
+                                <span class="type-circle" id="typeSelectedCircle" style="background:#0984e3"></span>
+                                <span id="typeSelectedLabel">Consulta (Geral)</span>
+                                <i class="fa-solid fa-chevron-down chevron"></i>
+                            </button>
+                            <div class="type-dropdown" id="typeDropdown">
+                                <div class="type-option selected" onclick="selectType('Consulta','#0984e3','Consulta (Geral)',this)">
+                                    <span class="type-circle" style="background:#0984e3"></span> Consulta (Geral)
+                                </div>
+                                <div class="type-option" onclick="selectType('Vacina','#d63031','Vacina (Urgente)',this)">
+                                    <span class="type-circle" style="background:#d63031"></span> Vacina (Urgente)
+                                </div>
+                                <div class="type-option" onclick="selectType('Cirurgia','#6c5ce7','Cirurgia (Programada)',this)">
+                                    <span class="type-circle" style="background:#6c5ce7"></span> Cirurgia (Programada)
+                                </div>
+                                <div class="type-option" onclick="selectType('Emergencia','#e17055','Emergência (Urgente)',this)">
+                                    <span class="type-circle" style="background:#e17055"></span> Emergência (Urgente)
+                                </div>
+                                <div class="type-option" onclick="selectType('Desparasitacao','#e67e22','Desparasitação (Atenção)',this)">
+                                    <span class="type-circle" style="background:#e67e22"></span> Desparasitação (Atenção)
+                                </div>
+                                <div class="type-option" onclick="selectType('Medicacao','#00B894','Medicação (Tratamento)',this)">
+                                    <span class="type-circle" style="background:#00B894"></span> Medicação (Tratamento)
+                                </div>
+                                <div class="type-option" onclick="selectType('Rotina','#5CB85C','Rotina / Banhos',this)">
+                                    <span class="type-circle" style="background:#5CB85C"></span> Rotina / Banhos
+                                </div>
+                                <div class="type-option" onclick="selectType('Bloqueio','#636e72','Bloqueio (Indisponível)',this)">
+                                    <span class="type-circle" style="background:#636e72"></span> Bloqueio (Indisponível)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="mb-3">
                         <label class="form-label fw-bold small text-muted">Título / Motivo</label>
-                        <input type="text" id="blockTitle" class="form-control" placeholder="Ex: Hora de Almoço">
+                        <input type="text" id="blockTitle" class="form-control" placeholder="Ex: Consulta de Rotina">
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-bold small text-muted">Tipo</label>
-                        <select class="form-select" id="blockType">
-                            <option value="Bloqueio">Bloqueio Manual (Ex: Almoço)</option>
-                            <option value="Consulta">Consulta</option>
-                            <option value="Cirurgia">Cirurgia</option>
-                            <option value="Emergencia">Emergência</option>
-                        </select>
-                    </div>
+
                     <div class="row g-3 mb-4">
                         <div class="col-6">
                             <label class="form-label fw-bold small text-muted">Início</label>
@@ -504,13 +578,20 @@
             calendar.addEventSource(events);
         }
 
-        // Color mapper specific to Zooni Owner app style
+        // Color mapper — every type maps to its exact filter-pill color
         function getClassNames(tipo, status) {
-            if(status === 'Pendente') return ['color-pendente'];
-            if(tipo === 'Vacina') return ['color-vacina'];
-            if(tipo === 'Cirurgia' || tipo === 'Emergencia') return ['color-cirurgia'];
-            if(tipo === 'Bloqueio') return ['color-bloqueio'];
-            return ['color-consulta']; // Default style
+            if (status === 'Pendente') return ['color-pendente'];
+            const map = {
+                'Vacina':           'color-vacina',
+                'Cirurgia':         'color-cirurgia',
+                'Emergencia':       'color-cirurgia',
+                'Bloqueio':         'color-bloqueio',
+                'Rotina':           'color-rotina',
+                'Medicacao':        'color-medicacao',
+                'Desparasitacao':   'color-desparasitacao',
+                'Consulta':         'color-consulta',
+            };
+            return [map[tipo] || 'color-consulta'];
         }
 
         function showContext(event) {
@@ -565,13 +646,18 @@
             }
         }
 
-        // --- BLOCK MANUAL LOGIC ---
-        const blockModal = new bootstrap.Modal(document.getElementById('blockModal'));
+        // Moved inside DOMContentLoaded to ensure DOM is ready
+        let blockModal = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            blockModal = new bootstrap.Modal(document.getElementById('blockModal'));
+        });
 
         function openBlockModal() {
             document.getElementById('blockTitle').value = '';
             document.getElementById('blockStart').value = '';
             document.getElementById('blockEnd').value = '';
+            if (!blockModal) blockModal = new bootstrap.Modal(document.getElementById('blockModal'));
             blockModal.show();
         }
 
@@ -622,7 +708,30 @@
             }
         }
 
-        // ── MOBILE SIDEBAR ─────────────────────────────────────────────
+        // ── FILTER CALENDAR BY TYPE ────────────────────────────────────
+        let activeFilter = null;
+        let allCalendarEvents = [];
+
+        function filterCalendar(tipo, pill) {
+            // Toggle active pill
+            document.querySelectorAll('#filterPills .filter-pill').forEach(p => p.classList.remove('active'));
+            pill.classList.add('active');
+            activeFilter = tipo;
+
+            // Filter events already in the calendar
+            calendar.getEvents().forEach(ev => {
+                const evTipo = ev.extendedProps?.tipo || '';
+                if (!tipo) {
+                    ev.setProp('display', 'auto');
+                } else {
+                    // Match the tipo - handle Bloqueio pill also matching 'Bloqueio' type
+                    const match = evTipo.toLowerCase() === tipo.toLowerCase();
+                    ev.setProp('display', match ? 'auto' : 'none');
+                }
+            });
+        }
+
+        // ── MOBILE SIDEBAR ──────────────────────────────────────────────────
         function openSidebar() {
             document.querySelector('.sidebar').classList.add('active');
             document.getElementById('sidebarOverlay').classList.add('active');
@@ -632,6 +741,44 @@
             document.getElementById('sidebarOverlay').classList.remove('active');
         }
         document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeSidebar(); });
+
+        // ── CUSTOM TYPE DROPDOWN LOGIC ────────────────────────────────
+        function toggleTypeDropdown() {
+            const btn = document.getElementById('typeSelectBtn');
+            const dd  = document.getElementById('typeDropdown');
+            const isOpen = dd.classList.contains('open');
+            dd.classList.toggle('open', !isOpen);
+            btn.classList.toggle('open', !isOpen);
+        }
+
+        function selectType(value, color, label, optionEl) {
+            // Update hidden input
+            document.getElementById('blockType').value = value;
+            // Update trigger button
+            document.getElementById('typeSelectedCircle').style.background = color;
+            document.getElementById('typeSelectedLabel').textContent = label;
+            // Mark selected option
+            document.querySelectorAll('#typeDropdown .type-option').forEach(o => o.classList.remove('selected'));
+            optionEl.classList.add('selected');
+            // Close dropdown
+            document.getElementById('typeDropdown').classList.remove('open');
+            document.getElementById('typeSelectBtn').classList.remove('open');
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', e => {
+            const wrap = document.querySelector('.type-select-wrap');
+            if (wrap && !wrap.contains(e.target)) {
+                document.getElementById('typeDropdown')?.classList.remove('open');
+                document.getElementById('typeSelectBtn')?.classList.remove('open');
+            }
+        });
+
+        // Reset type selector when modal opens
+        document.getElementById('blockModal').addEventListener('show.bs.modal', () => {
+            selectType('Consulta','#0984e3','Consulta (Geral)',
+                document.querySelector('#typeDropdown .type-option'));
+        });
 
         init();
     </script>

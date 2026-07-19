@@ -2069,7 +2069,7 @@
             vetAutocomplete = new google.maps.places.Autocomplete(input, {
                 types: ['establishment', 'geocode'],
                 fields: ['name', 'formatted_address'],
-                componentRestrictions: { country: ['pt', 'br'] }
+                componentRestrictions: { country: ['pt'] }
             });
 
             vetAutocomplete.addListener('place_changed', () => {

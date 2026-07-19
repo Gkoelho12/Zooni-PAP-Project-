@@ -508,7 +508,7 @@
 
         async function fetchNominatim(query) {
             try {
-                const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&addressdetails=1&limit=6&countrycodes=pt,br`;
+                const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&addressdetails=1&limit=6&countrycodes=pt`;
                 const res = await fetch(url, { headers: { 'Accept-Language': 'pt' } });
                 const results = await res.json();
 
