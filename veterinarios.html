@@ -1202,7 +1202,7 @@
         async function loadVets() {
             const { data, error } = await sb
                 .from('veterinarios')
-                .select('user_id, nome, especialidade, clinica, foto_url, tem_servico_24h, contacto_24h, modo_ferias, distrito, morada')
+                .select('user_id, nome, especialidade, clinica, foto_url, tem_servico_24h, contacto_24h, modo_ferias, distrito')
                 .eq('status', 'ativo')
                 .order('nome');
 
@@ -1211,7 +1211,7 @@
                 if (error?.message?.includes('distrito')) {
                     const { data: data2, error: error2 } = await sb
                         .from('veterinarios')
-                        .select('user_id, nome, especialidade, clinica, foto_url, tem_servico_24h, contacto_24h, modo_ferias, morada')
+                        .select('user_id, nome, especialidade, clinica, foto_url, tem_servico_24h, contacto_24h, modo_ferias')
                         .eq('status', 'ativo')
                         .order('nome');
                     if (error2 || !data2) {
@@ -1533,7 +1533,7 @@
             // --- Info grid ---
             document.getElementById('vpmClinica').textContent = v.clinica || '—';
             document.getElementById('vpmEspecialidade').textContent = formatEspecialidade(v.especialidade) || '—';
-            document.getElementById('vpmMorada').textContent = v.morada || v.clinica || '—';
+            document.getElementById('vpmMorada').textContent = v.clinica || '—';
             document.getElementById('vpmContacto').textContent =
                 v.tem_servico_24h && v.contacto_24h ? v.contacto_24h : '—';
 
