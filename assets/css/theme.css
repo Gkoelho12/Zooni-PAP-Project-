@@ -252,6 +252,98 @@ table {
     }
 }
 
+/* Compact icon rail (tablet / small laptop): 769px – 1100px */
+@media (min-width: 769px) and (max-width: 1100px) {
+    .app-container {
+        grid-template-columns: 76px minmax(0, 1fr) !important;
+    }
+
+    .sidebar {
+        padding: 1.25rem 0.5rem !important;
+        overflow-x: hidden !important;
+    }
+
+    /* Logo cropped to the "Z + paw" mark so it never overflows the rail */
+    .sidebar .logo-container {
+        width: 56px !important;
+        height: 56px;
+        margin: 0 auto 1.5rem !important;
+        overflow: hidden;
+        justify-content: center;
+        position: relative;
+    }
+
+    .sidebar .logo-img-sidebar {
+        position: absolute;
+        max-width: none !important;
+        width: 135px !important;
+        height: auto !important;
+        left: -8px;
+        top: -34px;
+    }
+
+    .sidebar .mobile-menu-close {
+        display: none !important;
+    }
+
+    .sidebar .nav-links {
+        width: 100%;
+        align-items: center;
+    }
+
+    .sidebar .nav-item {
+        width: 100%;
+    }
+
+    .sidebar .nav-link,
+    .sidebar .nav-link.active {
+        width: 100%;
+        justify-content: center;
+        gap: 0;
+        padding: 12px 0 !important;
+        border-left: none !important;
+    }
+
+    .sidebar .nav-link i {
+        width: auto;
+        font-size: 1.2rem;
+    }
+
+    .sidebar .nav-line-break {
+        width: 100%;
+        margin: 10px 0;
+    }
+
+    /* "New request" button becomes a round icon button */
+    .sidebar .btn-sidebar-cta {
+        width: 46px;
+        height: 46px;
+        padding: 0;
+        margin-left: auto;
+        margin-right: auto;
+        border-radius: 50%;
+        flex-shrink: 0;
+    }
+
+    .sidebar .btn-sidebar-cta span {
+        display: none !important;
+    }
+}
+
+/* Pet photos must stay perfectly round: never let flex/grid squeeze them */
+.pet-photo,
+.pet-emoji,
+.pet-select-img,
+.pet-select-emoji,
+.pet-profile-avatar,
+.pet-profile-emoji-lg,
+.profile-pic {
+    flex-shrink: 0;
+    aspect-ratio: 1 / 1;
+    max-width: none;
+    object-fit: cover;
+}
+
 /* ── Sidebar Global (Desktop & Mobile) ────────────────── */
 .sidebar {
     position: sticky !important;
@@ -460,6 +552,65 @@ table {
 
     .modal-dialog {
         margin: 0.5rem;
+    }
+}
+
+/* ── Settings sub-menu as combo box (mobile) ────────── */
+.settings-nav-select-wrap {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .settings-nav.has-select {
+        display: none !important;
+    }
+
+    .settings-nav-select-wrap {
+        display: block;
+        position: relative;
+        width: 100%;
+        margin-bottom: 1rem;
+    }
+
+    .settings-nav-select {
+        width: 100%;
+        appearance: none;
+        -webkit-appearance: none;
+        background: var(--card-bg, #fff);
+        color: var(--text-main, #1a2e1a);
+        border: 1.5px solid var(--border, #e8f0e8);
+        border-radius: 14px;
+        padding: 14px 44px 14px 46px;
+        font-size: 1rem;
+        font-weight: 600;
+        font-family: inherit;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+        cursor: pointer;
+        outline: none;
+        text-overflow: ellipsis;
+    }
+
+    .settings-nav-select:focus {
+        border-color: var(--primary, #3D8B3D);
+        box-shadow: 0 0 0 3px rgba(61, 139, 61, 0.15);
+    }
+
+    .settings-nav-select-icon,
+    .settings-nav-select-arrow {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--primary, #3D8B3D);
+        pointer-events: none;
+    }
+
+    .settings-nav-select-icon {
+        left: 16px;
+    }
+
+    .settings-nav-select-arrow {
+        right: 16px;
+        font-size: 0.85rem;
     }
 }
 

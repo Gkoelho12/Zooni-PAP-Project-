@@ -8,6 +8,7 @@
         const path = window.location.pathname;
         if (path.includes('dashboard_admin') || 
             path.includes('registo_veterinario.html') || 
+            path.includes('registo_clinica.html') || 
             path.includes('login.html')) {
             document.documentElement.removeAttribute('data-theme');
             return;

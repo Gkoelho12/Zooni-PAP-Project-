@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="pt">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zooni — Registo de Clínica e Direção Clínica</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="assets/js/theme.js"></script>
+    <link rel="stylesheet" href="assets/css/theme.css">
+    <style>
+        :root {
+            --primary: #3D8B3D;
+            --primary-dark: #1E4D1E;
+            --primary-light: #5CB85C;
+            --gold: #FDCB6E;
+            --gold-dark: #D35400;
+            --bg: #F2F8F2;
+            --text-sec: #5a7a5a;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: var(--bg);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+
+        .reg-wrapper {
+            display: flex;
+            width: 100%;
+            max-width: 1040px;
+            background: white;
+            border-radius: 28px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(61, 139, 61, 0.15);
+            min-height: 640px;
+        }
+
+        /* Coluna da Esquerda */
+        .reg-side {
+            flex: 0.92;
+            background: linear-gradient(145deg, #3D8B3D, #1E4D1E);
+            padding: 3.5rem 2.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            color: white;
+            position: relative;
+        }
+
+        .reg-side img {
+            max-width: 155px;
+            margin-bottom: 2.2rem;
+            filter: brightness(0) invert(1);
+        }
+
+        .reg-side .role-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 20px;
+            padding: 6px 14px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            width: fit-content;
+            color: #ffeaa7;
+            border: 1px solid rgba(254, 202, 87, 0.35);
+        }
+
+        .reg-side h2 {
+            font-size: 1.65rem;
+            font-weight: 800;
+            margin-bottom: 0.75rem;
+            line-height: 1.3;
+        }
+
+        .reg-side p {
+            font-size: 0.92rem;
+            opacity: 0.88;
+            line-height: 1.6;
+        }
+
+        .steps-list {
+            margin-top: 2.2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .step-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            font-size: 0.88rem;
+            opacity: 0.9;
+        }
+
+        .step-num {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.22);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 700;
+            flex-shrink: 0;
+            margin-top: 1px;
+            color: white;
+        }
+
+        /* Coluna da Direita */
+        .reg-form-panel {
+            flex: 1.15;
+            padding: 2.8rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            overflow-y: auto;
+            max-height: 90vh;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--text-sec);
+            font-size: 0.85rem;
+            text-decoration: none;
+            margin-bottom: 1.2rem;
+            transition: color 0.2s;
+            font-weight: 600;
+        }
+
+        .back-link:hover {
+            color: var(--primary);
+        }
+
+        .form-title {
+            font-size: 1.45rem;
+            font-weight: 800;
+            color: var(--primary-dark);
+            margin-bottom: 0.25rem;
+        }
+
+        .form-subtitle {
+            font-size: 0.88rem;
+            color: var(--text-sec);
+            margin-bottom: 1.4rem;
+        }
+
+        .section-divider {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--primary);
+            border-bottom: 1.5px solid #e0ede0;
+            padding-bottom: 6px;
+            margin: 1.2rem 0 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Inputs */
+        .input-group-custom {
+            position: relative;
+            margin-bottom: 0.85rem;
+        }
+
+        .input-group-custom i.input-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #a0b2a0;
+            font-size: 0.95rem;
+        }
+
+        .input-group-custom input {
+            width: 100%;
+            padding: 11px 14px 11px 40px;
+            border: 1.5px solid #c8e6c8;
+            border-radius: 12px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.92rem;
+            color: #2D3436;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            background: #fff;
+        }
+
+        .input-group-custom input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(61, 139, 61, 0.12);
+        }
+
+        /* Caixa Pontilhada de Upload */
+        .upload-area {
+            border: 2px dashed #c8e6c8;
+            border-radius: 14px;
+            padding: 1.1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: 0.85rem;
+            position: relative;
+            background: #fafdfa;
+        }
+
+        .upload-area:hover,
+        .upload-area.drag-over {
+            border-color: var(--primary);
+            background: #f0fdf4;
+        }
+
+        .upload-area input[type="file"] {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+            width: 100%;
+            height: 100%;
+        }
+
+        .upload-area .upload-icon {
+            font-size: 1.6rem;
+            color: var(--primary);
+            margin-bottom: 0.35rem;
+        }
+
+        .upload-area .upload-text {
+            font-size: 0.85rem;
+            color: var(--text-sec);
+        }
+
+        .upload-area .upload-text strong {
+            color: var(--primary);
+        }
+
+        .upload-area .file-info {
+            display: none;
+            align-items: center;
+            gap: 10px;
+            justify-content: center;
+            font-size: 0.88rem;
+            color: var(--primary-dark);
+            font-weight: 600;
+        }
+
+        .upload-area .preview-img {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--primary);
+            display: none;
+        }
+
+        .upload-area.has-file .upload-default {
+            display: none;
+        }
+
+        .upload-area.has-file .file-info {
+            display: flex;
+        }
+
+        /* Checkbox */
+        .terms-check {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 1.2rem;
+            margin-top: 0.5rem;
+        }
+
+        .terms-check input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            flex-shrink: 0;
+            margin-top: 2px;
+            accent-color: var(--primary);
+            cursor: pointer;
+        }
+
+        .terms-check label {
+            font-size: 0.85rem;
+            color: #2d3436;
+            font-weight: 500;
+            line-height: 1.5;
+            cursor: pointer;
+        }
+
+        .terms-check label a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        /* Botão */
+        .btn-registo {
+            width: 100%;
+            background: linear-gradient(135deg, #3D8B3D, #2B6E2B);
+            color: white;
+            border: none;
+            padding: 13px;
+            border-radius: 12px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 4px 14px rgba(61, 139, 61, 0.25);
+        }
+
+        .btn-registo:hover {
+            opacity: 0.95;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 18px rgba(61, 139, 61, 0.35);
+        }
+
+        .btn-registo:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .error-msg {
+            background: #ffeaea;
+            color: #d63031;
+            border-radius: 10px;
+            padding: 10px 14px;
+            font-size: 0.85rem;
+            margin-top: 0.8rem;
+            display: none;
+            border-left: 4px solid #d63031;
+        }
+
+        .success-box {
+            display: none;
+            background: #eef9ee;
+            border: 1.5px solid #c8e6c8;
+            border-radius: 14px;
+            padding: 1.5rem;
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        .series-badge {
+            background: #eef7ee;
+            color: var(--primary-dark);
+            border-radius: 8px;
+            padding: 3px 8px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            border: 1px solid #c8e6c8;
+        }
+
+        @media (max-width: 820px) {
+            .reg-side {
+                display: none;
+            }
+
+            .reg-wrapper {
+                max-width: 520px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="reg-wrapper">
+        <!-- Coluna da Esquerda (Identidade Zooni) -->
+        <div class="reg-side">
+            <img src="assets/logo.png" alt="Zooni Logo">
+            <div class="role-badge">
+                <i class="fa-solid fa-hospital"></i> Estrutura da Clínica
+            </div>
+            <h2>Registe a sua Clínica Veterinária.</h2>
+            <p>Junte-se à rede Zooni para gerir a sua equipa de médicos veterinários, controlar finanças, comissões de especialistas e serviços clínicos.</p>
+
+            <div class="steps-list">
+                <div class="step-item">
+                    <div class="step-num">1</div>
+                    <div><strong>Dados da Clínica:</strong> Nome comercial, NIF, morada oficial e séries de faturação.</div>
+                </div>
+                <div class="step-item">
+                    <div class="step-num">2</div>
+                    <div><strong>Documentação Fiscal:</strong> Logótipo institucional e certidão permanente.</div>
+                </div>
+                <div class="step-item">
+                    <div class="step-num">3</div>
+                    <div><strong>Aprovação e Direção:</strong> Credenciação automática do Gestor/Diretor Clínico.</div>
+                </div>
+            </div>
+
+            <div style="margin-top: auto; padding-top: 2rem; font-size: 0.8rem; opacity: 0.7;">
+                <i class="fa-solid fa-shield-halved"></i> Plataforma em conformidade com as diretivas da OMV e RGPD.
+            </div>
+        </div>
+
+        <!-- Coluna da Direita (Formulário Branco) -->
+        <div class="reg-form-panel">
+            <a href="login.html?role=veterinario" class="back-link">
+                <i class="fa-solid fa-arrow-left"></i> Já tenho conta clínica ou médica — Entrar
+            </a>
+
+            <div class="form-title">Criar Perfil de Clínica</div>
+            <div class="form-subtitle">Preencha os dados da clínica e do Diretor Clínico responsável</div>
+
+            <form id="registoClinicaForm">
+                <!-- 1. Dados do Diretor / Gestor -->
+                <div class="section-divider">
+                    <i class="fa-solid fa-crown" style="color: var(--gold-dark);"></i> 1. Diretor Clínico Responsável
+                </div>
+
+                <div class="input-group-custom">
+                    <i class="fa-regular fa-user input-icon"></i>
+                    <input type="text" id="dirNome" placeholder="Nome completo do Diretor Clínico *" required>
+                </div>
+
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.6rem;">
+                    <div class="input-group-custom" style="margin-bottom:0;">
+                        <i class="fa-regular fa-envelope input-icon"></i>
+                        <input type="email" id="dirEmail" placeholder="Email do Diretor *" required autocomplete="email">
+                    </div>
+                    <div class="input-group-custom" style="margin-bottom:0;">
+                        <i class="fa-solid fa-lock input-icon"></i>
+                        <input type="password" id="dirPassword" placeholder="Password * (mín. 6)" required
+                            autocomplete="new-password">
+                    </div>
+                </div>
+
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.6rem; margin-top:0.85rem;">
+                    <div class="input-group-custom" style="margin-bottom:0;">
+                        <i class="fa-solid fa-id-card input-icon"></i>
+                        <input type="text" id="dirCedula" placeholder="Nº Cédula OMV * (5 dígitos)" required
+                            pattern="[0-9]{5}" minlength="5" maxlength="5"
+                            oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,5)">
+                    </div>
+                    <div class="input-group-custom" style="margin-bottom:0;">
+                        <i class="fa-solid fa-phone input-icon"></i>
+                        <input type="tel" id="dirTelefone" placeholder="Telemóvel Direto * (9 dígitos)" required
+                            pattern="[0-9]{9}" minlength="9" maxlength="9"
+                            oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,9)">
+                    </div>
+                </div>
+
+                <!-- 2. Dados da Clínica -->
+                <div class="section-divider" style="margin-top: 1.4rem;">
+                    <i class="fa-solid fa-hospital"></i> 2. Dados Oficiais da Clínica
+                </div>
+
+                <div class="input-group-custom">
+                    <i class="fa-solid fa-building input-icon"></i>
+                    <input type="text" id="clinicaNome" placeholder="Nome Comercial da Clínica *" required>
+                </div>
+
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.6rem;">
+                    <div class="input-group-custom" style="margin-bottom:0;">
+                        <i class="fa-solid fa-file-invoice input-icon"></i>
+                        <input type="text" id="clinicaNIF" placeholder="NIF da Clínica * (9 dígitos)" required
+                            pattern="[0-9]{9}" minlength="9" maxlength="9"
+                            oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,9)">
+                    </div>
+                    <div class="input-group-custom" style="margin-bottom:0;">
+                        <i class="fa-solid fa-receipt input-icon"></i>
+                        <input type="text" id="clinicaSeries" placeholder="Série Faturação * (ex: FT 2026)" value="FT 2026" required>
+                    </div>
+                </div>
+
+                <div style="margin-top:0.85rem;" class="input-group-custom">
+                    <i class="fa-solid fa-location-dot input-icon"></i>
+                    <input type="text" id="clinicaMorada" placeholder="Morada Completa da Clínica *" required>
+                </div>
+
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.6rem;">
+                    <div class="input-group-custom" style="margin-bottom:0;">
+                        <i class="fa-solid fa-phone input-icon"></i>
+                        <input type="tel" id="clinicaTelefone" placeholder="Telefone Linha Geral *" required
+                            pattern="[0-9]{9}" minlength="9" maxlength="9"
+                            oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,9)">
+                    </div>
+                    <div class="input-group-custom" style="margin-bottom:0;">
+                        <i class="fa-regular fa-envelope input-icon"></i>
+                        <input type="email" id="clinicaEmail" placeholder="Email Geral da Clínica *" required>
+                    </div>
+                </div>
+
+                <!-- 3. Documentação e Logótipo -->
+                <div class="section-divider" style="margin-top: 1.4rem;">
+                    <i class="fa-solid fa-cloud-arrow-up"></i> 3. Logótipo e Documentação Fiscal
+                </div>
+
+                <!-- Logótipo da Clínica -->
+                <div style="margin-bottom: 0.5rem; font-size: 0.82rem; font-weight: 600; color: var(--primary-dark);">
+                    Logótipo da Clínica (aparecerá nos cartões de médicos e receitas) *
+                </div>
+                <div class="upload-area" id="uploadAreaLogo">
+                    <input type="file" id="logoFile" accept="image/png, image/jpeg, image/webp" required>
+                    <div class="upload-default">
+                        <i class="fa-solid fa-camera upload-icon"></i>
+                        <div class="upload-text">Arrasta o <strong>Logótipo</strong> ou clica para procurar</div>
+                        <div style="font-size: 0.75rem; color: #88a088; margin-top: 2px;">PNG ou JPG quadrado (recomendado 400x400)</div>
+                    </div>
+                    <div class="file-info" id="logoFileInfo">
+                        <img id="logoPreview" class="preview-img" alt="Logo Preview">
+                        <div>
+                            <div id="logoFileName" style="color:var(--primary-dark)"></div>
+                            <div id="logoFileSize" style="font-size:0.75rem; color:var(--text-sec); font-weight:normal;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Certidão da Clínica -->
+                <div style="margin-bottom: 0.5rem; font-size: 0.82rem; font-weight: 600; color: var(--primary-dark);">
+                    Certidão Permanente ou Registo Comercial da Clínica *
+                </div>
+                <div class="upload-area" id="uploadAreaCert">
+                    <input type="file" id="certFile" accept=".pdf, image/png, image/jpeg" required>
+                    <div class="upload-default">
+                        <i class="fa-solid fa-file-contract upload-icon"></i>
+                        <div class="upload-text">Arrasta a <strong>Certidão / Documento Fiscal</strong> ou clica para procurar</div>
+                        <div style="font-size: 0.75rem; color: #88a088; margin-top: 2px;">PDF ou Imagem (Máx. 5 MB)</div>
+                    </div>
+                    <div class="file-info" id="certFileInfo">
+                        <i class="fa-solid fa-file-pdf" style="font-size:1.8rem; color:#e74c3c;"></i>
+                        <div>
+                            <div id="certFileName" style="color:var(--primary-dark)"></div>
+                            <div id="certFileSize" style="font-size:0.75rem; color:var(--text-sec); font-weight:normal;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Termos -->
+                <div class="terms-check">
+                    <input type="checkbox" id="termsCheckClinica" required>
+                    <label for="termsCheckClinica">
+                        Confirmo a veracidade das informações fiscais e que atuo como Diretor Clínico ou representante legal autorizado, aceitando os <a href="#">Termos de Utilização</a> e a <a href="#">Política de Privacidade Zooni</a>.
+                    </label>
+                </div>
+
+                <button type="submit" class="btn-registo" id="btnRegistoClinica">
+                    <i class="fa-solid fa-hospital-user"></i> Concluir Registo da Clínica
+                </button>
+
+                <div class="error-msg" id="errorMsg"></div>
+
+                <div class="success-box" id="successBox">
+                    <div style="font-size: 2.2rem; color: var(--primary); margin-bottom: 0.5rem;">
+                        <i class="fa-solid fa-circle-check"></i>
+                    </div>
+                    <h4 style="font-weight: 800; color: var(--primary-dark); margin-bottom: 0.4rem;">Clínica Registada com Sucesso!</h4>
+                    <p style="font-size: 0.9rem; color: var(--text-sec); margin-bottom: 1rem;">
+                        O perfil da clínica e o cargo de <strong>Diretor Clínico</strong> foram configurados. A redirecionar para a Gestão de Equipa...
+                    </p>
+                    <div class="spinner-border text-success" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Supabase Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const SUPABASE_URL = 'https://xqtbtggmwejnkhckduti.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhxdGJ0Z2dtd2VqbmtoY2tkdXRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc2OTU5NjEsImV4cCI6MjA4MzI3MTk2MX0.G1wG0UC6sF7r6tMxGdqLGvsHa_dxlVD1-j6QNEw32IM';
+        const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        let selectedLogo = null;
+        let selectedCert = null;
+
+        // Configuração Drag and Drop do Logótipo
+        const logoInput = document.getElementById('logoFile');
+        const uploadAreaLogo = document.getElementById('uploadAreaLogo');
+        const logoPreview = document.getElementById('logoPreview');
+
+        logoInput.addEventListener('change', () => handleLogoFile(logoInput.files[0]));
+        uploadAreaLogo.addEventListener('dragover', e => { e.preventDefault(); uploadAreaLogo.classList.add('drag-over'); });
+        uploadAreaLogo.addEventListener('dragleave', () => uploadAreaLogo.classList.remove('drag-over'));
+        uploadAreaLogo.addEventListener('drop', e => {
+            e.preventDefault();
+            uploadAreaLogo.classList.remove('drag-over');
+            if (e.dataTransfer.files[0]) handleLogoFile(e.dataTransfer.files[0]);
+        });
+
+        function handleLogoFile(file) {
+            if (!file) return;
+            if (file.size > 5 * 1024 * 1024) {
+                showError('O logótipo deve ter menos de 5 MB.');
+                return;
+            }
+            selectedLogo = file;
+            uploadAreaLogo.classList.add('has-file');
+            document.getElementById('logoFileName').textContent = file.name;
+            document.getElementById('logoFileSize').textContent = '(' + (file.size / 1024).toFixed(0) + ' KB)';
+
+            // Preview imagem
+            const reader = new FileReader();
+            reader.onload = e => {
+                logoPreview.src = e.target.result;
+                logoPreview.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // Configuração Drag and Drop da Certidão
+        const certInput = document.getElementById('certFile');
+        const uploadAreaCert = document.getElementById('uploadAreaCert');
+
+        certInput.addEventListener('change', () => handleCertFile(certInput.files[0]));
+        uploadAreaCert.addEventListener('dragover', e => { e.preventDefault(); uploadAreaCert.classList.add('drag-over'); });
+        uploadAreaCert.addEventListener('dragleave', () => uploadAreaCert.classList.remove('drag-over'));
+        uploadAreaCert.addEventListener('drop', e => {
+            e.preventDefault();
+            uploadAreaCert.classList.remove('drag-over');
+            if (e.dataTransfer.files[0]) handleCertFile(e.dataTransfer.files[0]);
+        });
+
+        function handleCertFile(file) {
+            if (!file) return;
+            if (file.size > 10 * 1024 * 1024) {
+                showError('A certidão deve ter menos de 10 MB.');
+                return;
+            }
+            selectedCert = file;
+            uploadAreaCert.classList.add('has-file');
+            document.getElementById('certFileName').textContent = file.name;
+            document.getElementById('certFileSize').textContent = '(' + (file.size / 1024).toFixed(0) + ' KB)';
+        }
+
+        function showError(msg) {
+            const el = document.getElementById('errorMsg');
+            el.textContent = msg;
+            el.style.display = 'block';
+            el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        function hideError() {
+            document.getElementById('errorMsg').style.display = 'none';
+        }
+
+        // Submissão do Formulário
+        document.getElementById('registoClinicaForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            hideError();
+
+            const btn = document.getElementById('btnRegistoClinica');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> A criar clínica e credenciar diretor...';
+
+            const dirNome = document.getElementById('dirNome').value.trim();
+            const dirEmail = document.getElementById('dirEmail').value.trim();
+            const dirPassword = document.getElementById('dirPassword').value;
+            const dirCedula = document.getElementById('dirCedula').value.trim();
+            const dirTelefone = document.getElementById('dirTelefone').value.trim();
+
+            const clinicaNome = document.getElementById('clinicaNome').value.trim();
+            const clinicaNIF = document.getElementById('clinicaNIF').value.trim();
+            const clinicaSeries = document.getElementById('clinicaSeries').value.trim();
+            const clinicaMorada = document.getElementById('clinicaMorada').value.trim();
+            const clinicaTelefone = document.getElementById('clinicaTelefone').value.trim();
+            const clinicaEmail = document.getElementById('clinicaEmail').value.trim();
+
+            // Validações
+            if (!dirNome || !dirEmail || !dirPassword || !dirCedula || !dirTelefone || !clinicaNome || !clinicaNIF || !clinicaMorada) {
+                showError('Por favor preencha todos os campos obrigatórios.');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa-solid fa-hospital-user"></i> Concluir Registo da Clínica';
+                return;
+            }
+
+            if (!/^[0-9]{9}$/.test(clinicaNIF)) {
+                showError('O NIF da clínica deve ter exatamente 9 dígitos.');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa-solid fa-hospital-user"></i> Concluir Registo da Clínica';
+                return;
+            }
+
+            if (!/^[0-9]{5}$/.test(dirCedula)) {
+                showError('O número de cédula OMV deve ter exatamente 5 dígitos.');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa-solid fa-hospital-user"></i> Concluir Registo da Clínica';
+                return;
+            }
+
+            if (dirPassword.length < 6) {
+                showError('A password deve ter pelo menos 6 carateres.');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa-solid fa-hospital-user"></i> Concluir Registo da Clínica';
+                return;
+            }
+
+            try {
+                // 1. Upload dos ficheiros para o Supabase Storage com fallback seguro
+                let logoUrl = null;
+                let certUrl = null;
+
+                if (selectedLogo) {
+                    const ext = selectedLogo.name.split('.').pop();
+                    const logoName = `logo_${Date.now()}_${Math.random().toString(36).slice(2)}.${ext}`;
+                    const { data: upLogo, error: errLogo } = await sb.storage
+                        .from('clinic-assets')
+                        .upload(logoName, selectedLogo, { upsert: true });
+
+                    if (!errLogo && upLogo) {
+                        const { data: pubData } = sb.storage.from('clinic-assets').getPublicUrl(logoName);
+                        logoUrl = pubData.publicUrl;
+                    } else {
+                        // Tenta no bucket vet-docs caso clinic-assets não exista
+                        const { data: upVet, error: errVet } = await sb.storage
+                            .from('vet-docs')
+                            .upload(logoName, selectedLogo, { upsert: true });
+                        if (!errVet && upVet) {
+                            logoUrl = sb.storage.from('vet-docs').getPublicUrl(logoName).data.publicUrl;
+                        }
+                    }
+                }
+
+                if (selectedCert) {
+                    const ext = selectedCert.name.split('.').pop();
+                    const certName = `cert_${Date.now()}_${Math.random().toString(36).slice(2)}.${ext}`;
+                    const { data: upCert } = await sb.storage
+                        .from('vet-docs')
+                        .upload(certName, selectedCert, { upsert: true });
+                    if (upCert) {
+                        certUrl = sb.storage.from('vet-docs').getPublicUrl(certName).data.publicUrl;
+                    }
+                }
+
+                // 2. Criar utilizador de Autenticação (Diretor Clínico)
+                const { data: authData, error: authError } = await sb.auth.signUp({
+                    email: dirEmail,
+                    password: dirPassword,
+                    options: {
+                        data: {
+                            role: 'veterinario',
+                            is_diretor: true,
+                            cargo: 'diretor',
+                            nome: dirNome,
+                            full_name: dirNome,
+                            telefone: dirTelefone,
+                            clinica: clinicaNome,
+                            cedula_profissional: dirCedula
+                        }
+                    }
+                });
+
+                if (authError) {
+                    if (authError.message.toLowerCase().includes('already')) {
+                        showError('Este email já se encontra registado. Se já tem conta, inicie sessão.');
+                    } else {
+                        showError('Erro ao criar conta de utilizador: ' + authError.message);
+                    }
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fa-solid fa-hospital-user"></i> Concluir Registo da Clínica';
+                    return;
+                }
+
+                const userId = authData.user?.id;
+
+                // 3. Inserir Registo na Tabela clinicas
+                const { data: clinicData, error: clinicError } = await sb
+                    .from('clinicas')
+                    .insert([{
+                        nome: clinicaNome,
+                        nif: clinicaNIF,
+                        morada: clinicaMorada,
+                        telefone: clinicaTelefone,
+                        email: clinicaEmail,
+                        logo_url: logoUrl || 'https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?w=150&auto=format&fit=crop&q=80',
+                        certidao_url: certUrl,
+                        series_faturacao: clinicaSeries,
+                        diretor_id: userId,
+                        status: 'ativo'
+                    }])
+                    .select()
+                    .single();
+
+                if (clinicError) {
+                    console.error('Erro ao guardar clínica:', clinicError);
+                    showError('Erro ao guardar clínica no sistema: ' + clinicError.message + '\nCertifique-se de que correu o ficheiro SQL no Supabase.');
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fa-solid fa-hospital-user"></i> Concluir Registo da Clínica';
+                    return;
+                }
+
+                const clinicId = clinicData?.id;
+
+                // 4. Inserir ou atualizar perfil do Diretor Clínico na tabela veterinarios
+                if (userId) {
+                    await sb.from('veterinarios').upsert([{
+                        user_id: userId,
+                        nome: dirNome,
+                        email: dirEmail,
+                        telefone: dirTelefone,
+                        especialidade: 'Direção Clínica / Medicina Geral',
+                        clinica: clinicaNome,
+                        clinica_id: clinicId,
+                        cedula_profissional: dirCedula,
+                        is_diretor: true,
+                        status: 'ativo',
+                        aprovado_pela_clinica: true,
+                        percentagem_comissao: 100.00,
+                        foto_url: logoUrl || null
+                    }], { onConflict: 'user_id' });
+                }
+
+                // 5. Feedback de sucesso e redirecionamento
+                document.getElementById('registoClinicaForm').style.display = 'none';
+                document.getElementById('successBox').style.display = 'block';
+
+                localStorage.setItem('zooni-role', 'veterinario');
+                localStorage.setItem('zooni-diretor', 'true');
+                if (clinicId) localStorage.setItem('zooni-clinica-id', clinicId);
+
+                setTimeout(() => {
+                    window.location.href = 'equipa_clinica.html';
+                }, 1800);
+
+            } catch (err) {
+                console.error('Erro inesperado no registo:', err);
+                showError('Ocorreu um erro no processamento. Verifique a consola ou tente novamente.');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa-solid fa-hospital-user"></i> Concluir Registo da Clínica';
+            }
+        });
+    </script>
+</body>
+
+</html>

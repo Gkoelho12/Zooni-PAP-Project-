@@ -465,77 +465,348 @@
             margin-top: 12px;
         }
 
-        @media (max-width: 700px) {
-            .reg-side {
-                display: none;
-            }
+        /* ── Dropdown de Seleção de Clínica ── */
+        .clinic-select-box {
+            position: relative;
+            margin-bottom: 0.85rem;
+        }
 
-            .reg-wrapper {
-                max-width: 480px;
-            }
+        .clinic-trigger {
+            width: 100%;
+            padding: 9px 14px;
+            border: 1.5px solid #c8e6c8;
+            border-radius: 12px;
+            background: #fff;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.2s;
+            user-select: none;
+            min-height: 48px;
+        }
+
+        .clinic-trigger:hover, .clinic-trigger.active {
+            border-color: var(--primary);
+            box-shadow: 0 4px 14px rgba(61, 139, 61, 0.12);
+        }
+
+        .clinic-thumb-round {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 1.5px solid #c8e6c8;
+            flex-shrink: 0;
+            background: #f0fdf4;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.95rem;
+            color: var(--primary);
+        }
+
+        .clinic-dropdown-menu {
+            position: absolute;
+            top: calc(100% + 6px);
+            left: 0;
+            width: 100%;
+            background: #fff;
+            border: 1.5px solid #c8e6c8;
+            border-radius: 14px;
+            box-shadow: 0 12px 30px rgba(61, 139, 61, 0.15);
+            z-index: 9999;
+            padding: 10px;
+            display: none;
+            animation: fadeInClinic 0.2s ease-out;
+        }
+
+        @keyframes fadeInClinic {
+            from { opacity: 0; transform: translateY(-6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .clinic-search-bar {
+            position: relative;
+            margin-bottom: 8px;
+        }
+
+        .clinic-search-bar i {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--primary);
+            font-size: 0.85rem;
+        }
+
+        .clinic-search-bar input {
+            width: 100%;
+            padding: 8px 12px 8px 34px;
+            border: 1.5px solid #d8ebd8;
+            border-radius: 10px;
+            font-size: 0.88rem;
+            font-family: 'Outfit', sans-serif;
+            outline: none;
+        }
+
+        .clinic-search-bar input:focus {
+            border-color: var(--primary);
+        }
+
+        .clinic-options-list {
+            max-height: 220px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .clinic-option-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 10px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background 0.18s;
+        }
+
+        .clinic-option-item:hover {
+            background: #f0fdf4;
+        }
+
+        .clinic-option-item.selected {
+            background: #e6f6e6;
+            border: 1px solid #c8e6c8;
+        }
+
+        .clinic-option-name {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+        }
+
+        .clinic-option-address {
+            font-size: 0.76rem;
+            color: var(--text-sec);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .clinic-badge-pill {
+            font-size: 0.7rem;
+            font-weight: 700;
+            background: #e8f5e8;
+            color: var(--primary-dark);
+            padding: 2px 7px;
+            border-radius: 10px;
+            margin-left: auto;
+            white-space: nowrap;
+        }
+
+        .btn-clear-clinic {
+            background: none;
+            border: none;
+            color: #b2bec3;
+            cursor: pointer;
+            padding: 4px 8px;
+            margin-left: auto;
+            font-size: 0.95rem;
+            border-radius: 50%;
+            transition: color 0.2s;
+        }
+
+        .btn-clear-clinic:hover {
+            color: #e74c3c;
+        }
+
+        .clinic-new-link {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 10px;
+            border-top: 1px solid #eef7ee;
+            margin-top: 6px;
+            font-size: 0.8rem;
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .clinic-new-link:hover {
+            text-decoration: underline;
         }
     </style>
-    <!-- Nominatim Autocomplete (OpenStreetMap — sem chave de API) -->
+    <!-- Script de Gestão da Dropdown de Clínicas com Pesquisa -->
     <script>
-        let nominatimTimeout = null;
-        let nominatimList = null;
+        let availableClinics = [];
+        let selectedClinicData = null;
 
-        function initClinicaAutocomplete() {
-            const input = document.getElementById('regClinica');
-            if (!input) return;
+        // Dados de fallback para demonstração imediata
+        const defaultClinics = [
+            {
+                id: 1,
+                nome: 'Hospital Veterinário Central Zooni (Lisboa)',
+                morada: 'Avenida da Liberdade 180, Lisboa',
+                logo_url: 'https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?w=150&auto=format&fit=crop&q=80'
+            },
+            {
+                id: 2,
+                nome: 'Clínica Veterinária Santa Marinha (Porto)',
+                morada: 'Rua de Santa Catarina 820, Porto',
+                logo_url: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=150&auto=format&fit=crop&q=80'
+            },
+            {
+                id: 3,
+                nome: 'Centro Veterinário Universitário do Mondego (Coimbra)',
+                morada: 'Avenida Fernão de Magalhães 450, Coimbra',
+                logo_url: 'https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=150&auto=format&fit=crop&q=80'
+            }
+        ];
 
-            // Create dropdown container
-            nominatimList = document.createElement('ul');
-            nominatimList.id = 'nominatimDropdown';
-            nominatimList.style.cssText = 'position:absolute; z-index:9999; background:#fff; border:1.5px solid #c8e6c8; border-radius:12px; box-shadow:0 8px 24px rgba(61,139,61,0.12); list-style:none; padding:6px 0; margin:4px 0 0; width:100%; max-height:220px; overflow-y:auto; display:none;';
-            input.parentElement.style.position = 'relative';
-            input.parentElement.appendChild(nominatimList);
-
-            input.addEventListener('input', () => {
-                clearTimeout(nominatimTimeout);
-                const q = input.value.trim();
-                if (q.length < 3) { nominatimList.style.display = 'none'; return; }
-                nominatimTimeout = setTimeout(() => fetchNominatim(q), 350);
-            });
-
-            input.addEventListener('blur', () => {
-                setTimeout(() => { nominatimList.style.display = 'none'; }, 200);
-            });
-
-            document.getElementById('mapsNotReady').innerHTML =
-                '<i class="fa-solid fa-magnifying-glass" style="color:var(--primary)"></i> Pesquisa o nome ou morada da clínica acima.';
+        async function loadClinicsList() {
+            try {
+                if (typeof sb !== 'undefined') {
+                    const { data, error } = await sb
+                        .from('clinicas')
+                        .select('id, nome, morada, logo_url')
+                        .eq('status', 'ativo')
+                        .order('nome');
+                    
+                    if (!error && data && data.length > 0) {
+                        availableClinics = data;
+                    } else {
+                        availableClinics = defaultClinics;
+                    }
+                } else {
+                    availableClinics = defaultClinics;
+                }
+            } catch (err) {
+                console.warn('Usando clínicas de fallback:', err);
+                availableClinics = defaultClinics;
+            }
+            renderClinicsOptions(availableClinics);
         }
 
-        async function fetchNominatim(query) {
-            try {
-                const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&addressdetails=1&limit=6&countrycodes=pt`;
-                const res = await fetch(url, { headers: { 'Accept-Language': 'pt' } });
-                const results = await res.json();
+        function renderClinicsOptions(clinics) {
+            const list = document.getElementById('clinicOptionsList');
+            if (!list) return;
+            list.innerHTML = '';
 
-                nominatimList.innerHTML = '';
-                if (!results.length) { nominatimList.style.display = 'none'; return; }
+            if (clinics.length === 0) {
+                list.innerHTML = `
+                    <div style="padding:12px; text-align:center; font-size:0.85rem; color:var(--text-sec);">
+                        Nenhuma clínica encontrada.
+                    </div>`;
+                return;
+            }
 
-                results.forEach(r => {
-                    const li = document.createElement('li');
-                    li.style.cssText = 'padding:9px 14px; font-size:.875rem; cursor:pointer; font-family:Outfit,sans-serif; border-bottom:1px solid #f0fdf4; color:#1a2e1a;';
-                    li.textContent = r.display_name;
-                    li.onmousedown = () => {
-                        document.getElementById('regClinica').value = r.display_name;
-                        nominatimList.style.display = 'none';
-                        document.getElementById('mapsNotReady').innerHTML =
-                            '<i class="fa-solid fa-circle-check" style="color:var(--primary)"></i> Localização confirmada.';
-                    };
-                    li.onmouseover = () => li.style.background = '#f0fdf4';
-                    li.onmouseout  = () => li.style.background = '';
-                    nominatimList.appendChild(li);
+            clinics.forEach(c => {
+                const item = document.createElement('div');
+                item.className = 'clinic-option-item';
+                if (selectedClinicData && selectedClinicData.id === c.id) {
+                    item.classList.add('selected');
+                }
+
+                const logoSrc = c.logo_url || 'https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?w=150&auto=format&fit=crop&q=80';
+
+                item.innerHTML = `
+                    <img src="${logoSrc}" class="clinic-thumb-round" alt="Logo ${c.nome}" onerror="this.src='https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?w=150&auto=format&fit=crop&q=80'">
+                    <div style="flex:1; overflow:hidden;">
+                        <div class="clinic-option-name">${c.nome}</div>
+                        <div class="clinic-option-address"><i class="fa-solid fa-location-dot"></i> ${c.morada}</div>
+                    </div>
+                    <span class="clinic-badge-pill">Rede Zooni</span>
+                `;
+
+                item.addEventListener('click', () => {
+                    selectClinic(c);
                 });
-                nominatimList.style.display = 'block';
-            } catch(e) {
-                nominatimList.style.display = 'none';
+
+                list.appendChild(item);
+            });
+        }
+
+        function toggleClinicDropdown(forceClose = false) {
+            const menu = document.getElementById('clinicDropdownMenu');
+            const trigger = document.getElementById('clinicTrigger');
+            const chevron = document.getElementById('clinicChevron');
+            if (!menu) return;
+
+            const isOpen = menu.style.display === 'block';
+
+            if (isOpen || forceClose) {
+                menu.style.display = 'none';
+                trigger.classList.remove('active');
+                if (chevron) chevron.style.transform = 'rotate(0deg)';
+            } else {
+                menu.style.display = 'block';
+                trigger.classList.add('active');
+                if (chevron) chevron.style.transform = 'rotate(180deg)';
+                const search = document.getElementById('clinicSearchInput');
+                if (search) {
+                    search.focus();
+                    search.value = '';
+                    renderClinicsOptions(availableClinics);
+                }
             }
         }
 
-        document.addEventListener('DOMContentLoaded', initClinicaAutocomplete);
+        function filterClinics(query) {
+            const q = query.trim().toLowerCase();
+            if (!q) {
+                renderClinicsOptions(availableClinics);
+                return;
+            }
+            const filtered = availableClinics.filter(c => 
+                (c.nome && c.nome.toLowerCase().includes(q)) || 
+                (c.morada && c.morada.toLowerCase().includes(q))
+            );
+            renderClinicsOptions(filtered);
+        }
+
+        function selectClinic(c) {
+            selectedClinicData = c;
+            document.getElementById('regClinicaId').value = c.id;
+            document.getElementById('regClinica').value = c.nome;
+
+            // Atualiza o painel visual
+            document.getElementById('clinicPlaceholderView').style.display = 'none';
+            const selectedView = document.getElementById('clinicSelectedView');
+            selectedView.style.display = 'flex';
+
+            const logoSrc = c.logo_url || 'https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?w=150&auto=format&fit=crop&q=80';
+            document.getElementById('selectedClinicLogo').src = logoSrc;
+            document.getElementById('selectedClinicName').textContent = c.nome;
+            document.getElementById('selectedClinicAddress').textContent = c.morada;
+
+            toggleClinicDropdown(true);
+        }
+
+        function clearSelectedClinic(e) {
+            if (e) e.stopPropagation();
+            selectedClinicData = null;
+            document.getElementById('regClinicaId').value = '';
+            document.getElementById('regClinica').value = '';
+
+            document.getElementById('clinicPlaceholderView').style.display = 'flex';
+            document.getElementById('clinicSelectedView').style.display = 'none';
+            toggleClinicDropdown(true);
+        }
+
+        // Fechar dropdown ao clicar fora
+        document.addEventListener('click', (e) => {
+            const selectBox = document.getElementById('clinicSelectBox');
+            if (selectBox && !selectBox.contains(e.target)) {
+                toggleClinicDropdown(true);
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadClinicsList();
+        });
     </script>
 
     <!-- Zooni Data (Especialidades & Raças) -->
@@ -656,15 +927,49 @@
                     <input type="hidden" id="regEspecialidade">
                 </div>
 
-                <!-- Clínica com Google Maps -->
-                <div class="input-group-custom" style="margin-bottom:0.4rem;">
-                    <i class="fa-solid fa-location-dot"></i>
-                    <input type="text" id="regClinica" placeholder="Clínica / Morada (pesquisa pelo Maps) *"
-                        autocomplete="off" required>
-                </div>
-                <div id="mapsNotReady"
-                    style="font-size:0.75rem; color:var(--text-sec); margin-bottom:0.85rem; padding-left:4px;">
-                    <i class="fa-solid fa-circle-info"></i> Pesquisa a morada da clínica no campo acima.
+                <!-- Seleção de Clínica com Dropdown e Pesquisa Integrada -->
+                <div class="clinic-select-box" id="clinicSelectBox">
+                    <div class="clinic-trigger" id="clinicTrigger" onclick="toggleClinicDropdown()">
+                        <!-- Estado 1: Nenhuma selecionada -->
+                        <div id="clinicPlaceholderView" style="display:flex; align-items:center; gap:10px; width:100%;">
+                            <i class="fa-solid fa-hospital" style="color:var(--primary); font-size:1.05rem;"></i>
+                            <span style="color:#6b7c6c; font-size:0.92rem; font-weight:500;">Selecionar Clínica Zooni *</span>
+                            <i class="fa-solid fa-chevron-down" id="clinicChevron" style="margin-left:auto; color:var(--text-sec); font-size:0.85rem; transition:transform 0.2s;"></i>
+                        </div>
+
+                        <!-- Estado 2: Clínica selecionada (foto redonda, nome, morada e botão limpar) -->
+                        <div id="clinicSelectedView" style="display:none; align-items:center; gap:12px; width:100%; overflow:hidden;">
+                            <img id="selectedClinicLogo" src="" class="clinic-thumb-round" alt="Logo Clínica">
+                            <div style="flex:1; overflow:hidden; text-align:left;">
+                                <div id="selectedClinicName" style="font-size:0.92rem; font-weight:700; color:var(--primary-dark); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"></div>
+                                <div id="selectedClinicAddress" style="font-size:0.76rem; color:var(--text-sec); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"></div>
+                            </div>
+                            <button type="button" class="btn-clear-clinic" onclick="clearSelectedClinic(event)" title="Mudar de Clínica">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Menu Dropdown -->
+                    <div class="clinic-dropdown-menu" id="clinicDropdownMenu">
+                        <div class="clinic-search-bar">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                            <input type="text" id="clinicSearchInput" placeholder="Pesquisar por clínica ou morada..." oninput="filterClinics(this.value)">
+                        </div>
+
+                        <div class="clinic-options-list" id="clinicOptionsList">
+                            <!-- Opções carregadas via JavaScript -->
+                        </div>
+
+                        <a href="registo_clinica.html" class="clinic-new-link" target="_blank">
+                            <span><i class="fa-solid fa-plus-circle"></i> A sua clínica não está na lista? Registe a clínica</span>
+                            <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                        </a>
+                    </div>
+
+                    <!-- Campos ocultos para submissão -->
+                    <input type="hidden" id="regClinicaId" name="clinica_id">
+                    <input type="hidden" id="regClinica" name="clinica" required>
                 </div>
 
                 <!-- Serviço 24h -->
@@ -879,6 +1184,8 @@
                     documento_url = publicUrlData.publicUrl;
                 }
 
+                const clinicaId = document.getElementById('regClinicaId').value ? parseInt(document.getElementById('regClinicaId').value) : null;
+
                 // 2. Create auth user and pass metadata
                 const { data: authData, error: authError } = await sb.auth.signUp({ 
                     email, 
@@ -894,6 +1201,8 @@
                             phone: telefone,
                             especialidade,
                             clinica,
+                            clinica_id: clinicaId,
+                            aprovado_pela_clinica: false,
                             cedula_profissional: cedula,
                             documento_url,
                             status: 'pendente',
@@ -916,8 +1225,6 @@
 
                 const userId = authData.user?.id;
                 if (!userId) {
-                    // Se o Supabase devolver null no utilizador (sem erro), geralmente significa que o email já existe
-                    // e a configuração "Prevent email address leakage" está ativa no servidor.
                     showError('Este email já está associado a uma conta ou pendente de verificação. Se já tens conta, tenta fazer login ou recuperar a password.');
                     btn.disabled = false;
                     btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Enviar Pedido de Registo';
@@ -932,6 +1239,11 @@
                     telefone,
                     especialidade,
                     clinica,
+                    clinica_id: clinicaId,
+                    aprovado_pela_clinica: false,
+                    is_diretor: false,
+                    tipo_vinculo: 'residente',
+                    percentagem_comissao: 30.00,
                     cedula_profissional: cedula,
                     documento_url,
                     status: 'pendente',

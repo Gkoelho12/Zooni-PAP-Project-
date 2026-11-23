@@ -1,0 +1,2527 @@
+<!DOCTYPE html>
+<html lang="pt">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zooni — Módulo de Internamento e Hospitalização</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="assets/js/theme.js"></script>
+    <link rel="stylesheet" href="assets/css/theme.css">
+    <style>
+        :root {
+            --primary: #3D8B3D;
+            --primary-dark: #1E4D1E;
+            --primary-light: #5CB85C;
+            --gold: #FDCB6E;
+            --gold-dark: #D35400;
+            --bg-color: #F8FAF8;
+            --card-bg: #FFFFFF;
+            --card-hover: #F0FDF4;
+            --border-color: #E2ECE2;
+            --text-main: #2D3436;
+            --text-sec: #636E72;
+            --danger: #EF4444;
+            --warning: #F59E0B;
+            --success: #10B981;
+            --info: #3B82F6;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #121812;
+            --card-bg: #1B241B;
+            --card-hover: #222E22;
+            --border-color: #2D3C2D;
+            --text-main: #F1F5F1;
+            --text-sec: #94A394;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: var(--bg-color);
+            color: var(--text-main);
+            overflow-x: hidden;
+        }
+
+        .app-container {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            min-height: 100vh;
+        }
+
+        /* ── SIDEBAR ── */
+        .sidebar {
+            background-color: var(--primary-dark);
+            color: white;
+            padding: 2rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            z-index: 100;
+            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .logo-container {
+            margin-bottom: 2.2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            align-items: flex-start;
+        }
+
+        .logo-img-sidebar {
+            max-width: 155px;
+            filter: brightness(0) invert(1);
+        }
+
+        .logo-subtext {
+            font-size: 0.82rem;
+            letter-spacing: 2px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.8);
+            text-transform: uppercase;
+            padding-left: 4px;
+        }
+
+        .nav-links {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+            flex-grow: 1;
+            overflow-y: auto;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 11px 14px;
+            color: rgba(255, 255, 255, 0.82);
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 500;
+            font-size: 0.92rem;
+            transition: all 0.2s;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background-color: rgba(255, 255, 255, 0.16);
+            color: white;
+        }
+
+        .nav-link.active {
+            border-left: 4px solid var(--gold);
+            background: rgba(255, 255, 255, 0.22);
+            font-weight: 700;
+        }
+
+        .nav-link i {
+            width: 20px;
+            text-align: center;
+            font-size: 1.05rem;
+        }
+
+        .nav-line-break {
+            border-top: 1px solid rgba(255, 255, 255, 0.12);
+            margin: 12px 0;
+        }
+
+        /* ── MAIN CONTENT ── */
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Top Navbar */
+        .navbar-area {
+            padding: 1rem 2.2rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--card-bg);
+            min-height: 70px;
+            position: sticky;
+            top: 0;
+            z-index: 90;
+        }
+
+        .clinic-pill-header {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #f0fdf4;
+            color: var(--primary-dark);
+            border: 1.5px solid #c8e6c8;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .clinic-pill-header i {
+            color: var(--primary);
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .btn-vet-primary {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 9px 18px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.88rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 12px rgba(61, 139, 61, 0.25);
+        }
+
+        .btn-vet-primary:hover {
+            background: var(--primary-dark);
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        /* Page Body */
+        .page-body {
+            padding: 2rem 2.2rem;
+            flex-grow: 1;
+        }
+
+        .page-header {
+            margin-bottom: 1.8rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .page-title {
+            font-size: 1.65rem;
+            font-weight: 800;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .page-title i {
+            color: var(--primary);
+        }
+
+        .page-subtitle {
+            font-size: 0.9rem;
+            color: var(--text-sec);
+            margin-top: 4px;
+        }
+
+        /* ── STATS CARDS ── */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+            gap: 16px;
+            margin-bottom: 1.8rem;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 1.2rem 1.4rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+            transition: transform 0.2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .stat-val {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--text-main);
+            line-height: 1.1;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--text-sec);
+            font-weight: 600;
+            margin-top: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-icon-wrap {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+        }
+
+        /* ── SEARCH & FILTER BAR ── */
+        .filter-bar {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 1rem 1.4rem;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            position: relative;
+            flex: 1;
+            min-width: 260px;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-sec);
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 9px 14px 9px 40px;
+            border: 1.5px solid var(--border-color);
+            border-radius: 12px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.9rem;
+            outline: none;
+            background: var(--card-bg);
+            color: var(--text-main);
+            transition: border-color 0.2s;
+        }
+
+        .search-box input:focus {
+            border-color: var(--primary);
+        }
+
+        .filter-pills {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            overflow-x: auto;
+        }
+
+        .filter-pill {
+            padding: 7px 15px;
+            border: 1.5px solid var(--border-color);
+            border-radius: 20px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            background: var(--card-bg);
+            color: var(--text-sec);
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+            user-select: none;
+        }
+
+        .filter-pill:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .filter-pill.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+
+        /* ── GRELHA DE BOXES / JAULAS ── */
+        .boxes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 20px;
+        }
+
+        /* 1. Box Livre: Rebordo tracejado cinza e botão + Internar */
+        .box-card-free {
+            background: #FAFCFA;
+            border: 2px dashed #CBD5E1;
+            border-radius: 20px;
+            padding: 1.6rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 290px;
+            transition: all 0.25s cubic-bezier(0.165, 0.84, 0.44, 1);
+            position: relative;
+        }
+
+        .box-card-free:hover {
+            border-color: var(--primary);
+            background: #F0FDF4;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(61, 139, 61, 0.08);
+        }
+
+        .box-header-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .box-title {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--text-main);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .box-type-pill {
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 3px 10px;
+            border-radius: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .box-type-pill.canil { background: #E0F2FE; color: #0284C7; }
+        .box-type-pill.gatil { background: #FEF3C7; color: #D97706; }
+        .box-type-pill.uci { background: #FEE2E2; color: #DC2626; }
+        .box-type-pill.isolamento { background: #F3E8FF; color: #9333EA; }
+
+        .free-box-center {
+            text-align: center;
+            padding: 1.5rem 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .free-box-icon {
+            width: 58px;
+            height: 58px;
+            border-radius: 50%;
+            background: #E2ECE2;
+            color: #64748B;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            margin-bottom: 4px;
+        }
+
+        .free-box-desc {
+            font-size: 0.85rem;
+            color: var(--text-sec);
+            font-weight: 500;
+        }
+
+        .btn-admit-box {
+            width: 100%;
+            background: #FFFFFF;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            font-weight: 700;
+            padding: 10px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-admit-box:hover {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 14px rgba(61, 139, 61, 0.3);
+        }
+
+        /* 2. Box Ocupada: Barra lateral verde (estável) ou vermelha (crítico) */
+        .box-card-occupied {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 290px;
+            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.04);
+            position: relative;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.165, 0.84, 0.44, 1);
+            overflow: hidden;
+        }
+
+        .box-card-occupied:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+            border-color: #cbd5e1;
+        }
+
+        /* Barra Lateral Verde (Estável) */
+        .box-card-occupied.estavel {
+            border-left: 6px solid #10B981;
+        }
+
+        /* Barra Lateral Vermelha (Crítico) */
+        .box-card-occupied.critico {
+            border-left: 6px solid #EF4444;
+        }
+
+        /* Barra Lateral Laranja (Recuperação) */
+        .box-card-occupied.recuperacao {
+            border-left: 6px solid #F59E0B;
+        }
+
+        .occupied-patient-row {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin: 12px 0 14px;
+        }
+
+        .patient-photo-circle {
+            width: 62px;
+            height: 62px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #E2ECE2;
+            flex-shrink: 0;
+            background: #F1F5F9;
+        }
+
+        .patient-emoji-circle {
+            width: 62px;
+            height: 62px;
+            border-radius: 50%;
+            background: #E8F5E9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            flex-shrink: 0;
+            border: 3px solid #E2ECE2;
+        }
+
+        .patient-info-wrap {
+            flex-grow: 1;
+            overflow: hidden;
+        }
+
+        .patient-name-title {
+            font-size: 1.18rem;
+            font-weight: 800;
+            color: var(--text-main);
+            margin: 0;
+            line-height: 1.2;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .patient-species-text {
+            font-size: 0.8rem;
+            color: var(--text-sec);
+            margin-top: 3px;
+        }
+
+        .patient-tutor-text {
+            font-size: 0.76rem;
+            color: #64748B;
+            margin-top: 2px;
+        }
+
+        /* Alerta de Próxima Medicação */
+        .next-med-badge {
+            background: #F0FDF4;
+            border: 1px solid #BBF7D0;
+            color: #166534;
+            padding: 8px 12px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .next-med-badge.urgent {
+            background: #FEF2F2;
+            border-color: #FECACA;
+            color: #991B1B;
+            animation: pulseAlert 2s infinite;
+        }
+
+        @keyframes pulseAlert {
+            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+            70% { box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+
+        .occupied-tags-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.76rem;
+            color: var(--text-sec);
+            border-top: 1px solid var(--border-color);
+            padding-top: 10px;
+        }
+
+        .status-chip {
+            font-size: 0.72rem;
+            font-weight: 800;
+            padding: 3px 9px;
+            border-radius: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .status-chip.estavel { background: #ECFDF5; color: #059669; border: 1px solid #A7F3D0; }
+        .status-chip.critico { background: #FEF2F2; color: #DC2626; border: 1px solid #FECACA; }
+        .status-chip.recuperacao { background: #FFFBEB; color: #D97706; border: 1px solid #FDE68A; }
+
+        /* ── MODAL BRANCO DA FOLHA DE TURNOS ── */
+        .modal-hospital {
+            border-radius: 24px;
+            border: none;
+            box-shadow: 0 25px 70px rgba(0, 0, 0, 0.22);
+            overflow: hidden;
+            background: #FFFFFF !important;
+        }
+
+        .modal-hospital .modal-header {
+            background: #F8FAF8;
+            border-bottom: 1.5px solid #E2ECE2;
+            padding: 1.4rem 1.8rem;
+        }
+
+        .modal-hospital .modal-body {
+            padding: 1.8rem;
+            background: #FFFFFF !important;
+        }
+
+        .modal-patient-header-banner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #F0FDF4;
+            border: 1.5px solid #C8E6C8;
+            border-radius: 16px;
+            padding: 1.2rem 1.4rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 14px;
+        }
+
+        .modal-patient-meta {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .modal-nav-tabs {
+            border-bottom: 2px solid #E2ECE2;
+            margin-bottom: 1.5rem;
+            display: flex;
+            gap: 10px;
+        }
+
+        .modal-tab-btn {
+            background: none;
+            border: none;
+            padding: 10px 16px;
+            font-size: 0.92rem;
+            font-weight: 700;
+            color: var(--text-sec);
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .modal-tab-btn:hover {
+            color: var(--primary);
+        }
+
+        .modal-tab-btn.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        /* Tabela da Folha de Turnos */
+        .table-turnos {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 8px;
+            font-size: 0.88rem;
+        }
+
+        .table-turnos th {
+            font-size: 0.74rem;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--text-sec);
+            font-weight: 700;
+            padding: 8px 12px;
+            border: none;
+        }
+
+        .table-turnos tr.treatment-row {
+            background: #FAFCFA;
+            border: 1px solid #E2ECE2;
+            border-radius: 12px;
+            transition: background 0.15s;
+        }
+
+        .table-turnos tr.treatment-row td {
+            padding: 12px 14px;
+            vertical-align: middle;
+            border-top: 1px solid #E2ECE2;
+            border-bottom: 1px solid #E2ECE2;
+        }
+
+        .table-turnos tr.treatment-row td:first-child {
+            border-left: 1px solid #E2ECE2;
+            border-radius: 12px 0 0 12px;
+        }
+
+        .table-turnos tr.treatment-row td:last-child {
+            border-right: 1px solid #E2ECE2;
+            border-radius: 0 12px 12px 0;
+        }
+
+        .table-turnos tr.treatment-row.completed {
+            background: #F0FDF4;
+            opacity: 0.85;
+        }
+
+        /* Checkbox Verde Grande para Confirmar Medicação */
+        .check-med-green {
+            width: 26px;
+            height: 26px;
+            accent-color: var(--primary);
+            cursor: pointer;
+            border-radius: 6px;
+        }
+
+        .badge-turno {
+            font-size: 0.72rem;
+            font-weight: 800;
+            padding: 3px 8px;
+            border-radius: 8px;
+            text-transform: uppercase;
+        }
+
+        .badge-turno.manha { background: #FEF3C7; color: #B45309; }
+        .badge-turno.tarde { background: #E0F2FE; color: #0369A1; }
+        .badge-turno.noite { background: #EDE9FE; color: #6D28D9; }
+
+        /* Tabela de Produtos Gastos (Conta Final) */
+        .billing-summary-box {
+            background: #F8FAF8;
+            border: 1.5px solid #E0EDE0;
+            border-radius: 16px;
+            padding: 1.4rem;
+            margin-top: 1.4rem;
+        }
+
+        .bill-total-highlight {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: var(--primary-dark);
+        }
+
+        /* Toast */
+        .toast-hospital {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: #1E4D1E;
+            color: white;
+            padding: 14px 22px;
+            border-radius: 14px;
+            font-weight: 700;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            font-size: 0.92rem;
+            z-index: 99999;
+            display: none;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Responsividade */
+        @media (max-width: 900px) {
+            .app-container {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                display: none;
+            }
+        }
+    
+        /* ── MELHORIAS DE DESIGN ── */
+        .stat-card {
+            border-radius: 18px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 2px 10px rgba(30, 77, 30, 0.05);
+            transition: transform .2s, box-shadow .2s;
+        }
+        .stat-card:hover { transform: translateY(-3px); box-shadow: 0 10px 24px rgba(30, 77, 30, 0.12); }
+        .stat-icon-wrap { border-radius: 14px; }
+
+        .filter-bar { box-shadow: 0 2px 10px rgba(30, 77, 30, 0.05); }
+        .sort-select {
+            border: 1.5px solid var(--border-color);
+            border-radius: 12px;
+            padding: 8px 12px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 600;
+            background: var(--card-bg);
+            color: var(--text-main);
+            outline: none;
+            cursor: pointer;
+        }
+        .sort-select:focus { border-color: var(--primary); }
+
+        .boxes-grid { gap: 20px; }
+        .box-card-occupied, .box-card-free {
+            border-radius: 20px;
+            transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+        }
+        .box-card-occupied { box-shadow: 0 4px 16px rgba(30, 77, 30, 0.08); }
+        .box-card-occupied:hover { transform: translateY(-4px); box-shadow: 0 14px 30px rgba(30, 77, 30, 0.16); }
+        .box-card-free:hover { transform: translateY(-2px); border-color: var(--primary); }
+        .patient-photo-circle { box-shadow: 0 0 0 3px #fff, 0 0 0 5px rgba(61, 139, 61, 0.25); }
+
+        /* ── SELETOR DE PACIENTES (pesquisa + agrupado por tutor) ── */
+        .patient-picker {
+            border: 1.5px solid var(--border-color);
+            border-radius: 14px;
+            overflow: hidden;
+            background: var(--card-bg);
+        }
+        .picker-search { position: relative; border-bottom: 1px solid var(--border-color); }
+        .picker-search i {
+            position: absolute; left: 14px; top: 50%;
+            transform: translateY(-50%); color: var(--text-sec); font-size: .85rem;
+        }
+        .picker-search input {
+            width: 100%; border: none; outline: none;
+            padding: 11px 14px 11px 38px;
+            font-family: 'Outfit', sans-serif; font-size: .9rem;
+            background: transparent; color: var(--text-main);
+        }
+        .picker-list { max-height: 230px; overflow-y: auto; }
+        .picker-group-title {
+            position: sticky; top: 0;
+            padding: 6px 14px;
+            font-size: .7rem; font-weight: 800; letter-spacing: .8px;
+            text-transform: uppercase; color: var(--primary-dark, #1E4D1E);
+            background: #eef6ee;
+        }
+        .picker-item {
+            display: flex; align-items: center; gap: 10px;
+            padding: 8px 14px; cursor: pointer;
+            border-bottom: 1px solid rgba(0, 0, 0, .04);
+            transition: background .15s;
+        }
+        .picker-item:hover { background: #f3faf3; }
+        .picker-item.selected { background: #e1f2e1; box-shadow: inset 3px 0 0 var(--primary); }
+        .picker-avatar {
+            width: 34px; height: 34px; border-radius: 50%;
+            object-fit: cover; flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center;
+            background: #e8f5e9; font-size: 1rem;
+        }
+        .picker-name { font-weight: 700; font-size: .9rem; line-height: 1.1; }
+        .picker-meta { font-size: .75rem; color: var(--text-sec); }
+        .picker-empty { padding: 22px 14px; text-align: center; color: var(--text-sec); font-size: .85rem; }
+        .picker-selected {
+            padding: 8px 14px; font-size: .85rem; font-weight: 700;
+            background: var(--primary); color: #fff;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- ── SIDEBAR ZOONI VETERINÁRIO ── -->
+        <aside class="sidebar">
+            <div class="logo-container">
+                <a href="dashboard_veterinario.html" style="text-decoration:none;">
+                    <img src="assets/logo.png" alt="Zooni Logo" class="logo-img-sidebar">
+                </a>
+                <div class="logo-subtext">VETERINÁRIO</div>
+            </div>
+
+            <ul class="nav-links">
+                <li>
+                    <a href="dashboard_veterinario.html" class="nav-link">
+                        <i class="fa-solid fa-chart-pie"></i> Visão Geral
+                    </a>
+                </li>
+                <li>
+                    <a href="agenda_veterinario.html" class="nav-link">
+                        <i class="fa-regular fa-calendar"></i> Agenda
+                    </a>
+                </li>
+                <li>
+                    <a href="tickets_veterinario.html" class="nav-link">
+                        <i class="fa-solid fa-ticket"></i> Tickets
+                    </a>
+                </li>
+                <li>
+                    <a href="chat_veterinario.html" class="nav-link">
+                        <i class="fa-solid fa-comments"></i> Chat Médico
+                    </a>
+                </li>
+                <li>
+                    <a href="pacientes_veterinario.html" class="nav-link">
+                        <i class="fa-solid fa-users"></i> Pacientes
+                    </a>
+                </li>
+                <li>
+                    <a href="internamento.html" class="nav-link active">
+                        <i class="fa-solid fa-bed-pulse"></i> Internamento
+                    </a>
+                </li>
+                                <li class="nav-item"><a href="loja_veterinario.html" class="nav-link"><i class="fa-solid fa-prescription-bottle-medical"></i> Farmácia &amp; Compras</a></li>
+<li>
+                    <a href="campanhas.html" class="nav-link">
+                        <i class="fa-solid fa-bullhorn"></i> Campanhas CRM
+                    </a>
+                </li>
+
+                <div class="nav-line-break"></div>
+
+                <li>
+                    <a href="definicoes_veterinario.html" class="nav-link">
+                        <i class="fa-solid fa-gear"></i> Configurações
+                    </a>
+                </li>
+                <li>
+                    <a href="login.html?logout=true" class="nav-link text-danger" style="color:#ff7675;">
+                        <i class="fa-solid fa-arrow-right-from-bracket"></i> Sair
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <!-- ── CONTEÚDO PRINCIPAL ── -->
+        <main class="main-content">
+            <!-- Barra Superior -->
+            <div class="navbar-area">
+                <div class="clinic-pill-header" id="clinicBadgeHeader">
+                    <i class="fa-solid fa-hospital"></i>
+                    <span id="clinicNameDisplay">Hospital Veterinário Central Zooni</span>
+                    <span style="font-size:0.75rem; color:#88a088; margin-left:4px;">(Série <span id="clinicSeriesDisplay">FT 2026</span>)</span>
+                </div>
+
+                <div class="nav-actions">
+                    <button class="btn btn-sm btn-outline-success" onclick="abrirModalNovaBox()" style="border-radius:10px; font-weight:600; padding:6px 14px;">
+                        <i class="fa-solid fa-plus me-1"></i> Nova Box
+                    </button>
+                    <button class="btn-vet-primary" onclick="abrirModalAdmissao(null)">
+                        <i class="fa-solid fa-paw"></i> + Internar Paciente
+                    </button>
+                </div>
+            </div>
+
+            <!-- Corpo da Página -->
+            <div class="page-body">
+                <!-- Cabeçalho -->
+                <div class="page-header">
+                    <div>
+                        <h1 class="page-title">
+                            <i class="fa-solid fa-bed-pulse"></i> Módulo de Internamento & Hospitalização
+                        </h1>
+                        <p class="page-subtitle">
+                            Gestão visual de boxes/jaulas, folhas de tratamento por turnos e registo automático de produtos gastos na fatura.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- KPI Cards -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div>
+                            <div class="stat-val" id="statTotalBoxes">7</div>
+                            <div class="stat-label">Total de Boxes</div>
+                        </div>
+                        <div class="stat-icon-wrap" style="background:#e8f5e9; color:#2e7d32;">
+                            <i class="fa-solid fa-cubes"></i>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div>
+                            <div class="stat-val text-primary" id="statBoxesOcupadas">4</div>
+                            <div class="stat-label">Boxes Ocupadas</div>
+                        </div>
+                        <div class="stat-icon-wrap" style="background:#e0f2fe; color:#0284c7;">
+                            <i class="fa-solid fa-bed-pulse"></i>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div>
+                            <div class="stat-val text-success" id="statBoxesLivres">3</div>
+                            <div class="stat-label">Boxes Livres</div>
+                        </div>
+                        <div class="stat-icon-wrap" style="background:#f0fdf4; color:#10b981;">
+                            <i class="fa-solid fa-door-open"></i>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div>
+                            <div class="stat-val text-danger" id="statPacientesCriticos">1</div>
+                            <div class="stat-label">Pacientes Críticos (UCI)</div>
+                        </div>
+                        <div class="stat-icon-wrap" style="background:#fee2e2; color:#ef4444;">
+                            <i class="fa-solid fa-heart-pulse"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Barra de Pesquisa e Filtros -->
+                <div class="filter-bar">
+                    <div class="search-box">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" id="inputPesquisaBox" placeholder="Pesquisar por paciente, tutor ou número da box..." oninput="filtrarBoxes()">
+                    </div>
+                    <select id="selectOrdenar" class="sort-select" onchange="renderBoxesGrid()" title="Ordenar">
+                        <option value="box">Ordenar: Box</option>
+                        <option value="tutor">Ordenar: Tutor (A-Z)</option>
+                        <option value="paciente">Ordenar: Paciente (A-Z)</option>
+                    </select>
+                    <div class="filter-pills">
+                        <div class="filter-pill active" onclick="setFiltroTipo('todos', this)">Todas as Boxes</div>
+                        <div class="filter-pill" onclick="setFiltroTipo('canil', this)"><i class="fa-solid fa-dog me-1"></i> Canil</div>
+                        <div class="filter-pill" onclick="setFiltroTipo('gatil', this)"><i class="fa-solid fa-cat me-1"></i> Gatil</div>
+                        <div class="filter-pill" onclick="setFiltroTipo('uci', this)"><i class="fa-solid fa-heart-pulse me-1"></i> UCI</div>
+                        <div class="filter-pill" onclick="setFiltroTipo('isolamento', this)"><i class="fa-solid fa-biohazard me-1"></i> Isolamento</div>
+                        <div class="filter-pill" onclick="setFiltroEstado('livre', this)">Livres</div>
+                        <div class="filter-pill" onclick="setFiltroEstado('ocupada', this)">Ocupadas</div>
+                        <div class="filter-pill" onclick="setFiltroEstado('meus', this)"><i class="fa-solid fa-user-doctor me-1"></i> Meus pacientes</div>
+                    </div>
+                </div>
+
+                <!-- Grelha Visual de Boxes/Jaulas -->
+                <div class="boxes-grid" id="boxesGridContainer">
+                    <!-- Renderizado dinamicamente via JS -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- ── MODAL BRANCO: FOLHA DE TRATAMENTO POR TURNOS (HOSPITALIZAÇÃO) ── -->
+    <div class="modal fade" id="modalFolhaTurnos" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content modal-hospital">
+                <div class="modal-header d-flex justify-content-between align-items-center">
+                    <div>
+                        <h4 class="fw-bold mb-1" style="color:var(--primary-dark);" id="modalHospitalBoxTitle">
+                            Box 02 — Canil Médio
+                        </h4>
+                        <div class="small text-muted" id="modalHospitalBoxSub">Folha de Internamento Clínico e Tratamento</div>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+                    <!-- Banner de Informação do Paciente -->
+                    <div class="modal-patient-header-banner">
+                        <div class="modal-patient-meta">
+                            <img src="" id="modalPatientPhoto" class="patient-photo-circle" style="width:70px; height:70px;" alt="Paciente">
+                            <div>
+                                <h3 class="fw-bold mb-1" id="modalPatientName" style="color:var(--text-main);">Thor</h3>
+                                <div class="small text-muted" id="modalPatientDetails">Cão · Pastor Alemão · 32.4 kg · 4 anos</div>
+                                <div class="small fw-bold text-success" id="modalPatientTutor"><i class="fa-solid fa-user me-1"></i> Tutor: Sofia Martins (912 345 678)</div>
+                            </div>
+                        </div>
+                        <div class="d-flex flex-column align-items-end gap-2">
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="small fw-bold text-muted">Estado Clínico:</span>
+                                <select class="form-select form-select-sm" id="modalSelectEstado" style="width:140px; font-weight:700; border-radius:10px;" onchange="alterarEstadoPaciente(this.value)">
+                                    <option value="estavel">🟢 Estável</option>
+                                    <option value="critico">🔴 Crítico (UCI)</option>
+                                    <option value="recuperacao">🟡 Em Recuperação</option>
+                                </select>
+                            </div>
+                            <div class="small text-muted" id="modalInternamentoTempo"><i class="fa-regular fa-clock me-1"></i> Entrada: 19/10/2026 (Há 1 dia e 6h)</div>
+                        </div>
+                    </div>
+
+                    <!-- Abas do Modal -->
+                    <div class="modal-nav-tabs">
+                        <button class="modal-tab-btn active" onclick="switchModalTab('turnos', this)">
+                            <i class="fa-solid fa-clipboard-check"></i> Folha de Turnos & Medicação
+                        </button>
+                        <button class="modal-tab-btn" onclick="switchModalTab('vitais', this)">
+                            <i class="fa-solid fa-heart-pulse"></i> Sinais Vitais & Evolução
+                        </button>
+                        <button class="modal-tab-btn" onclick="switchModalTab('gastos', this)">
+                            <i class="fa-solid fa-receipt"></i> Conta & Produtos Gastos
+                            <span class="badge bg-success" id="modalBadgeTotalConta">0.00 €</span>
+                        </button>
+                    </div>
+
+                    <!-- CONTEÚDO DA ABA 1: FOLHA DE TURNOS -->
+                    <div id="tabModalTurnos">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="small text-muted">
+                                <i class="fa-solid fa-circle-info text-primary me-1"></i>
+                                Marque as checkboxes verdes para registar a administração. O produto é debitado automaticamente na conta.
+                            </div>
+                            <button class="btn btn-sm btn-outline-success rounded-pill px-3" onclick="abrirNovoTratamentoPrompt()">
+                                <i class="fa-solid fa-plus me-1"></i> Adicionar Tratamento
+                            </button>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="table-turnos">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 50px;" class="text-center">Feito</th>
+                                        <th style="width: 110px;">Turno / Hora</th>
+                                        <th>Tratamento / Medicação / Procedimento</th>
+                                        <th>Via / Posologia</th>
+                                        <th>Fluidoterapia</th>
+                                        <th>Registo / Administrado por</th>
+                                        <th style="width: 70px;" class="text-center">Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tableTurnosBody">
+                                    <!-- Itens da folha de tratamentos -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- CONTEÚDO DA ABA 2: SINAIS VITAIS -->
+                    <div id="tabModalVitais" style="display:none;">
+                        <div class="card p-3 mb-4" style="background:#f8faf8; border:1px solid #e2ece2; border-radius:14px;">
+                            <div class="fw-bold mb-2 text-success"><i class="fa-solid fa-stethoscope me-1"></i> Novo Registo de Sinais Vitais</div>
+                            <div class="row g-2 align-items-end">
+                                <div class="col-md-2 col-6">
+                                    <label class="small text-muted fw-bold">FC (bpm)</label>
+                                    <input type="number" id="vitFC" class="form-control form-control-sm" placeholder="ex: 110">
+                                </div>
+                                <div class="col-md-2 col-6">
+                                    <label class="small text-muted fw-bold">FR (cpm)</label>
+                                    <input type="number" id="vitFR" class="form-control form-control-sm" placeholder="ex: 24">
+                                </div>
+                                <div class="col-md-2 col-6">
+                                    <label class="small text-muted fw-bold">Temp (°C)</label>
+                                    <input type="number" step="0.1" id="vitTemp" class="form-control form-control-sm" placeholder="ex: 38.6">
+                                </div>
+                                <div class="col-md-2 col-6">
+                                    <label class="small text-muted fw-bold">TRC (s)</label>
+                                    <input type="text" id="vitTRC" class="form-control form-control-sm" placeholder="< 2s">
+                                </div>
+                                <div class="col-md-2 col-6">
+                                    <label class="small text-muted fw-bold">PA (mmHg)</label>
+                                    <input type="text" id="vitPA" class="form-control form-control-sm" placeholder="125/75">
+                                </div>
+                                <div class="col-md-2 col-6">
+                                    <button class="btn btn-sm btn-success w-100" onclick="registarSinaisVitais()"><i class="fa-solid fa-check me-1"></i> Registar</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle" style="font-size:0.88rem;">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Data / Hora</th>
+                                        <th>FC (bpm)</th>
+                                        <th>FR (cpm)</th>
+                                        <th>Temperatura</th>
+                                        <th>TRC</th>
+                                        <th>Pressão Arterial</th>
+                                        <th>Avaliador</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tableVitaisBody">
+                                    <!-- Registos vitais -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- CONTEÚDO DA ABA 3: PRODUTOS GASTOS E CONTA FINAL -->
+                    <div id="tabModalGastos" style="display:none;">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="small text-muted">
+                                <i class="fa-solid fa-coins text-warning me-1"></i>
+                                Produtos, diárias e fármacos debitados na conta hospitalar do paciente.
+                            </div>
+                            <button class="btn btn-sm btn-outline-success rounded-pill px-3" onclick="abrirModalAddProduto()">
+                                <i class="fa-solid fa-plus me-1"></i> Lançar Produto / Consumível
+                            </button>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle" style="font-size:0.88rem;">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Item / Consumível / Fármaco</th>
+                                        <th>Categoria</th>
+                                        <th class="text-center">Quantidade</th>
+                                        <th class="text-end">Preço Unit.</th>
+                                        <th class="text-end">Subtotal</th>
+                                        <th class="text-center" style="width:60px;">Remover</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tableProdutosGastosBody">
+                                    <!-- Itens da conta -->
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="billing-summary-box d-flex justify-content-between align-items-center flex-wrap gap-3">
+                            <div>
+                                <div class="small text-muted fw-bold">TOTAL ACUMULADO DO INTERNAMENTO:</div>
+                                <div class="bill-total-highlight" id="modalCustoTotalDisplay">142.50 €</div>
+                                <div class="small text-muted">Inclui diárias, medicações administradas e consumíveis cirúrgicos.</div>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-outline-secondary btn-sm" onclick="imprimirExtratoConta()">
+                                    <i class="fa-solid fa-print me-1"></i> Extrato de Custos
+                                </button>
+                                <button class="btn btn-success btn-sm" onclick="exportarFaturaInternamento()">
+                                    <i class="fa-solid fa-file-invoice-dollar me-1"></i> Enviar p/ Faturação
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer d-flex justify-content-between bg-light" style="padding:1.2rem 1.8rem;">
+                    <button type="button" class="btn btn-outline-danger" onclick="darAltaHospitalarPrompt()">
+                        <i class="fa-solid fa-door-open me-1"></i> Dar Alta Hospitalar
+                    </button>
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Fechar</button>
+                        <button type="button" class="btn btn-success" onclick="salvarAlteracoesInternamento()">
+                            <i class="fa-solid fa-floppy-disk me-1"></i> Guardar Folha
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── MODAL: + INTERNAR PACIENTE (ADMISSÃO) ── -->
+    <div class="modal fade" id="modalAdmissao" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="border-radius:20px; overflow:hidden;">
+                <div class="modal-header" style="background:#f0fdf4; border-bottom:1px solid #c8e6c8; padding:1.2rem 1.6rem;">
+                    <h5 class="modal-title fw-bold" style="color:var(--primary-dark);">
+                        <i class="fa-solid fa-hospital-user me-2"></i>Admissão de Internamento
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <form id="formAdmissao" onsubmit="confirmarInternamento(event)">
+                        <div class="mb-3">
+                            <label class="small fw-bold text-muted mb-1">Box / Jaula de Alojamento</label>
+                            <select class="form-select" id="admissaoBoxSelect" required>
+                                <!-- Preenchido dinamicamente com boxes livres -->
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="small fw-bold text-muted mb-1">Selecionar Paciente</label>
+                            <input type="hidden" id="admissaoPacienteSelect">
+                            <div class="patient-picker">
+                                <div class="picker-search">
+                                    <i class="fa-solid fa-magnifying-glass"></i>
+                                    <input type="text" id="admissaoPacienteBusca" placeholder="Pesquisar animal, tutor ou raça..." oninput="renderPickerPacientes()" autocomplete="off">
+                                </div>
+                                <div id="pickerPacientesLista" class="picker-list"></div>
+                                <div id="pickerSelecionado" class="picker-selected d-none"></div>
+                            </div>
+                            <div class="small text-muted mt-1"><i class="fa-solid fa-circle-info me-1"></i>Apenas os seus pacientes, agrupados por tutor.</div>
+                        </div>
+
+                        <div class="row g-2 mb-3">
+                            <div class="col-6">
+                                <label class="small fw-bold text-muted mb-1">Estado do Paciente</label>
+                                <select class="form-select" id="admissaoEstadoSelect">
+                                    <option value="estavel">🟢 Estável</option>
+                                    <option value="critico">🔴 Crítico (UCI)</option>
+                                    <option value="recuperacao">🟡 Recuperação</option>
+                                </select>
+                            </div>
+                            <div class="col-6">
+                                <label class="small fw-bold text-muted mb-1">Alta Prevista</label>
+                                <input type="date" class="form-control" id="admissaoDataAlta">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="small fw-bold text-muted mb-1">Motivo do Internamento</label>
+                            <textarea class="form-control" id="admissaoMotivo" rows="2" placeholder="Ex: Pós-operatório Torção Gástrica, Fluidoterapia por desidratação..." required></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="small fw-bold text-muted mb-1">Plano Inicial de Medicação & Fluidoterapia</label>
+                            <input type="text" class="form-control" id="admissaoPlanoInicial" placeholder="Ex: Ringer Lactato 50ml/h + Cefazolina IV 8/8h">
+                        </div>
+
+                        <button type="submit" class="btn w-100 mt-2" style="background:var(--primary); color:white; font-weight:700; padding:12px; border-radius:12px;">
+                            <i class="fa-solid fa-check me-2"></i> Confirmar Internamento
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── MODAL: + ADICIONAR PRODUTO / CONSUMÍVEL À CONTA ── -->
+    <div class="modal fade" id="modalAddProduto" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="border-radius:20px; overflow:hidden;">
+                <div class="modal-header" style="background:#f8faf8; border-bottom:1px solid #e0ede0; padding:1.2rem 1.6rem;">
+                    <h5 class="modal-title fw-bold" style="color:var(--primary-dark);">
+                        <i class="fa-solid fa-cart-plus me-2 text-success"></i>Lançar Consumível / Fármaco na Conta
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <form onsubmit="confirmarAddProduto(event)">
+                        <div class="mb-3">
+                            <label class="small fw-bold text-muted mb-1">Catálogo de Consumíveis Hospitalares</label>
+                            <select class="form-select" id="catalogoProdutoSelect" onchange="onSelectCatalogoItem(this.value)">
+                                <option value="">-- Selecione ou escreva abaixo --</option>
+                                <option value="Diária Box Canil|35.00|Alojamento">Diária Box Canil (35.00 €)</option>
+                                <option value="Diária Box Gatil|30.00|Alojamento">Diária Box Gatil (30.00 €)</option>
+                                <option value="Diária Box UCI Monitorizada|65.00|UCI">Diária Box UCI Monitorizada (65.00 €)</option>
+                                <option value="Cateter Intravenoso 20G/22G|4.50|Material">Cateter Intravenoso 20G/22G (4.50 €)</option>
+                                <option value="Sistema de Infusão de Soro|3.80|Material">Sistema de Infusão de Soro (3.80 €)</option>
+                                <option value="Soro Ringer com Lactato 500ml|8.20|Fluidoterapia">Soro Ringer com Lactato 500ml (8.20 €)</option>
+                                <option value="Cloreto de Sódio 0.9% 500ml|7.50|Fluidoterapia">Cloreto de Sódio 0.9% 500ml (7.50 €)</option>
+                                <option value="Ampola Cefazolina 1g IV|6.00|Farmácia">Ampola Cefazolina 1g IV (6.00 €)</option>
+                                <option value="Ampola Metadona / Tramadol|7.50|Farmácia">Ampola Metadona / Tramadol (7.50 €)</option>
+                                <option value="Maropitant (Cerenia) Injetável|12.00|Farmácia">Maropitant (Cerenia) Injetável (12.00 €)</option>
+                                <option value="Lata Ração Húmida Gastrointestinal|3.90|Nutrição">Lata Ração Húmida Gastrointestinal (3.90 €)</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="small fw-bold text-muted mb-1">Nome do Produto / Serviço</label>
+                            <input type="text" class="form-control" id="prodNome" required placeholder="Ex: Diária Canil ou Fármaco">
+                        </div>
+
+                        <div class="row g-2 mb-3">
+                            <div class="col-6">
+                                <label class="small fw-bold text-muted mb-1">Quantidade</label>
+                                <input type="number" step="1" min="1" class="form-control" id="prodQtd" value="1" required>
+                            </div>
+                            <div class="col-6">
+                                <label class="small fw-bold text-muted mb-1">Preço Unitário (€)</label>
+                                <input type="number" step="0.01" min="0" class="form-control" id="prodPreco" value="0.00" required>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn w-100" style="background:var(--primary); color:white; font-weight:700; padding:12px; border-radius:12px;">
+                            <i class="fa-solid fa-plus me-1"></i> Adicionar à Conta
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── MODAL: + CRIAR NOVA BOX ── -->
+    <div class="modal fade" id="modalNovaBox" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="border-radius:20px; overflow:hidden;">
+                <div class="modal-header" style="background:#f8faf8; border-bottom:1px solid #e0ede0; padding:1.2rem 1.6rem;">
+                    <h5 class="modal-title fw-bold" style="color:var(--primary-dark);">
+                        <i class="fa-solid fa-cube me-2 text-success"></i>Registar Nova Box / Jaula
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <form onsubmit="confirmarNovaBox(event)">
+                        <div class="mb-3">
+                            <label class="small fw-bold text-muted mb-1">Número / Identificação da Box</label>
+                            <input type="text" class="form-control" id="novoBoxNumero" placeholder="Ex: Box 05 — Canil Grande" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="small fw-bold text-muted mb-1">Tipo de Alojamento</label>
+                            <select class="form-select" id="novoBoxTipo" required>
+                                <option value="canil">🐕 Canil (Cães)</option>
+                                <option value="gatil">🐱 Gatil (Gatos)</option>
+                                <option value="uci">🚨 UCI (Cuidados Intensivos)</option>
+                                <option value="isolamento">⚠️ Isolamento (Infecciosos)</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn w-100" style="background:var(--primary); color:white; font-weight:700; padding:12px; border-radius:12px;">
+                            <i class="fa-solid fa-plus me-1"></i> Criar Box
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast de Notificação -->
+    <div class="toast-hospital" id="toastHospital">
+        <i class="fa-solid fa-circle-check text-warning fa-lg"></i>
+        <span id="toastHospitalMsg">Ação concluída com sucesso!</span>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+
+    <script>
+        /* ── SUPABASE CLIENT INIT ── */
+        const SUPABASE_URL = 'https://xqtbtggmwejnkhckduti.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhxdGJ0Z2dtd2VqbmtoY2tkdXRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc2OTU5NjEsImV4cCI6MjA4MzI3MTk2MX0.G1wG0UC6sF7r6tMxGdqLGvsHa_dxlVD1-j6QNEw32IM';
+        const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        /* ── ESTADO (carregado da base de dados Supabase) ── */
+        let hospitalBoxes = [];
+        let animaisDisponiveis = [];
+        let meusPacientesIds = new Set();
+        let clinicaAtual = null;
+        let medicoAtual = { id: null, nome: 'Equipa Zooni' };
+
+        let filtroAtualTipo = 'todos';
+        let filtroAtualEstado = 'todos';
+        let boxAtivaParaModal = null;
+
+        /* ── INICIALIZAÇÃO ── */
+        document.addEventListener('DOMContentLoaded', async () => {
+            const ok = await iniciarSessao();
+            if (!ok) return;
+            await carregarDados();
+            renderBoxesGrid();
+            atualizarKpis();
+            carregarAnimaisAdmissao();
+        });
+
+        function mostrarErroGrid(msg) {
+            const c = document.getElementById('boxesGridContainer');
+            if (c) c.innerHTML = `
+                <div class="col-12 text-center p-5 bg-white rounded-4 border">
+                    <i class="fa-solid fa-triangle-exclamation fa-3x text-warning mb-3"></i>
+                    <h5 class="fw-bold">Não foi possível carregar o internamento</h5>
+                    <p class="small text-secondary mb-0">${msg}</p>
+                </div>`;
+        }
+
+        async function iniciarSessao() {
+            const { data: { session } } = await sb.auth.getSession();
+            if (!session) { window.location.href = 'login.html?role=veterinario'; return false; }
+
+            const { data: vet } = await sb.from('veterinarios')
+                .select('nome, clinica_id')
+                .eq('user_id', session.user.id)
+                .maybeSingle();
+
+            medicoAtual = { id: session.user.id, nome: (vet && vet.nome) || session.user.email };
+
+            const clinicaId = (vet && vet.clinica_id) || localStorage.getItem('zooni-clinica-id');
+            if (!clinicaId) {
+                mostrarErroGrid('O seu perfil ainda não está associado a nenhuma clínica.');
+                return false;
+            }
+
+            const { data: cl } = await sb.from('clinicas').select('id, nome').eq('id', clinicaId).maybeSingle();
+            clinicaAtual = cl || { id: Number(clinicaId), nome: 'Clínica' };
+            const nomeEl = document.getElementById('clinicNameDisplay');
+            if (nomeEl) nomeEl.textContent = clinicaAtual.nome;
+            return true;
+        }
+
+        function normalizarTexto(s) {
+            return (s || '').toString().normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+        }
+
+        function mapearEspecie(tipo) {
+            const t = normalizarTexto(tipo);
+            if (t === 'cao' || t === 'cachorro' || t === 'dog') return 'Cão';
+            if (t === 'gato' || t === 'cat') return 'Gato';
+            return tipo ? tipo.charAt(0).toUpperCase() + tipo.slice(1) : 'Animal';
+        }
+
+        async function carregarDados() {
+            try {
+                const [boxesRes, interRes, animaisRes, clientesRes, agendRes, ticketsRes] = await Promise.all([
+                    sb.from('hospitalizacao_boxes').select('*').eq('clinica_id', clinicaAtual.id).order('id'),
+                    sb.from('hospitalizacao_internamentos').select('*').eq('clinica_id', clinicaAtual.id).eq('ativo', true),
+                    sb.from('animais').select('id, nome, raca, tipo_animal, peso, peso_kg, foto_url, id_dono').order('nome').limit(2000),
+                    sb.from('clientes').select('id, nome, telemovel, telefone').limit(5000),
+                    sb.from('agendamentos').select('id_animal, status').eq('id_vet', medicoAtual.id),
+                    sb.from('tickets').select('id_animal').eq('id_veterinario', medicoAtual.id)
+                ]);
+
+                const erro = boxesRes.error || interRes.error || animaisRes.error || clientesRes.error;
+                if (erro) throw erro;
+
+                // Os "meus pacientes" = animais com consultas (agendamentos) ou tickets atribuídos a mim
+                meusPacientesIds = new Set([
+                    ...(agendRes.data || []).filter(a => normalizarTexto(a.status) !== 'cancelado').map(a => a.id_animal),
+                    ...(ticketsRes.data || []).map(t => t.id_animal)
+                ].filter(Boolean));
+
+                const clientes = {};
+                (clientesRes.data || []).forEach(c => { clientes[c.id] = c; });
+
+                animaisDisponiveis = (animaisRes.data || []).map(a => {
+                    const dono = clientes[a.id_dono] || {};
+                    return {
+                        id: a.id,
+                        nome: a.nome,
+                        especie: mapearEspecie(a.tipo_animal),
+                        raca: a.raca || 'Sem raça definida',
+                        peso: a.peso ?? a.peso_kg ?? '—',
+                        foto: a.foto_url || null,
+                        tutor: dono.nome || 'Tutor desconhecido',
+                        telefone: dono.telemovel || dono.telefone || ''
+                    };
+                });
+
+                const internamentos = interRes.data || [];
+                hospitalBoxes = (boxesRes.data || []).map(b => {
+                    const row = internamentos.find(i => i.id_box === b.id);
+                    const box = { id: b.id, numero_box: b.numero_box, tipo: b.tipo || 'canil', estado: row ? 'ocupada' : 'livre' };
+                    if (row) box.internamento = montarInternamento(row);
+                    return box;
+                });
+            } catch (e) {
+                console.error('Erro ao carregar internamento:', e);
+                const tabelaEmFalta = e && (e.code === 'PGRST205' || e.code === '42P01');
+                mostrarErroGrid(tabelaEmFalta
+                    ? 'As tabelas de internamento ainda não existem na base de dados. Execute o script <code>sql/internamento_dados_reais.sql</code> no SQL Editor do Supabase.'
+                    : (e.message || 'Erro desconhecido.'));
+                hospitalBoxes = [];
+            }
+        }
+
+        function montarInternamento(row) {
+            const animal = animaisDisponiveis.find(a => a.id === row.id_animal) || {};
+            const inter = {
+                id: row.id,
+                id_animal: row.id_animal,
+                paciente_nome: animal.nome || 'Paciente',
+                especie: animal.especie || 'Animal',
+                raca: animal.raca || '—',
+                peso: animal.peso ?? '—',
+                foto: animal.foto || null,
+                tutor: animal.tutor || 'Tutor desconhecido',
+                telefone: animal.telefone || '',
+                estado_paciente: row.estado_paciente || 'estavel',
+                motivo: row.motivo_internamento,
+                data_entrada: row.data_entrada,
+                fluidoterapia: row.fluidoterapia || '',
+                folha_turnos: row.folha_turnos || [],
+                sinais_vitais: row.sinais_vitais || [],
+                produtos_gastos: row.produtos_gastos || []
+            };
+            inter.proxima_medicacao = calcularProximaMedicacao(inter);
+            return inter;
+        }
+
+        function calcularProximaMedicacao(inter) {
+            const pendentes = (inter.folha_turnos || []).filter(t => !t.feito).sort((a, b) => (a.hora || '').localeCompare(b.hora || ''));
+            if (pendentes.length === 0) return '';
+            const agora = new Date();
+            const hhmm = `${String(agora.getHours()).padStart(2, '0')}:${String(agora.getMinutes()).padStart(2, '0')}`;
+            const prox = pendentes.find(t => t.hora >= hhmm) || pendentes[0];
+            return `${prox.hora} — ${prox.procedimento}`;
+        }
+
+        function proximaMedicacaoTimestamp(inter) {
+            const txt = calcularProximaMedicacao(inter);
+            const m = txt.match(/^(\d{2}):(\d{2})/);
+            if (!m) return null;
+            const d = new Date();
+            d.setHours(Number(m[1]), Number(m[2]), 0, 0);
+            return d.toISOString();
+        }
+
+        /* Guarda o internamento ativo (aberto no modal) na base de dados */
+        async function guardarEstadoLocal() {
+            const box = boxAtivaParaModal;
+            if (!box || !box.internamento) return;
+            const i = box.internamento;
+            i.proxima_medicacao = calcularProximaMedicacao(i);
+
+            const { error } = await sb.from('hospitalizacao_internamentos').update({
+                estado_paciente: i.estado_paciente,
+                folha_turnos: i.folha_turnos,
+                sinais_vitais: i.sinais_vitais,
+                produtos_gastos: i.produtos_gastos,
+                custo_total: calcularTotalConta(i),
+                fluidoterapia: i.fluidoterapia || null,
+                proxima_medicacao: proximaMedicacaoTimestamp(i)
+            }).eq('id', i.id);
+
+            if (error) {
+                console.error('Erro ao guardar internamento:', error);
+                showToast('Erro ao guardar na base de dados: ' + error.message);
+            }
+        }
+
+        /* ── RENDERIZAÇÃO DA GRELHA DE BOXES ── */
+        function renderBoxesGrid() {
+            const container = document.getElementById('boxesGridContainer');
+            if (!container) return;
+
+            const termo = document.getElementById('inputPesquisaBox')?.value.toLowerCase().trim() || '';
+
+            let filtradas = hospitalBoxes.filter(box => {
+                // Filtro por tipo
+                if (filtroAtualTipo !== 'todos' && box.tipo !== filtroAtualTipo) return false;
+                // Filtro por estado
+                if (filtroAtualEstado !== 'todos') {
+                    if (filtroAtualEstado === 'meus') {
+                        if (!(box.internamento && meusPacientesIds.has(box.internamento.id_animal))) return false;
+                    } else if (box.estado !== filtroAtualEstado) return false;
+                }
+                // Pesquisa por texto
+                if (termo) {
+                    const numMatch = box.numero_box.toLowerCase().includes(termo);
+                    const pacienteMatch = box.internamento && box.internamento.paciente_nome.toLowerCase().includes(termo);
+                    const tutorMatch = box.internamento && box.internamento.tutor.toLowerCase().includes(termo);
+                    if (!numMatch && !pacienteMatch && !tutorMatch) return false;
+                }
+                return true;
+            });
+
+            const ordem = document.getElementById('selectOrdenar')?.value || 'box';
+            if (ordem !== 'box') {
+                const chave = b => b.internamento
+                    ? normalizarTexto(ordem === 'tutor' ? b.internamento.tutor : b.internamento.paciente_nome)
+                    : '\uffff'; // boxes livres no fim
+                filtradas = [...filtradas].sort((a, b) => chave(a).localeCompare(chave(b), 'pt'));
+            }
+
+            if (filtradas.length === 0) {
+                container.innerHTML = `
+                    <div class="col-12 text-center p-5 bg-white rounded-4 border">
+                        <i class="fa-solid fa-bed-pulse fa-3x text-muted opacity-25 mb-3"></i>
+                        <h5 class="fw-bold text-muted">Nenhuma box encontrada</h5>
+                        <p class="small text-secondary mb-0">Tente ajustar os filtros ou registar uma nova box.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = filtradas.map(box => {
+                if (box.estado === 'livre' || !box.internamento) {
+                    // BOX LIVRE
+                    return `
+                        <div class="box-card-free">
+                            <div>
+                                <div class="box-header-row">
+                                    <h5 class="box-title">
+                                        <i class="fa-solid fa-cube text-muted"></i>
+                                        ${box.numero_box}
+                                    </h5>
+                                    <span class="box-type-pill ${box.tipo}">${box.tipo}</span>
+                                </div>
+                                <div class="free-box-center">
+                                    <div class="free-box-icon">
+                                        <i class="fa-solid fa-door-open"></i>
+                                    </div>
+                                    <div class="fw-bold" style="color:var(--primary);">Box Livre & Higienizada</div>
+                                    <div class="free-box-desc">Pronta para nova admissão hospitalar</div>
+                                </div>
+                            </div>
+                            <button class="btn-admit-box" onclick="abrirModalAdmissao(${box.id})">
+                                <i class="fa-solid fa-plus"></i> Internar Paciente
+                            </button>
+                        </div>
+                    `;
+                } else {
+                    // BOX OCUPADA
+                    const inter = box.internamento;
+                    const estadoClass = inter.estado_paciente || 'estavel';
+                    const isUrgent = estadoClass === 'critico';
+
+                    return `
+                        <div class="box-card-occupied ${estadoClass}" onclick="abrirFolhaTurnos(${box.id})">
+                            <div>
+                                <div class="box-header-row">
+                                    <h5 class="box-title">
+                                        <i class="fa-solid fa-cube" style="color:var(--primary);"></i>
+                                        ${box.numero_box}
+                                    </h5>
+                                    <span class="status-chip ${estadoClass}">
+                                        ${estadoClass === 'critico' ? '<i class="fa-solid fa-triangle-exclamation"></i> Crítico' : '<i class="fa-solid fa-circle-check"></i> Estável'}
+                                    </span>
+                                </div>
+
+                                <div class="occupied-patient-row">
+                                    ${inter.foto ? 
+                                        `<img src="${inter.foto}" class="patient-photo-circle" alt="${inter.paciente_nome}">` : 
+                                        `<div class="patient-emoji-circle">${inter.especie === 'Gato' ? '🐱' : '🐶'}</div>`
+                                    }
+                                    <div class="patient-info-wrap">
+                                        <h4 class="patient-name-title">${inter.paciente_nome}</h4>
+                                        <div class="patient-species-text">${inter.especie} · ${inter.raca} (${inter.peso} kg)</div>
+                                        <div class="patient-tutor-text"><i class="fa-regular fa-user me-1"></i> ${inter.tutor}</div>
+                                    </div>
+                                </div>
+
+                                <div class="next-med-badge ${isUrgent ? 'urgent' : ''}">
+                                    <i class="fa-regular fa-clock"></i>
+                                    <span class="text-truncate">${inter.proxima_medicacao || 'Sem medicação pendente'}</span>
+                                </div>
+
+                                <div class="small text-muted mb-2">
+                                    <strong>Motivo:</strong> ${inter.motivo || 'Internamento clínico'}
+                                </div>
+                                <div class="small text-muted">
+                                    <strong>Fluidos:</strong> ${inter.fluidoterapia || 'Sem fluidoterapia'}
+                                </div>
+                            </div>
+
+                            <div class="occupied-tags-row mt-3">
+                                <span><i class="fa-solid fa-receipt text-success me-1"></i> Conta: <strong>${calcularTotalConta(inter).toFixed(2)} €</strong></span>
+                                <span class="fw-bold" style="color:var(--primary);">Folha de Turno <i class="fa-solid fa-chevron-right ms-1"></i></span>
+                            </div>
+                        </div>
+                    `;
+                }
+            }).join('');
+        }
+
+        /* ── ATUALIZAR KPIS ── */
+        function atualizarKpis() {
+            const total = hospitalBoxes.length;
+            const ocupadas = hospitalBoxes.filter(b => b.estado === 'ocupada' && b.internamento).length;
+            const livres = total - ocupadas;
+            const criticos = hospitalBoxes.filter(b => b.internamento && b.internamento.estado_paciente === 'critico').length;
+
+            document.getElementById('statTotalBoxes').textContent = total;
+            document.getElementById('statBoxesOcupadas').textContent = ocupadas;
+            document.getElementById('statBoxesLivres').textContent = livres;
+            document.getElementById('statPacientesCriticos').textContent = criticos;
+        }
+
+        function calcularTotalConta(inter) {
+            if (!inter || !inter.produtos_gastos) return 0;
+            return inter.produtos_gastos.reduce((acc, p) => acc + (p.qtd * p.preco), 0);
+        }
+
+        /* ── FILTROS ── */
+        function setFiltroTipo(tipo, el) {
+            filtroAtualTipo = tipo;
+            document.querySelectorAll('.filter-pills .filter-pill').forEach(p => p.classList.remove('active'));
+            if (el) el.classList.add('active');
+            renderBoxesGrid();
+        }
+
+        function setFiltroEstado(estado, el) {
+            filtroAtualEstado = (filtroAtualEstado === estado) ? 'todos' : estado;
+            document.querySelectorAll('.filter-pills .filter-pill').forEach(p => p.classList.remove('active'));
+            if (el && filtroAtualEstado === estado) el.classList.add('active');
+            renderBoxesGrid();
+        }
+
+        function filtrarBoxes() {
+            renderBoxesGrid();
+        }
+
+        /* ── FOLHA DE TURNOS MODAL ── */
+        function abrirFolhaTurnos(boxId) {
+            const box = hospitalBoxes.find(b => b.id === boxId);
+            if (!box || !box.internamento) return;
+            boxAtivaParaModal = box;
+
+            const inter = box.internamento;
+            document.getElementById('modalHospitalBoxTitle').textContent = box.numero_box;
+            document.getElementById('modalHospitalBoxSub').textContent = `Internamento ativo · Entrada em ${formatarData(inter.data_entrada)}`;
+            document.getElementById('modalPatientName').textContent = inter.paciente_nome;
+            document.getElementById('modalPatientDetails').textContent = `${inter.especie} · ${inter.raca} · ${inter.peso} kg`;
+            document.getElementById('modalPatientTutor').innerHTML = `<i class="fa-solid fa-user me-1"></i> Tutor: ${inter.tutor} (${inter.telefone || 'S/ telefone'})`;
+            document.getElementById('modalSelectEstado').value = inter.estado_paciente || 'estavel';
+            
+            const photoEl = document.getElementById('modalPatientPhoto');
+            if (inter.foto) {
+                photoEl.src = inter.foto;
+                photoEl.style.display = 'block';
+            } else {
+                photoEl.src = 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=150&q=80';
+            }
+
+            renderTabelaTurnos();
+            renderTabelaVitais();
+            renderTabelaGastos();
+
+            switchModalTab('turnos');
+            const modalEl = new bootstrap.Modal(document.getElementById('modalFolhaTurnos'));
+            modalEl.show();
+        }
+
+        function renderTabelaTurnos() {
+            const tbody = document.getElementById('tableTurnosBody');
+            if (!tbody || !boxAtivaParaModal || !boxAtivaParaModal.internamento) return;
+
+            const turnos = boxAtivaParaModal.internamento.folha_turnos || [];
+            if (turnos.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="text-center text-muted p-4">Nenhum tratamento registado nesta folha. Clique em "+ Adicionar Tratamento".</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = turnos.map((t, index) => `
+                <tr class="treatment-row ${t.feito ? 'completed' : ''}">
+                    <td class="text-center">
+                        <input type="checkbox" class="check-med-green" ${t.feito ? 'checked' : ''} onchange="toggleTratamentoFeito(${index}, this.checked)">
+                    </td>
+                    <td>
+                        <span class="badge-turno ${t.turno}">${t.turno}</span>
+                        <div class="fw-bold mt-1">${t.hora}</div>
+                    </td>
+                    <td>
+                        <div class="fw-bold">${t.procedimento}</div>
+                        ${t.produto_associado ? `<div class="small text-muted"><i class="fa-solid fa-tag text-success me-1"></i> Debita: ${t.produto_associado}</div>` : ''}
+                    </td>
+                    <td><span class="badge bg-light text-dark border">${t.via || 'IV'}</span></td>
+                    <td><span class="small text-muted">${t.fluidoterapia || '—'}</span></td>
+                    <td>
+                        ${t.feito ? 
+                            `<span class="badge bg-success-subtle text-success border border-success-subtle"><i class="fa-solid fa-check me-1"></i> ${t.assinado || 'Administrado'}</span>` : 
+                            `<span class="badge bg-warning-subtle text-warning border border-warning-subtle"><i class="fa-regular fa-clock me-1"></i> Pendente</span>`
+                        }
+                    </td>
+                    <td class="text-center">
+                        <button class="btn btn-sm btn-link text-danger p-0" onclick="removerTratamento(${index})" title="Remover"><i class="fa-regular fa-trash-can"></i></button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function toggleTratamentoFeito(index, isChecked) {
+            if (!boxAtivaParaModal || !boxAtivaParaModal.internamento) return;
+            const inter = boxAtivaParaModal.internamento;
+            const item = inter.folha_turnos[index];
+            if (!item) return;
+
+            item.feito = isChecked;
+            if (isChecked) {
+                const now = new Date();
+                const horaStr = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+                item.assinado = `${medicoAtual.nome} (${horaStr})`;
+
+                // Se houver produto associado, debitar automaticamente na conta do paciente!
+                if (item.produto_associado) {
+                    adicionarProdutoAutomatico(item.produto_associado);
+                }
+                showToast(`✓ Medicação "${item.procedimento}" confirmada e debitada na conta!`);
+            } else {
+                item.assinado = null;
+            }
+
+            guardarEstadoLocal();
+            renderTabelaTurnos();
+            renderTabelaGastos();
+            renderBoxesGrid();
+        }
+
+        function adicionarProdutoAutomatico(nomeProduto) {
+            const inter = boxAtivaParaModal.internamento;
+            if (!inter.produtos_gastos) inter.produtos_gastos = [];
+
+            // Preços padrão para consumíveis
+            let preco = 6.00;
+            let cat = 'Farmácia';
+            if (nomeProduto.includes('Cefazolina')) preco = 6.00;
+            else if (nomeProduto.includes('Metadona') || nomeProduto.includes('Tramadol')) preco = 7.50;
+            else if (nomeProduto.includes('Ringer')) { preco = 8.20; cat = 'Fluidoterapia'; }
+            else if (nomeProduto.includes('Cateter')) { preco = 4.50; cat = 'Material'; }
+
+            // Verificar se já existe para somar quantidade
+            const existing = inter.produtos_gastos.find(p => p.nome === nomeProduto);
+            if (existing) {
+                existing.qtd += 1;
+            } else {
+                inter.produtos_gastos.push({
+                    id: Date.now(),
+                    nome: nomeProduto,
+                    cat: cat,
+                    qtd: 1,
+                    preco: preco
+                });
+            }
+        }
+
+        function abrirNovoTratamentoPrompt() {
+            const proc = prompt('Nome do Tratamento / Medicação / Procedimento:');
+            if (!proc) return;
+            const hora = prompt('Horário programado (ex: 18:00):', '18:00') || '18:00';
+            const turno = prompt('Turno (manha, tarde ou noite):', 'tarde') || 'tarde';
+            const via = prompt('Via de administração (ex: IV, Oral, SC, Curativo):', 'IV') || 'IV';
+
+            boxAtivaParaModal.internamento.folha_turnos.push({
+                id: Date.now(),
+                hora: hora,
+                turno: turno.toLowerCase(),
+                procedimento: proc,
+                via: via,
+                fluidoterapia: 'Manter taxa',
+                feito: false,
+                assinado: null,
+                produto_associado: proc
+            });
+
+            guardarEstadoLocal();
+            renderTabelaTurnos();
+            showToast('Novo tratamento adicionado à folha!');
+        }
+
+        function removerTratamento(index) {
+            if (!confirm('Remover este tratamento da folha?')) return;
+            boxAtivaParaModal.internamento.folha_turnos.splice(index, 1);
+            guardarEstadoLocal();
+            renderTabelaTurnos();
+        }
+
+        /* ── SINAIS VITAIS ── */
+        function renderTabelaVitais() {
+            const tbody = document.getElementById('tableVitaisBody');
+            if (!tbody || !boxAtivaParaModal || !boxAtivaParaModal.internamento) return;
+
+            const vitais = boxAtivaParaModal.internamento.sinais_vitais || [];
+            if (vitais.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="text-center text-muted p-4">Sem sinais vitais registados ainda.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = vitais.map(v => `
+                <tr>
+                    <td class="fw-bold">${v.data}</td>
+                    <td><span class="badge ${v.fc > 140 || v.fc < 70 ? 'bg-danger' : 'bg-success'}">${v.fc} bpm</span></td>
+                    <td><span class="badge ${v.fr > 35 || v.fr < 12 ? 'bg-danger' : 'bg-success'}">${v.fr} cpm</span></td>
+                    <td><span class="badge ${v.temp > 39.2 || v.temp < 37.8 ? 'bg-danger' : 'bg-success'}">${v.temp} °C</span></td>
+                    <td>${v.trc || '< 2s'}</td>
+                    <td>${v.pa || '120/80'}</td>
+                    <td class="small text-muted">${v.avaliador || 'Equipa Zooni'}</td>
+                </tr>
+            `).join('');
+        }
+
+        function registarSinaisVitais() {
+            const fc = document.getElementById('vitFC').value;
+            const fr = document.getElementById('vitFR').value;
+            const temp = document.getElementById('vitTemp').value;
+            const trc = document.getElementById('vitTRC').value || '< 2s';
+            const pa = document.getElementById('vitPA').value || '120/80';
+
+            if (!fc && !temp) {
+                alert('Por favor introduza pelo menos FC e Temperatura.');
+                return;
+            }
+
+            const now = new Date();
+            const dataStr = `${String(now.getDate()).padStart(2,'0')}/${String(now.getMonth()+1).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+
+            if (!boxAtivaParaModal.internamento.sinais_vitais) {
+                boxAtivaParaModal.internamento.sinais_vitais = [];
+            }
+
+            boxAtivaParaModal.internamento.sinais_vitais.unshift({
+                data: dataStr,
+                fc: Number(fc) || 100,
+                fr: Number(fr) || 20,
+                temp: Number(temp) || 38.5,
+                trc: trc,
+                pa: pa,
+                avaliador: medicoAtual.nome
+            });
+
+            document.getElementById('vitFC').value = '';
+            document.getElementById('vitFR').value = '';
+            document.getElementById('vitTemp').value = '';
+            document.getElementById('vitTRC').value = '';
+            document.getElementById('vitPA').value = '';
+
+            guardarEstadoLocal();
+            renderTabelaVitais();
+            showToast('Sinais vitais registados com sucesso!');
+        }
+
+        /* ── PRODUTOS GASTOS E FATURAÇÃO ── */
+        function renderTabelaGastos() {
+            const tbody = document.getElementById('tableProdutosGastosBody');
+            if (!tbody || !boxAtivaParaModal || !boxAtivaParaModal.internamento) return;
+
+            const produtos = boxAtivaParaModal.internamento.produtos_gastos || [];
+            let total = 0;
+
+            if (produtos.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="text-center text-muted p-4">Nenhum produto debitado ainda.</td></tr>`;
+            } else {
+                tbody.innerHTML = produtos.map((p, index) => {
+                    const subtotal = p.qtd * p.preco;
+                    total += subtotal;
+                    return `
+                        <tr>
+                            <td class="fw-bold">${p.nome}</td>
+                            <td><span class="badge bg-light text-dark border">${p.cat || 'Geral'}</span></td>
+                            <td class="text-center">
+                                <div class="d-inline-flex align-items-center gap-2">
+                                    <button class="btn btn-sm btn-outline-secondary py-0 px-2" onclick="alterarQtdProduto(${index}, -1)">-</button>
+                                    <span class="fw-bold">${p.qtd}</span>
+                                    <button class="btn btn-sm btn-outline-secondary py-0 px-2" onclick="alterarQtdProduto(${index}, 1)">+</button>
+                                </div>
+                            </td>
+                            <td class="text-end">${p.preco.toFixed(2)} €</td>
+                            <td class="text-end fw-bold text-success">${subtotal.toFixed(2)} €</td>
+                            <td class="text-center">
+                                <button class="btn btn-sm btn-link text-danger p-0" onclick="removerProdutoConta(${index})"><i class="fa-regular fa-trash-can"></i></button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+
+            document.getElementById('modalBadgeTotalConta').textContent = `${total.toFixed(2)} €`;
+            document.getElementById('modalCustoTotalDisplay').textContent = `${total.toFixed(2)} €`;
+        }
+
+        function alterarQtdProduto(index, delta) {
+            const p = boxAtivaParaModal.internamento.produtos_gastos[index];
+            if (!p) return;
+            p.qtd += delta;
+            if (p.qtd <= 0) {
+                boxAtivaParaModal.internamento.produtos_gastos.splice(index, 1);
+            }
+            guardarEstadoLocal();
+            renderTabelaGastos();
+            renderBoxesGrid();
+        }
+
+        function removerProdutoConta(index) {
+            boxAtivaParaModal.internamento.produtos_gastos.splice(index, 1);
+            guardarEstadoLocal();
+            renderTabelaGastos();
+            renderBoxesGrid();
+        }
+
+        function abrirModalAddProduto() {
+            const m = new bootstrap.Modal(document.getElementById('modalAddProduto'));
+            m.show();
+        }
+
+        function onSelectCatalogoItem(val) {
+            if (!val) return;
+            const [nome, preco, cat] = val.split('|');
+            document.getElementById('prodNome').value = nome;
+            document.getElementById('prodPreco').value = Number(preco).toFixed(2);
+            document.getElementById('prodQtd').value = 1;
+        }
+
+        function confirmarAddProduto(e) {
+            e.preventDefault();
+            const nome = document.getElementById('prodNome').value.trim();
+            const preco = parseFloat(document.getElementById('prodPreco').value) || 0;
+            const qtd = parseInt(document.getElementById('prodQtd').value) || 1;
+
+            if (!nome) return;
+
+            if (!boxAtivaParaModal.internamento.produtos_gastos) {
+                boxAtivaParaModal.internamento.produtos_gastos = [];
+            }
+
+            boxAtivaParaModal.internamento.produtos_gastos.push({
+                id: Date.now(),
+                nome: nome,
+                cat: 'Hospitalização',
+                qtd: qtd,
+                preco: preco
+            });
+
+            guardarEstadoLocal();
+            renderTabelaGastos();
+            renderBoxesGrid();
+
+            bootstrap.Modal.getInstance(document.getElementById('modalAddProduto')).hide();
+            showToast(`Lançado na conta: ${qtd}x ${nome} (${(qtd*preco).toFixed(2)} €)`);
+        }
+
+        function switchModalTab(tab, btn) {
+            document.getElementById('tabModalTurnos').style.display = (tab === 'turnos') ? 'block' : 'none';
+            document.getElementById('tabModalVitais').style.display = (tab === 'vitais') ? 'block' : 'none';
+            document.getElementById('tabModalGastos').style.display = (tab === 'gastos') ? 'block' : 'none';
+
+            if (btn) {
+                document.querySelectorAll('.modal-tab-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+            }
+        }
+
+        function alterarEstadoPaciente(novoEstado) {
+            if (!boxAtivaParaModal || !boxAtivaParaModal.internamento) return;
+            boxAtivaParaModal.internamento.estado_paciente = novoEstado;
+            guardarEstadoLocal();
+            renderBoxesGrid();
+            atualizarKpis();
+            showToast(`Estado clínico atualizado para: ${novoEstado.toUpperCase()}`);
+        }
+
+        async function darAltaHospitalarPrompt() {
+            const box = boxAtivaParaModal;
+            if (!box || !box.internamento) return;
+            const inter = box.internamento;
+            if (!confirm(`Deseja confirmar a ALTA HOSPITALAR de ${inter.paciente_nome}?\nA Box ficará livre e a conta final será consolidada.`)) return;
+
+            const total = calcularTotalConta(inter);
+            const { error } = await sb.from('hospitalizacao_internamentos').update({
+                ativo: false,
+                data_alta_efetiva: new Date().toISOString(),
+                estado_paciente: inter.estado_paciente,
+                folha_turnos: inter.folha_turnos,
+                sinais_vitais: inter.sinais_vitais,
+                produtos_gastos: inter.produtos_gastos,
+                custo_total: total
+            }).eq('id', inter.id);
+            if (error) { showToast('Erro ao dar alta: ' + error.message); return; }
+
+            await sb.from('hospitalizacao_boxes').update({ estado: 'livre' }).eq('id', box.id);
+
+            box.estado = 'livre';
+            delete box.internamento;
+            bootstrap.Modal.getInstance(document.getElementById('modalFolhaTurnos')).hide();
+            renderBoxesGrid();
+            atualizarKpis();
+            carregarAnimaisAdmissao();
+            alert(`Alta concluída com sucesso!\nConta Hospitalar Consolidada: ${total.toFixed(2)} €`);
+        }
+
+        function salvarAlteracoesInternamento() {
+            guardarEstadoLocal();
+            showToast('✓ Alterações guardadas com sucesso!');
+            bootstrap.Modal.getInstance(document.getElementById('modalFolhaTurnos')).hide();
+            renderBoxesGrid();
+        }
+
+        /* ── EXTRATO DE CUSTOS EM PDF (com logótipo Zooni) ── */
+        function carregarLogoZooni() {
+            return new Promise(resolve => {
+                const img = new Image();
+                img.onload = () => {
+                    try {
+                        const c = document.createElement('canvas');
+                        c.width = img.naturalWidth; c.height = img.naturalHeight;
+                        c.getContext('2d').drawImage(img, 0, 0);
+                        resolve({ data: c.toDataURL('image/png'), w: img.naturalWidth, h: img.naturalHeight });
+                    } catch (e) { resolve(null); }
+                };
+                img.onerror = () => resolve(null);
+                img.src = 'assets/logo.png';
+            });
+        }
+
+        async function imprimirExtratoConta() {
+            const box = boxAtivaParaModal;
+            if (!box || !box.internamento) return;
+            if (!window.jspdf) { showToast('Biblioteca de PDF indisponível. Verifique a ligação à internet.'); return; }
+
+            const inter = box.internamento;
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+            const W = 210, H = 297, M = 15;
+            const VERDE = [30, 77, 30], VERDE2 = [61, 139, 61], PALE = [238, 247, 238], CINZA = [100, 116, 100], TEXTO = [30, 41, 30];
+            const logo = await carregarLogoZooni();
+            const agora = new Date();
+            const fmtData = d => new Date(d).toLocaleDateString('pt-PT') + ' ' + new Date(d).toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' });
+            const euro = v => Number(v).toFixed(2).replace('.', ',') + ' €';
+            const nomeClinica = (clinicaAtual && clinicaAtual.nome) || 'Clínica Veterinária';
+            const numDoc = `EXT-${agora.getFullYear()}-${String(inter.id).padStart(5, '0')}`;
+
+            /* Cabeçalho */
+            doc.setFillColor(...VERDE);
+            doc.rect(0, 0, W, 42, 'F');
+            doc.setFillColor(...VERDE2);
+            doc.rect(0, 42, W, 2.2, 'F');
+
+            // Logótipo sobre cartão branco arredondado
+            doc.setFillColor(255, 255, 255);
+            doc.roundedRect(M, 8, 46, 26, 4, 4, 'F');
+            if (logo) {
+                const maxW = 40, maxH = 20;
+                const r = Math.min(maxW / logo.w, maxH / logo.h);
+                const lw = logo.w * r, lh = logo.h * r;
+                doc.addImage(logo.data, 'PNG', M + (46 - lw) / 2, 8 + (26 - lh) / 2, lw, lh);
+            } else {
+                doc.setTextColor(...VERDE); doc.setFont('helvetica', 'bold'); doc.setFontSize(18);
+                doc.text('ZOONI', M + 23, 24, { align: 'center' });
+            }
+
+            doc.setTextColor(255, 255, 255);
+            doc.setFont('helvetica', 'bold'); doc.setFontSize(19);
+            doc.text('Extrato de Custos', W - M, 19, { align: 'right' });
+            doc.setFont('helvetica', 'normal'); doc.setFontSize(10);
+            doc.text('Internamento & Hospitalização', W - M, 25.5, { align: 'right' });
+            doc.setFontSize(8.5);
+            doc.text(`Nº ${numDoc}  ·  Emitido em ${fmtData(agora)}`, W - M, 32, { align: 'right' });
+
+            /* Clínica */
+            let y = 54;
+            doc.setTextColor(...VERDE); doc.setFont('helvetica', 'bold'); doc.setFontSize(11);
+            doc.text(nomeClinica, M, y);
+            doc.setTextColor(...CINZA); doc.setFont('helvetica', 'normal'); doc.setFontSize(8.5);
+            doc.text(`Médico responsável: ${medicoAtual.nome}`, W - M, y, { align: 'right' });
+
+            /* Cartão do paciente */
+            y += 6;
+            doc.setFillColor(...PALE);
+            doc.setDrawColor(200, 225, 200);
+            doc.roundedRect(M, y, W - 2 * M, 34, 4, 4, 'FD');
+            doc.setFillColor(...VERDE2);
+            doc.roundedRect(M, y, 2.5, 34, 1, 1, 'F');
+
+            doc.setTextColor(...TEXTO); doc.setFont('helvetica', 'bold'); doc.setFontSize(15);
+            doc.text(inter.paciente_nome, M + 8, y + 10);
+            doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(...CINZA);
+            doc.text(`${inter.especie} · ${inter.raca} · ${inter.peso} kg`, M + 8, y + 16);
+
+            const campo = (rotulo, valor, x, yy) => {
+                doc.setFont('helvetica', 'bold'); doc.setFontSize(7.5); doc.setTextColor(...VERDE2);
+                doc.text(rotulo.toUpperCase(), x, yy);
+                doc.setFont('helvetica', 'normal'); doc.setFontSize(9.5); doc.setTextColor(...TEXTO);
+                doc.text(String(valor || '—'), x, yy + 4.6);
+            };
+            campo('Tutor', inter.tutor, M + 8, y + 24);
+            campo('Contacto', inter.telefone || '—', M + 78, y + 24);
+            campo('Box', box.numero_box, M + 118, y + 24);
+            campo('Entrada', fmtData(inter.data_entrada), M + 150 - 3, y + 10);
+            const estadoTxt = { estavel: 'Estável', critico: 'Crítico', recuperacao: 'Recuperação' }[inter.estado_paciente] || inter.estado_paciente;
+            campo('Estado clínico', estadoTxt, M + 150 - 3, y + 24);
+
+            /* Motivo */
+            y += 42;
+            doc.setFont('helvetica', 'bold'); doc.setFontSize(7.5); doc.setTextColor(...VERDE2);
+            doc.text('MOTIVO DO INTERNAMENTO', M, y);
+            doc.setFont('helvetica', 'normal'); doc.setFontSize(9.5); doc.setTextColor(...TEXTO);
+            const motivoLinhas = doc.splitTextToSize(inter.motivo || '—', W - 2 * M);
+            doc.text(motivoLinhas, M, y + 5);
+            y += 5 + motivoLinhas.length * 4.6 + 6;
+
+            /* Tabela de custos */
+            const cols = { item: M + 3, cat: M + 85, qtd: M + 122, unit: M + 152, sub: W - M - 3 };
+            const cabecalhoTabela = yy => {
+                doc.setFillColor(...VERDE);
+                doc.roundedRect(M, yy, W - 2 * M, 9, 2, 2, 'F');
+                doc.setTextColor(255, 255, 255); doc.setFont('helvetica', 'bold'); doc.setFontSize(8.5);
+                doc.text('ITEM / CONSUMÍVEL / FÁRMACO', cols.item, yy + 6);
+                doc.text('CATEGORIA', cols.cat, yy + 6);
+                doc.text('QTD.', cols.qtd, yy + 6, { align: 'center' });
+                doc.text('PREÇO UNIT.', cols.unit, yy + 6, { align: 'right' });
+                doc.text('SUBTOTAL', cols.sub, yy + 6, { align: 'right' });
+                return yy + 11;
+            };
+            y = cabecalhoTabela(y);
+
+            const produtos = inter.produtos_gastos || [];
+            let total = 0;
+            if (produtos.length === 0) {
+                doc.setTextColor(...CINZA); doc.setFont('helvetica', 'italic'); doc.setFontSize(9.5);
+                doc.text('Nenhum produto debitado até ao momento.', W / 2, y + 8, { align: 'center' });
+                y += 16;
+            }
+            produtos.forEach((p, i) => {
+                if (y > H - 55) { doc.addPage(); y = cabecalhoTabela(20); }
+                const sub = p.qtd * p.preco;
+                total += sub;
+                if (i % 2 === 0) { doc.setFillColor(246, 250, 246); doc.rect(M, y - 4.5, W - 2 * M, 8, 'F'); }
+                doc.setTextColor(...TEXTO); doc.setFont('helvetica', 'bold'); doc.setFontSize(9);
+                doc.text(doc.splitTextToSize(p.nome, 78)[0], cols.item, y);
+                doc.setFont('helvetica', 'normal'); doc.setTextColor(...CINZA);
+                doc.text(p.cat || 'Geral', cols.cat, y);
+                doc.setTextColor(...TEXTO);
+                doc.text(String(p.qtd), cols.qtd, y, { align: 'center' });
+                doc.text(euro(p.preco), cols.unit, y, { align: 'right' });
+                doc.setFont('helvetica', 'bold');
+                doc.text(euro(sub), cols.sub, y, { align: 'right' });
+                y += 8;
+            });
+
+            doc.setDrawColor(200, 225, 200);
+            doc.line(M, y - 3, W - M, y - 3);
+
+            /* Total */
+            if (y > H - 50) { doc.addPage(); y = 25; }
+            y += 6;
+            doc.setFillColor(...VERDE);
+            doc.roundedRect(W - M - 82, y, 82, 22, 4, 4, 'F');
+            doc.setTextColor(200, 230, 200); doc.setFont('helvetica', 'bold'); doc.setFontSize(8);
+            doc.text('TOTAL ACUMULADO DO INTERNAMENTO', W - M - 41, y + 7.5, { align: 'center' });
+            doc.setTextColor(255, 255, 255); doc.setFontSize(18);
+            doc.text(euro(total), W - M - 41, y + 17, { align: 'center' });
+
+            doc.setTextColor(...CINZA); doc.setFont('helvetica', 'normal'); doc.setFontSize(8);
+            doc.text(doc.splitTextToSize('Inclui diárias, medicações administradas e consumíveis. Valores sujeitos a confirmação na fatura final.', 90), M, y + 8);
+
+            /* Rodapé em todas as páginas */
+            const paginas = doc.getNumberOfPages();
+            for (let i = 1; i <= paginas; i++) {
+                doc.setPage(i);
+                doc.setFillColor(...VERDE2);
+                doc.rect(0, H - 14, W, 0.8, 'F');
+                doc.setTextColor(...CINZA); doc.setFont('helvetica', 'normal'); doc.setFontSize(7.5);
+                doc.text(`${nomeClinica}  ·  Documento gerado pela plataforma Zooni`, M, H - 8);
+                doc.text(`Página ${i} de ${paginas}`, W - M, H - 8, { align: 'right' });
+            }
+
+            const nomeFicheiro = `Extrato_${inter.paciente_nome.replace(/[^\w]+/g, '_')}_${agora.toISOString().slice(0, 10)}.pdf`;
+            doc.save(nomeFicheiro);
+            showToast('✓ Extrato de custos em PDF gerado!');
+        }
+
+        function exportarFaturaInternamento() {
+            const total = calcularTotalConta(boxAtivaParaModal.internamento);
+            alert(`Fatura Série FT 2026 gerada com sucesso!\nValor Total: ${total.toFixed(2)} €\nEnviada por email para o tutor.`);
+        }
+
+        /* ── ADMISSÃO DE NOVO INTERNAMENTO ── */
+        function escHtml(s) {
+            return (s ?? '').toString().replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+        }
+
+        function carregarAnimaisAdmissao() {
+            const hidden = document.getElementById('admissaoPacienteSelect');
+            if (!hidden) return;
+            hidden.value = '';
+            const busca = document.getElementById('admissaoPacienteBusca');
+            if (busca) busca.value = '';
+            const sel = document.getElementById('pickerSelecionado');
+            if (sel) sel.classList.add('d-none');
+            renderPickerPacientes();
+        }
+
+        /* Lista só os MEUS pacientes, filtrados pela pesquisa e agrupados por tutor (A-Z) */
+        function renderPickerPacientes() {
+            const lista = document.getElementById('pickerPacientesLista');
+            if (!lista) return;
+            const termo = normalizarTexto(document.getElementById('admissaoPacienteBusca')?.value);
+            const selecionado = document.getElementById('admissaoPacienteSelect').value;
+            const internados = hospitalBoxes.filter(b => b.internamento).map(b => b.internamento.id_animal);
+
+            const candidatos = animaisDisponiveis.filter(a =>
+                meusPacientesIds.has(a.id) && !internados.includes(a.id) &&
+                (!termo || normalizarTexto(`${a.nome} ${a.tutor} ${a.raca} ${a.especie}`).includes(termo))
+            );
+
+            if (candidatos.length === 0) {
+                lista.innerHTML = `<div class="picker-empty"><i class="fa-solid fa-paw mb-2 d-block fa-lg opacity-50"></i>${
+                    meusPacientesIds.size === 0 ? 'Ainda não tem pacientes associados (consultas ou tickets).' : 'Nenhum paciente encontrado.'}</div>`;
+                return;
+            }
+
+            const grupos = {};
+            candidatos.forEach(a => { (grupos[a.tutor] = grupos[a.tutor] || []).push(a); });
+
+            lista.innerHTML = Object.keys(grupos)
+                .sort((x, y) => x.localeCompare(y, 'pt', { sensitivity: 'base' }))
+                .map(tutor => `
+                    <div class="picker-group-title"><i class="fa-regular fa-user me-1"></i>${escHtml(tutor)}</div>
+                    ${grupos[tutor].sort((x, y) => x.nome.localeCompare(y.nome, 'pt', { sensitivity: 'base' })).map(a => `
+                        <div class="picker-item ${String(a.id) === selecionado ? 'selected' : ''}" onclick="selecionarPacienteAdmissao(${a.id})">
+                            ${a.foto ? `<img class="picker-avatar" src="${escHtml(a.foto)}" alt="">`
+                                     : `<div class="picker-avatar">${a.especie === 'Gato' ? '🐱' : (a.especie === 'Cão' ? '🐶' : '🐾')}</div>`}
+                            <div>
+                                <div class="picker-name">${escHtml(a.nome)}</div>
+                                <div class="picker-meta">${escHtml(a.especie)} · ${escHtml(a.raca)}</div>
+                            </div>
+                        </div>`).join('')}
+                `).join('');
+        }
+
+        function selecionarPacienteAdmissao(id) {
+            document.getElementById('admissaoPacienteSelect').value = id;
+            const a = animaisDisponiveis.find(x => x.id === id);
+            const sel = document.getElementById('pickerSelecionado');
+            if (a && sel) {
+                sel.innerHTML = `<i class="fa-solid fa-check me-1"></i> ${escHtml(a.nome)} — ${escHtml(a.tutor)}`;
+                sel.classList.remove('d-none');
+            }
+            renderPickerPacientes();
+        }
+
+        function abrirModalAdmissao(boxIdPreSelecionada) {
+            const boxSelect = document.getElementById('admissaoBoxSelect');
+            const livres = hospitalBoxes.filter(b => b.estado === 'livre');
+
+            if (livres.length === 0) {
+                alert('Atenção: Não há nenhuma Box livre de momento. Adicione uma nova box ou conceda alta a um paciente.');
+                return;
+            }
+
+            boxSelect.innerHTML = livres.map(b => `
+                <option value="${b.id}" ${b.id === boxIdPreSelecionada ? 'selected' : ''}>
+                    ${b.numero_box} (${b.tipo.toUpperCase()})
+                </option>
+            `).join('');
+
+            carregarAnimaisAdmissao();
+            const modal = new bootstrap.Modal(document.getElementById('modalAdmissao'));
+            modal.show();
+        }
+
+        function onAdmissaoPacienteChange(pacienteId) {
+            // Sem ação adicional necessária
+        }
+
+        async function confirmarInternamento(e) {
+            e.preventDefault();
+            const boxId = parseInt(document.getElementById('admissaoBoxSelect').value);
+            const pacienteId = parseInt(document.getElementById('admissaoPacienteSelect').value);
+            const estado = document.getElementById('admissaoEstadoSelect').value;
+            const motivo = document.getElementById('admissaoMotivo').value.trim();
+            const plano = document.getElementById('admissaoPlanoInicial').value.trim();
+            const dataAlta = document.getElementById('admissaoDataAlta').value;
+
+            const animal = animaisDisponiveis.find(a => a.id === pacienteId);
+            if (!animal) { showToast('Selecione um paciente da lista.'); return; }
+            const box = hospitalBoxes.find(b => b.id === boxId);
+            if (!box) return;
+
+            const agora = new Date();
+            const folha = plano ? [{
+                id: Date.now(),
+                hora: `${String(agora.getHours()).padStart(2, '0')}:${String(agora.getMinutes()).padStart(2, '0')}`,
+                turno: agora.getHours() < 12 ? 'manha' : (agora.getHours() < 20 ? 'tarde' : 'noite'),
+                procedimento: plano,
+                via: 'IV',
+                fluidoterapia: '',
+                feito: false,
+                assinado: null,
+                produto_associado: null
+            }] : [];
+
+            const { error } = await sb.from('hospitalizacao_internamentos').insert([{
+                id_box: box.id,
+                id_animal: animal.id,
+                clinica_id: clinicaAtual.id,
+                id_veterinario_responsavel: medicoAtual.id,
+                estado_paciente: estado,
+                motivo_internamento: motivo,
+                data_alta_prevista: dataAlta ? new Date(dataAlta).toISOString() : null,
+                folha_turnos: folha,
+                produtos_gastos: [],
+                sinais_vitais: [],
+                ativo: true
+            }]);
+
+            if (error) { showToast('Erro ao internar: ' + error.message); return; }
+
+            await sb.from('hospitalizacao_boxes').update({ estado: 'ocupada' }).eq('id', box.id);
+
+            bootstrap.Modal.getInstance(document.getElementById('modalAdmissao')).hide();
+            document.getElementById('formAdmissao').reset();
+            await carregarDados();
+            renderBoxesGrid();
+            atualizarKpis();
+            carregarAnimaisAdmissao();
+            showToast(`✓ ${animal.nome} internado com sucesso na ${box.numero_box}!`);
+        }
+
+        /* ── CRIAR NOVA BOX ── */
+        function abrirModalNovaBox() {
+            const m = new bootstrap.Modal(document.getElementById('modalNovaBox'));
+            m.show();
+        }
+
+        async function confirmarNovaBox(e) {
+            e.preventDefault();
+            const num = document.getElementById('novoBoxNumero').value.trim();
+            const tipo = document.getElementById('novoBoxTipo').value;
+            if (!num) return;
+
+            const { error } = await sb.from('hospitalizacao_boxes').insert([{
+                clinica_id: clinicaAtual.id,
+                numero_box: num,
+                tipo: tipo,
+                estado: 'livre'
+            }]);
+
+            if (error) { showToast('Erro ao criar box: ' + error.message); return; }
+
+            bootstrap.Modal.getInstance(document.getElementById('modalNovaBox')).hide();
+            document.getElementById('novoBoxNumero').value = '';
+            await carregarDados();
+            renderBoxesGrid();
+            atualizarKpis();
+            showToast(`✓ Nova box "${num}" criada com sucesso!`);
+        }
+
+        /* ── UTILITÁRIOS ── */
+        function formatarData(str) {
+            if (!str) return '—';
+            try {
+                const d = new Date(str);
+                return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')} às ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+            } catch(e) { return str; }
+        }
+
+        function showToast(msg) {
+            const t = document.getElementById('toastHospital');
+            document.getElementById('toastHospitalMsg').textContent = msg;
+            t.style.display = 'flex';
+            setTimeout(() => { t.style.display = 'none'; }, 3500);
+        }
+    </script>
+    <script src="assets/js/clinica_director.js"></script>
+</body>
+
+</html>

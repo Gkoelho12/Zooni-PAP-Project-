@@ -449,6 +449,10 @@
 
             <div class="error-msg" id="errorMsg"></div>
             <div class="success-msg" id="successMsg"></div>
+
+            <div id="clinicaRegisterLink" style="text-align:center; margin-top:1.2rem; font-size:0.85rem; color:var(--text-sec); display:none;">
+                É Diretor Clínico ou quer registar a sua clínica? <a href="registo_clinica.html" style="color:var(--primary); font-weight:700; text-decoration:none;">Registar Clínica Zooni</a>
+            </div>
         </div>
     </div>
 
@@ -485,10 +489,12 @@
 
         // Update UI based on role
         if (role === 'veterinario') {
-            document.getElementById('roleText').textContent = 'Veterinário';
+            document.getElementById('roleText').textContent = 'Veterinário / Clínica';
             document.getElementById('roleBadge').querySelector('i').className = 'fa-solid fa-user-doctor';
-            document.getElementById('formTitle').textContent = 'Acesso Veterinário';
+            document.getElementById('formTitle').textContent = 'Acesso Clínico';
             document.getElementById('tabRegisto').textContent = 'Criar Conta';
+            const clinicaLink = document.getElementById('clinicaRegisterLink');
+            if (clinicaLink) clinicaLink.style.display = 'block';
         } else if (role === 'admin') {
             document.getElementById('roleText').textContent = 'Administrador';
             document.getElementById('roleBadge').querySelector('i').className = 'fa-solid fa-shield-halved';
@@ -518,8 +524,12 @@
                 if (admin) { window.location.href = 'dashboard_admin.html'; return; }
                 
                 // 2. Check Vet
-                let {data: vet} = await supabaseClient.from('veterinarios').select('status').eq('user_id', userId).single();
+                let {data: vet} = await supabaseClient.from('veterinarios').select('status, is_diretor, clinica_id').eq('user_id', userId).single();
                 if (vet) {
+                    if (vet.is_diretor) {
+                        localStorage.setItem('zooni-diretor', 'true');
+                        if (vet.clinica_id) localStorage.setItem('zooni-clinica-id', vet.clinica_id);
+                    }
                     if (vet.status === 'pendente') window.location.href = 'pendente_veterinario.html';
                     else if (vet.status === 'ativo') window.location.href = 'dashboard_veterinario.html';
                     else await supabaseClient.auth.signOut();
@@ -549,6 +559,11 @@
             document.getElementById('formTitle').textContent = isLogin ? 'Entrar na tua conta' : 'Criar nova conta';
             document.getElementById('formSubtitle').textContent = isLogin ? 'Introduz o teu email e password' : 'Preenche os dados para te registares';
             hideMessages();
+        }
+
+        // Abrir diretamente na aba de registo quando vier ?tab=registo
+        if (params.get('tab') === 'registo' && role !== 'admin') {
+            switchTab('registo');
         }
 
         function showError(msg) {
@@ -658,7 +673,11 @@
                     return;
                 }
             } else if (role === 'veterinario') {
-                let { data: vet } = await supabaseClient.from('veterinarios').select('user_id, status').eq('user_id', userId).single();
+                let { data: vet } = await supabaseClient.from('veterinarios').select('user_id, status, is_diretor, clinica_id').eq('user_id', userId).single();
+                if (vet && vet.is_diretor) {
+                    localStorage.setItem('zooni-diretor', 'true');
+                    if (vet.clinica_id) localStorage.setItem('zooni-clinica-id', vet.clinica_id);
+                }
                 if (!vet) {
                     const metadata = data.user.user_metadata;
                     if (metadata && metadata.role === 'veterinario') {

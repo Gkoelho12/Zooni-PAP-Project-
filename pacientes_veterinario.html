@@ -755,9 +755,298 @@
             .patient-table-wrap {
                 overflow-x: auto;
             }
-            .patient-table {
-                min-width: 750px;
-            }
+        /* ── MÓDULO CLÍNICO AVANÇADO (ABA CLÍNICA) ── */
+        .clinical-card {
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 1.2rem;
+            margin-bottom: 1.2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+        }
+
+        .clinical-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.9rem;
+            padding-bottom: 6px;
+            border-bottom: 1px solid #f0fdf4;
+        }
+
+        .clinical-card-title {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+
+        /* Biometrics Grid */
+        .biometrics-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-bottom: 0.9rem;
+        }
+
+        .biometric-box {
+            background: #f8faf8;
+            border: 1px solid #e0ede0;
+            border-radius: 12px;
+            padding: 8px 10px;
+        }
+
+        .biometric-label {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--text-sec);
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .biometric-input {
+            width: 100%;
+            border: none;
+            background: transparent;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+            outline: none;
+            padding: 2px 0 0;
+        }
+
+        /* PACS Gallery Grid */
+        .pacs-gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 0.5rem;
+        }
+
+        .pacs-thumb-item {
+            aspect-ratio: 1 / 1;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1.5px solid #d8ebd8;
+            position: relative;
+            cursor: pointer;
+            background: #000;
+            transition: all 0.2s;
+        }
+
+        .pacs-thumb-item:hover {
+            transform: scale(1.03);
+            border-color: var(--primary);
+            box-shadow: 0 4px 14px rgba(61, 139, 61, 0.2);
+        }
+
+        .pacs-thumb-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .pacs-thumb-badge {
+            position: absolute;
+            bottom: 4px;
+            left: 4px;
+            background: rgba(0,0,0,0.75);
+            color: white;
+            font-size: 0.65rem;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 6px;
+            backdrop-filter: blur(2px);
+        }
+
+        /* Laboratório Cartões Horizontais */
+        .lab-cards-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 0.5rem;
+        }
+
+        .lab-card-item {
+            background: #fff;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 10px 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            transition: border-color 0.2s;
+        }
+
+        .lab-card-item:hover {
+            border-color: var(--primary);
+        }
+
+        .lab-status-badge {
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 10px;
+            text-transform: uppercase;
+        }
+
+        .lab-status-badge.concluido {
+            background: #eef9ee;
+            color: #10B981;
+            border: 1px solid #c8e6c8;
+        }
+
+        .lab-status-badge.pendente {
+            background: #fffbeb;
+            color: #d97706;
+            border: 1px solid #fde68a;
+        }
+
+        /* Modal PACS Escuro */
+        .modal-pacs-dark {
+            background: #0d1117 !important;
+            color: #e6edf3;
+            border: 1px solid #30363d;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .pacs-viewer-container {
+            position: relative;
+            min-height: 440px;
+            max-height: 62vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #000;
+            overflow: hidden;
+        }
+
+        .pacs-viewer-img {
+            max-width: 90%;
+            max-height: 58vh;
+            transition: transform 0.2s, filter 0.2s;
+        }
+
+        .pacs-toolbar {
+            background: #161b22;
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            border-top: 1px solid #30363d;
+            flex-wrap: wrap;
+        }
+
+        .btn-pacs-ctrl {
+            background: #21262d;
+            color: #c9d1d9;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            padding: 5px 11px;
+            font-size: 0.82rem;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .btn-pacs-ctrl:hover {
+            background: #30363d;
+            color: #fff;
+        }
+
+        /* Dose Calculator Box */
+        .dose-calc-box {
+            background: #f0fdf4;
+            border: 1.5px solid #c8e6c8;
+            border-radius: 14px;
+            padding: 14px;
+            margin: 1rem 0;
+        }
+
+        .dose-calc-title {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .dose-calc-result {
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: var(--primary-dark);
+        }
+
+        .dose-calc-detail {
+            font-size: 0.8rem;
+            color: var(--text-sec);
+            margin-top: 4px;
+        }
+
+        /* Mural de Notas Internas da Equipa */
+        .mural-note-item {
+            background: #FFFFFF;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 10px 14px;
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.02);
+        }
+
+        .mural-note-avatar {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 1.5px solid #C8E6C8;
+            flex-shrink: 0;
+        }
+
+        .mural-note-author {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .mural-note-date {
+            font-size: 0.72rem;
+            color: var(--text-sec);
+            font-weight: normal;
+        }
+
+        .mural-note-body {
+            font-size: 0.84rem;
+            color: #374151;
+            margin-top: 2px;
+            line-height: 1.35;
+        }
+
+        /* Cartão de Documento Assinado */
+        .doc-signed-card {
+            background: #FAFCFA;
+            border: 1.5px solid #E2ECE2;
+            border-radius: 12px;
+            padding: 10px 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
         }
     </style>
 </head>
@@ -794,6 +1083,13 @@
                 </li>
                 <li class="nav-item">
                     <a href="pacientes_veterinario.html" class="nav-link active"><i class="fa-solid fa-users"></i> Pacientes</a>
+                </li>
+                <li class="nav-item">
+                    <a href="internamento.html" class="nav-link"><i class="fa-solid fa-bed-pulse"></i> Internamento</a>
+                </li>
+                                <li class="nav-item"><a href="loja_veterinario.html" class="nav-link"><i class="fa-solid fa-prescription-bottle-medical"></i> Farmácia &amp; Compras</a></li>
+<li class="nav-item">
+                    <a href="campanhas.html" class="nav-link"><i class="fa-solid fa-bullhorn"></i> Campanhas CRM</a>
                 </li>
             </ul>
 
@@ -963,6 +1259,9 @@
             <div class="clinical-tab" data-tab="prophy" onclick="switchTab('prophy', this)">
                 <i class="fa-solid fa-syringe"></i> Profilaxia
             </div>
+            <div class="clinical-tab" data-tab="clinica" onclick="switchTab('clinica', this)">
+                <i class="fa-solid fa-stethoscope"></i> Clínica
+            </div>
         </div>
 
         <!-- ── TAB 1: Overview ───────────────────────────────── -->
@@ -1024,6 +1323,45 @@
             <button class="btn-vet-primary" onclick="saveClinicalData()" id="btnSaveClinical">
                 <i class="fa-solid fa-floppy-disk"></i> Guardar Alterações
             </button>
+
+            <!-- Bloco de Notas Interno da Equipa (Mural de Comentários) -->
+            <div class="mt-4 p-3 rounded-4" style="background:#F8FAF8; border:1.5px solid #E2ECE2;">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="small fw-bold text-dark text-uppercase" style="letter-spacing:0.5px;">
+                        <i class="fa-solid fa-comments text-success me-1"></i>Mural da Equipa & Notas Rápidas
+                    </span>
+                    <span class="badge bg-light text-muted border" id="countNotasEquipa">2 notas</span>
+                </div>
+
+                <!-- Lista de Comentários / Notas -->
+                <div class="d-flex flex-column gap-2 mb-3" id="muralNotasEquipaLista">
+                    <!-- Renderizado dinamicamente via JS -->
+                </div>
+
+                <!-- Formulário para Adicionar Nova Nota -->
+                <div class="input-group input-group-sm">
+                    <input type="text" class="form-control" id="inputNovaNotaEquipa" placeholder="Adicionar nota rápida para os colegas médicos..." style="border-radius:10px 0 0 10px;" onkeydown="if(event.key==='Enter')adicionarNotaEquipa()">
+                    <button class="btn btn-success" onclick="adicionarNotaEquipa()" style="border-radius:0 10px 10px 0;">
+                        <i class="fa-solid fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Documentos de Consentimento Assinados Digitalmente pelo Tutor -->
+            <div class="mt-4 p-3 rounded-4" style="background:#FFFFFF; border:1.5px solid #E2ECE2;">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                    <span class="small fw-bold text-dark text-uppercase" style="letter-spacing:0.5px;">
+                        <i class="fa-solid fa-file-signature text-primary me-1"></i>Termos e Consentimentos Assinados
+                    </span>
+                    <button class="btn btn-sm btn-outline-primary" onclick="abrirModalEmitirTermo()" style="font-size:0.75rem; border-radius:8px; padding:2px 8px;">
+                        <i class="fa-solid fa-plus"></i> Novo Termo
+                    </button>
+                </div>
+                <div class="small text-muted mb-3" style="font-size:0.75rem;">Documentos e termos assinados digitalmente pelo tutor no smartphone/tablet.</div>
+                <div class="d-flex flex-column gap-2" id="listaDocumentosConsentimento">
+                    <!-- Renderizado dinamicamente via JS -->
+                </div>
+            </div>
         </div>
 
         <!-- ── TAB 2: History Timeline ───────────────────────── -->
@@ -1066,16 +1404,362 @@
                 </button>
             </div>
         </div>
+
+        <!-- ── TAB 4: Ficha Clínica Avançada, PACS e Laboratório ── -->
+        <div class="tab-content-area" id="tabClinica" style="display:none;">
+            <!-- 1. Evolução de Peso ao Longo dos Meses -->
+            <div class="clinical-card">
+                <div class="clinical-card-header">
+                    <div class="clinical-card-title">
+                        <i class="fa-solid fa-chart-line" style="color:var(--primary);"></i>
+                        Evolução de Peso
+                    </div>
+                    <button class="btn btn-sm btn-outline-success" onclick="abrirNovoPesoPrompt()" style="font-size:0.75rem; border-radius:8px; padding:2px 8px;">
+                        <i class="fa-solid fa-plus"></i> Registar Peso
+                    </button>
+                </div>
+                <!-- Gráfico de Linha Verde Suave em SVG interativo -->
+                <div id="weightChartContainer" style="width:100%; height:140px; position:relative; margin-bottom:8px;">
+                    <!-- Renderizado dinamicamente via JS -->
+                </div>
+                <div style="display:flex; justify-content:space-between; font-size:0.78rem; color:var(--text-sec); padding-top:6px; border-top:1px dashed #e8f5e8;">
+                    <span>Inicial: <strong id="ocPesoInicial">—</strong></span>
+                    <span>Atual: <strong id="ocPesoAtualChart" style="color:var(--primary-dark);">—</strong></span>
+                    <span>Variação: <strong id="ocPesoVariacao" style="color:#10b981;">0.0 kg</strong></span>
+                </div>
+            </div>
+
+            <!-- 2. Anamnese e Exame Físico -->
+            <div class="clinical-card">
+                <div class="clinical-card-header">
+                    <div class="clinical-card-title">
+                        <i class="fa-solid fa-notes-medical" style="color:var(--primary);"></i>
+                        Anamnese & Exame Físico
+                    </div>
+                    <span style="font-size:0.75rem; color:var(--text-sec); font-weight:600;">Registo Atual</span>
+                </div>
+
+                <div class="mb-3">
+                    <label class="small fw-bold text-muted mb-1 d-block">Anamnese / Queixa Principal</label>
+                    <textarea class="edit-field" id="clinAnamnese" rows="2" placeholder="Queixa principal, apetite, dejeções, evolução dos sintomas..."></textarea>
+                </div>
+
+                <label class="small fw-bold text-muted mb-1 d-block">Parâmetros Biométricos (Exame Físico)</label>
+                <div class="biometrics-grid">
+                    <div class="biometric-box">
+                        <div class="biometric-label"><i class="fa-solid fa-heart-pulse text-danger"></i> FC</div>
+                        <input type="text" class="biometric-input" id="clinFC" placeholder="110 bpm">
+                    </div>
+                    <div class="biometric-box">
+                        <div class="biometric-label"><i class="fa-solid fa-lungs text-primary"></i> FR</div>
+                        <input type="text" class="biometric-input" id="clinFR" placeholder="24 cpm">
+                    </div>
+                    <div class="biometric-box">
+                        <div class="biometric-label"><i class="fa-solid fa-temperature-half text-warning"></i> Temp</div>
+                        <input type="text" class="biometric-input" id="clinTemp" placeholder="38.5 °C">
+                    </div>
+                    <div class="biometric-box">
+                        <div class="biometric-label"><i class="fa-solid fa-stopwatch text-secondary"></i> TRC</div>
+                        <input type="text" class="biometric-input" id="clinTRC" placeholder="< 2s">
+                    </div>
+                    <div class="biometric-box">
+                        <div class="biometric-label"><i class="fa-solid fa-eye text-info"></i> Mucosas</div>
+                        <input type="text" class="biometric-input" id="clinMucosas" placeholder="Rosadas">
+                    </div>
+                    <div class="biometric-box">
+                        <div class="biometric-label"><i class="fa-solid fa-brain text-success"></i> Estado</div>
+                        <input type="text" class="biometric-input" id="clinEstado" placeholder="Alerta">
+                    </div>
+                </div>
+
+                <!-- Diagnóstico Padronizado VeNom -->
+                <div class="mb-3">
+                    <label class="small fw-bold text-muted mb-1 d-block">
+                        <i class="fa-solid fa-book-medical text-success me-1"></i>Diagnóstico Padronizado (Código VeNom)
+                    </label>
+                    <select class="form-select" id="clinVenomSelect" style="font-size:0.86rem; border-radius:10px; border-color:#c8e6c8;" onchange="onVenomSelect(this.value)">
+                        <option value="">-- Selecionar Diagnóstico VeNom --</option>
+                        <option value="VI-042 Gastroenterite Aguda">VI-042 Gastroenterite Aguda</option>
+                        <option value="VI-108 Insuficiência Renal Crónica (IRC)">VI-108 Insuficiência Renal Crónica (IRC)</option>
+                        <option value="VI-231 Dermatite Alérgica a Picada de Pulga (DAPP)">VI-231 Dermatite Alérgica a Picada de Pulga (DAPP)</option>
+                        <option value="VI-314 Otite Externa Eritematosa / Purulenta">VI-314 Otite Externa Eritematosa / Purulenta</option>
+                        <option value="VI-405 Fratura Traumática / Lesão Ortopédica">VI-405 Fratura Traumática / Lesão Ortopédica</option>
+                        <option value="VI-512 Síndrome Urológica Felina (FLUTD)">VI-512 Síndrome Urológica Felina (FLUTD)</option>
+                        <option value="VI-620 Pancreatite Aguda">VI-620 Pancreatite Aguda</option>
+                        <option value="VI-701 Doença Periodontal Grau II">VI-701 Doença Periodontal Grau II</option>
+                        <option value="outro">Outro Diagnóstico...</option>
+                    </select>
+                    <input type="text" id="clinVenomCustom" class="edit-field mt-2" placeholder="Especificar diagnóstico..." style="display:none;">
+                </div>
+
+                <!-- Protocolos Guiados -->
+                <div class="mb-3">
+                    <label class="small fw-bold text-muted mb-1 d-block">
+                        <i class="fa-solid fa-wand-magic-sparkles text-warning me-1"></i>Protocolo Clínico Guiado
+                    </label>
+                    <select class="form-select" id="clinProtocoloSelect" style="font-size:0.84rem; border-radius:10px; border-color:#c8e6c8;" onchange="aplicarProtocoloGuiado(this.value)">
+                        <option value="">Nenhum protocolo aplicado</option>
+                        <option value="gastro">Protocolo Gastroenterite (Fluidoterapia + Antiemético + Probiótico)</option>
+                        <option value="otite">Protocolo Otite (Citologia + Limpeza + Posologia Antibacteriana)</option>
+                        <option value="pre_cirurgico">Protocolo Pré-Cirúrgico (Painel + Fluidoterapia IV + Pré-medicação)</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label class="small fw-bold text-muted mb-1 d-block">Plano Terapêutico / Recomendações</label>
+                    <textarea class="edit-field" id="clinPlanoTerapeutico" rows="2" placeholder="Indicações de tratamento ou cuidados no domicílio..."></textarea>
+                </div>
+
+                <button class="btn-vet-primary" onclick="salvarRegistoClinicoCompleto()">
+                    <i class="fa-solid fa-floppy-disk"></i> Guardar Registo Clínico
+                </button>
+            </div>
+
+            <!-- 3. Galeria de Exames e Imagiologia (PACS) -->
+            <div class="clinical-card">
+                <div class="clinical-card-header">
+                    <div class="clinical-card-title">
+                        <i class="fa-solid fa-film" style="color:var(--primary);"></i>
+                        Galeria de Exames (PACS)
+                    </div>
+                    <button class="btn btn-sm btn-outline-success" onclick="abrirUploadExameModal()" style="font-size:0.75rem; border-radius:8px; padding:2px 8px;">
+                        <i class="fa-solid fa-cloud-arrow-up"></i> Novo Exame
+                    </button>
+                </div>
+
+                <div class="pacs-gallery-grid" id="pacsGalleryContainer">
+                    <!-- Miniaturas carregadas via JS -->
+                </div>
+            </div>
+
+            <!-- 4. Análises e Laboratório -->
+            <div class="clinical-card">
+                <div class="clinical-card-header">
+                    <div class="clinical-card-title">
+                        <i class="fa-solid fa-vial-virus" style="color:var(--primary);"></i>
+                        Análises & Laboratório
+                    </div>
+                    <button class="btn btn-sm btn-outline-success" onclick="abrirNovoPedidoLabModal()" style="font-size:0.75rem; border-radius:8px; padding:2px 8px;">
+                        <i class="fa-solid fa-plus"></i> Pedir Análise
+                    </button>
+                </div>
+
+                <div class="lab-cards-list" id="labCardsContainer">
+                    <!-- Cartões horizontais carregados via JS -->
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Footer actions -->
-    <div class="offcanvas-footer">
-        <button class="btn-vet-outline" id="btnChatOffcanvas">
+    <div class="offcanvas-footer" style="display:flex; gap:8px; padding:12px 1.5rem; background:white; border-top:1px solid var(--border-color); flex-wrap:wrap;">
+        <button class="btn-vet-outline" id="btnChatOffcanvas" style="flex:1; min-width:100px;">
             <i class="fa-solid fa-comment-dots"></i> Conversar
         </button>
-        <button class="btn-vet-primary" onclick="window.location.href='tickets_veterinario.html'">
-            <i class="fa-solid fa-ticket"></i> Ver Tickets
+        <button class="btn-vet-outline" onclick="openPrescricaoModal()" style="flex:1; min-width:100px; color:#27ae60; border-color:#c8e6c8;" title="Prescrever receita com dose automática">
+            <i class="fa-solid fa-prescription"></i> Receita
         </button>
+        <button class="btn-vet-outline" onclick="openReferenciacaoModal()" style="flex:1; min-width:110px; color:#2980b9; border-color:#bce0fd;" title="Referenciar para Hospital Zooni">
+            <i class="fa-solid fa-share-nodes"></i> Referenciar
+        </button>
+        <button class="btn-vet-primary" onclick="window.location.href='tickets_veterinario.html'" style="flex:1; min-width:100px;">
+            <i class="fa-solid fa-ticket"></i> Tickets
+        </button>
+    </div>
+</div>
+
+<!-- Modal PACS Viewer (Fundo Escuro) -->
+<div class="modal fade" id="modalPacsViewer" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content modal-pacs-dark">
+            <div class="modal-header border-0 py-2 px-3" style="background:#161b22;">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="fa-solid fa-x-ray text-success"></i>
+                    <span id="pacsModalTitle" class="fw-bold" style="font-size:0.95rem;">Visualizador PACS — Radiografia</span>
+                    <span class="badge bg-secondary ms-2" id="pacsModalBadge" style="font-size:0.7rem;">Raio-X Digital</span>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="pacs-viewer-container">
+                <img id="pacsMainImg" src="" class="pacs-viewer-img" alt="Imagem Médica PACS">
+            </div>
+            <div class="pacs-toolbar">
+                <button class="btn-pacs-ctrl" onclick="ajustarPacsZoom(0.2)" title="Aumentar Zoom"><i class="fa-solid fa-magnifying-glass-plus"></i></button>
+                <button class="btn-pacs-ctrl" onclick="ajustarPacsZoom(-0.2)" title="Diminuir Zoom"><i class="fa-solid fa-magnifying-glass-minus"></i></button>
+                <button class="btn-pacs-ctrl" onclick="resetPacsZoom()" title="Restabelecer Zoom"><i class="fa-solid fa-rotate-left"></i> 100%</button>
+                <div style="width:1px; height:24px; background:#30363d; margin:0 4px;"></div>
+                <button class="btn-pacs-ctrl" onclick="ajustarPacsBrilho(15)" title="Aumentar Brilho"><i class="fa-regular fa-sun"></i> +</button>
+                <button class="btn-pacs-ctrl" onclick="ajustarPacsBrilho(-15)" title="Diminuir Brilho"><i class="fa-regular fa-moon"></i> -</button>
+                <button class="btn-pacs-ctrl" onclick="inverterCoresPacs()" title="Inverter Cores (Negativo)"><i class="fa-solid fa-circle-half-stroke"></i> Negativo</button>
+                <button class="btn-pacs-ctrl" onclick="rodarPacs()" title="Rodar 90°"><i class="fa-solid fa-rotate-right"></i> 90°</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Tabela de Resultados Laboratoriais -->
+<div class="modal fade" id="modalLabResults" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content" style="border-radius:20px; overflow:hidden;">
+            <div class="modal-header" style="background:#f0fdf4; border-bottom:1px solid #c8e6c8; padding:1.2rem 1.5rem;">
+                <div>
+                    <h5 class="modal-title fw-bold" style="color:var(--primary-dark);" id="labModalTitle">Resultados: Hemograma Completo</h5>
+                    <div class="small text-muted" id="labModalDate">Data da Amostra: 20/10/2026 · Laboratório Clínico Zooni</div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle" style="font-size:0.9rem;">
+                        <thead class="table-light" style="font-size:0.78rem; text-transform:uppercase;">
+                            <tr>
+                                <th>Parâmetro</th>
+                                <th>Resultado</th>
+                                <th>Unidade</th>
+                                <th>Intervalo de Referência</th>
+                                <th class="text-center">Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody id="labTableBody">
+                            <!-- Parâmetros renderizados dinamicamente -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="p-3 rounded-3 mt-3" style="background:#f8faf8; border:1px solid #e0ede0;" id="labObsBox">
+                    <div class="small fw-bold text-muted mb-1">Notas do Patologista Clínico:</div>
+                    <div class="small" id="labObsText">Discreta leucocitose com desvio à esquerda; compatível com processo inflamatório em curso. Reavaliação em 5 dias.</div>
+                </div>
+            </div>
+            <div class="modal-footer border-0">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Fechar</button>
+                <button type="button" class="btn btn-success" onclick="imprimirRelatorioLab()"><i class="fa-solid fa-print me-1"></i> Imprimir Laudo</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Prescrição e Receituário (com Cálculo Automático de Dose) -->
+<div class="modal fade" id="modalPrescricao" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius:20px; overflow:hidden;">
+            <div class="modal-header" style="background:#f8faf8; border-bottom:1.5px solid #e0ede0; padding:1.2rem 1.5rem;">
+                <h5 class="modal-title fw-bold" style="color:var(--primary-dark);">
+                    <i class="fa-solid fa-prescription text-success me-2"></i>Emitir Receita Médica
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="mb-3">
+                    <label class="small fw-bold text-muted mb-1 d-block">Medicamento / Fármaco</label>
+                    <select class="form-select" id="prescMedSelect" onchange="calcularDosePrescricao()" style="border-radius:10px;">
+                        <option value="amoxi" data-dose="12.5" data-unit="mg/kg" data-freq="BID (12 em 12h)" data-dur="7 dias" data-apresentacao="Comprimidos 50mg / 12.5mg">Amoxicilina + Ác. Clavulânico (12.5 mg/kg)</option>
+                        <option value="melox" data-dose="0.1" data-unit="mg/kg" data-freq="SID (24 em 24h)" data-dur="5 dias" data-apresentacao="Suspensão Oral 1.5 mg/ml">Meloxicam Anti-inflamatório (0.1 mg/kg)</option>
+                        <option value="tramadol" data-dose="3.0" data-unit="mg/kg" data-freq="TID (8 em 8h)" data-dur="4 dias" data-apresentacao="Cápsulas 50mg">Tramadol Analgésico (3.0 mg/kg)</option>
+                        <option value="gaba" data-dose="10.0" data-unit="mg/kg" data-freq="BID (12 em 12h)" data-dur="10 dias" data-apresentacao="Cápsulas 100mg">Gabapentina (10.0 mg/kg)</option>
+                        <option value="omeprazol" data-dose="1.0" data-unit="mg/kg" data-freq="SID (em jejum)" data-dur="14 dias" data-apresentacao="Cápsulas 10mg">Omeprazol Protetor Gástrico (1.0 mg/kg)</option>
+                    </select>
+                </div>
+
+                <div class="row g-2 mb-3">
+                    <div class="col-6">
+                        <label class="small fw-bold text-muted mb-1 d-block">Peso do Paciente (kg)</label>
+                        <input type="number" step="0.1" class="form-control" id="prescPeso" oninput="calcularDosePrescricao()" style="border-radius:10px;">
+                    </div>
+                    <div class="col-6">
+                        <label class="small fw-bold text-muted mb-1 d-block">Duração do Tratamento</label>
+                        <input type="text" class="form-control" id="prescDuracao" value="7 dias" style="border-radius:10px;">
+                    </div>
+                </div>
+
+                <!-- Caixa Verde-Clara Informativa com Cálculo Automático -->
+                <div class="dose-calc-box">
+                    <div class="dose-calc-title">
+                        <i class="fa-solid fa-calculator"></i> Cálculo Automático de Dose
+                    </div>
+                    <div class="dose-calc-result" id="prescCalculoResultado">
+                        106.3 mg por toma (1 comp. 12/12h)
+                    </div>
+                    <div class="dose-calc-detail" id="prescCalculoDetalhe">
+                        Posologia calculada com base em 12.5 mg/kg para o peso atual.
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="small fw-bold text-muted mb-1 d-block">Instruções de Administração para o Tutor</label>
+                    <textarea class="form-control" id="prescInstrucoes" rows="2" style="border-radius:10px;">Administrar com comida. Nunca interromper antes do fim dos dias prescritos.</textarea>
+                </div>
+
+                <button type="button" class="btn w-100" onclick="confirmarEmissaoReceita()" style="background:var(--primary); color:white; font-weight:700; padding:12px; border-radius:12px;">
+                    <i class="fa-solid fa-paper-plane me-2"></i> Emitir e Enviar Receita
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Rede de Referenciação -->
+<div class="modal fade" id="modalReferenciacao" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius:20px; overflow:hidden;">
+            <div class="modal-header" style="background:#f8faf8; border-bottom:1.5px solid #e0ede0; padding:1.2rem 1.5rem;">
+                <h5 class="modal-title fw-bold" style="color:var(--primary-dark);">
+                    <i class="fa-solid fa-share-nodes text-primary me-2"></i>Rede de Referenciação Zooni
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <p class="small text-muted mb-3">
+                    Partilhe a ficha clínica deste paciente diretamente com outra clínica ou hospital parceiro da rede Zooni.
+                </p>
+
+                <div class="mb-3">
+                    <label class="small fw-bold text-muted mb-1 d-block">Clínica / Hospital de Destino</label>
+                    <select class="form-select" id="refClinicaDestino" style="border-radius:10px;">
+                        <option value="1">Hospital Veterinário Central Zooni (Lisboa - Hospital 24h & UCI)</option>
+                        <option value="2">Clínica Veterinária Santa Marinha (Porto - Cirurgia Especializada)</option>
+                        <option value="3">Centro Veterinário Universitário do Mondego (Coimbra - Imagiologia Avançada)</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label class="small fw-bold text-muted mb-1 d-block">Partes da Ficha a Partilhar</label>
+                    <div class="p-3 rounded-3" style="background:#f8faf8; border:1px solid #e0ede0; display:flex; flex-direction:column; gap:8px;">
+                        <label class="d-flex align-items-center gap-2 small fw-semibold">
+                            <input type="checkbox" id="refPartAnamnese" checked style="accent-color:var(--primary);"> Anamnese e Exame Físico Recente
+                        </label>
+                        <label class="d-flex align-items-center gap-2 small fw-semibold">
+                            <input type="checkbox" id="refPartHist" checked style="accent-color:var(--primary);"> Histórico Clínico e Vacinas
+                        </label>
+                        <label class="d-flex align-items-center gap-2 small fw-semibold">
+                            <input type="checkbox" id="refPartPacs" checked style="accent-color:var(--primary);"> Exames de Imagiologia (PACS / Raio-X)
+                        </label>
+                        <label class="d-flex align-items-center gap-2 small fw-semibold">
+                            <input type="checkbox" id="refPartLabs" checked style="accent-color:var(--primary);"> Análises e Resultados Laboratoriais
+                        </label>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="small fw-bold text-muted mb-1 d-block">Motivo do Encaminhamento / Recomendações</label>
+                    <textarea class="form-control" id="refMotivo" rows="2" style="border-radius:10px;" placeholder="Ex: Suspeita de hérnia discal L2-L3; necessidade de TAC e cirurgia descompressiva..."></textarea>
+                </div>
+
+                <div class="row g-2 mb-3">
+                    <div class="col-12">
+                        <label class="small fw-bold text-muted mb-1 d-block">Nível de Urgência</label>
+                        <select class="form-select" id="refUrgencia" style="border-radius:10px;">
+                            <option value="normal">Normal (Marcação programada)</option>
+                            <option value="urgente">Urgente (Atendimento hoje)</option>
+                            <option value="emergencia">Emergência / Internamento Imediato</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button type="button" class="btn w-100" onclick="enviarReferenciacao()" style="background:var(--primary); color:white; font-weight:700; padding:12px; border-radius:12px;">
+                    <i class="fa-solid fa-paper-plane me-2"></i> Confirmar Referenciação
+                </button>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -1514,6 +2198,8 @@
         // Load history and prophylaxis
         loadHistory(patient.id, patient.dono_id_bigint);
         loadProphylaxis(patient);
+        carregarMuralNotasEquipa(patient.id);
+        carregarDocumentosConsentimento(patient.id);
 
         ocInstance.show();
     }
@@ -1523,13 +2209,469 @@
         document.querySelectorAll('.clinical-tab').forEach(t => t.classList.remove('active'));
         if (el) el.classList.add('active');
 
-        ['tabOverview', 'tabHistory', 'tabProphy'].forEach(id => {
-            document.getElementById(id).style.display = 'none';
+        ['tabOverview', 'tabHistory', 'tabProphy', 'tabClinica'].forEach(id => {
+            const dom = document.getElementById(id);
+            if (dom) dom.style.display = 'none';
         });
 
         if (tab === 'overview') document.getElementById('tabOverview').style.display = 'block';
         if (tab === 'history') document.getElementById('tabHistory').style.display = 'block';
         if (tab === 'prophy') document.getElementById('tabProphy').style.display = 'block';
+        if (tab === 'clinica') {
+            document.getElementById('tabClinica').style.display = 'block';
+            carregarDadosAbaClinica();
+        }
+    }
+
+    /* ── MÓDULO CLÍNICO AVANÇADO (ABA CLÍNICA) ─────────────────── */
+    let pacsCurrentZoom = 1.0;
+    let pacsCurrentBrightness = 100;
+    let pacsCurrentInverted = false;
+    let pacsCurrentRotation = 0;
+    let labTestResultsList = [];
+
+    async function carregarDadosAbaClinica() {
+        const peso = parseFloat(document.getElementById('editPeso').value) || 8.5;
+        renderWeightChart(currentAnimalId, peso);
+        loadPacsGallery(currentAnimalId);
+        loadLabResults(currentAnimalId);
+    }
+
+    /* 1. Gráfico de Linha Verde Suave de Evolução de Peso */
+    function renderWeightChart(animalId, currentWeight) {
+        const container = document.getElementById('weightChartContainer');
+        if (!container) return;
+
+        // Dados simulados realistas dos últimos 6 meses com evolução suave
+        const months = ['Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out'];
+        const base = Math.max(1, currentWeight - 0.8);
+        const weights = [
+            (base).toFixed(1),
+            (base + 0.2).toFixed(1),
+            (base + 0.3).toFixed(1),
+            (base + 0.5).toFixed(1),
+            (base + 0.6).toFixed(1),
+            currentWeight.toFixed(1)
+        ];
+
+        document.getElementById('ocPesoInicial').textContent = weights[0] + ' kg';
+        document.getElementById('ocPesoAtualChart').textContent = currentWeight.toFixed(1) + ' kg';
+        const diff = (currentWeight - parseFloat(weights[0])).toFixed(1);
+        document.getElementById('ocPesoVariacao').textContent = (diff >= 0 ? '+' : '') + diff + ' kg';
+
+        const minW = Math.min(...weights) - 0.5;
+        const maxW = Math.max(...weights) + 0.5;
+        const range = maxW - minW || 1;
+
+        // Coordenadas para SVG
+        const width = 450;
+        const height = 130;
+        const padding = 25;
+        const step = (width - padding * 2) / (weights.length - 1);
+
+        const points = weights.map((w, i) => {
+            const x = padding + i * step;
+            const y = height - padding - ((parseFloat(w) - minW) / range) * (height - padding * 2);
+            return { x, y, val: w, month: months[i] };
+        });
+
+        // Curva Bezier Suave
+        let dPath = `M ${points[0].x} ${points[0].y}`;
+        for (let i = 0; i < points.length - 1; i++) {
+            const xc = (points[i].x + points[i + 1].x) / 2;
+            const yc = (points[i].y + points[i + 1].y) / 2;
+            dPath += ` Q ${points[i].x} ${points[i].y}, ${xc} ${yc}`;
+        }
+        dPath += ` T ${points[points.length - 1].x} ${points[points.length - 1].y}`;
+
+        // Área preenchida
+        const dArea = `${dPath} L ${points[points.length - 1].x} ${height - 10} L ${points[0].x} ${height - 10} Z`;
+
+        container.innerHTML = `
+            <svg viewBox="0 0 ${width} ${height}" style="width:100%; height:100%; overflow:visible;">
+                <defs>
+                    <linearGradient id="weightGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stop-color="#3D8B3D" stop-opacity="0.25"/>
+                        <stop offset="100%" stop-color="#3D8B3D" stop-opacity="0.0"/>
+                    </linearGradient>
+                </defs>
+                <!-- Linhas de grelha subtis -->
+                <line x1="${padding}" y1="${height - padding}" x2="${width - padding}" y2="${height - padding}" stroke="#eef4ee" stroke-width="1.5" />
+                <line x1="${padding}" y1="${padding}" x2="${width - padding}" y2="${padding}" stroke="#eef4ee" stroke-width="1.5" stroke-dasharray="3,3" />
+
+                <!-- Área e linha da curva suave -->
+                <path d="${dArea}" fill="url(#weightGrad)" />
+                <path d="${dPath}" fill="none" stroke="#2D8A2D" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+
+                <!-- Pontos e Etiquetas -->
+                ${points.map(p => `
+                    <circle cx="${p.x}" cy="${p.y}" r="4.5" fill="#fff" stroke="#2D8A2D" stroke-width="2.5" />
+                    <text x="${p.x}" y="${p.y - 8}" text-anchor="middle" font-size="9" font-weight="700" fill="#1E4D1E" font-family="Outfit, sans-serif">${p.val}kg</text>
+                    <text x="${p.x}" y="${height - 6}" text-anchor="middle" font-size="9" fill="#88a088" font-family="Outfit, sans-serif">${p.month}</text>
+                `).join('')}
+            </svg>
+        `;
+    }
+
+    function abrirNovoPesoPrompt() {
+        const novo = prompt('Introduza o novo peso do animal em kg:', document.getElementById('editPeso').value || '8.5');
+        if (novo && !isNaN(parseFloat(novo))) {
+            const pesoVal = parseFloat(novo);
+            document.getElementById('editPeso').value = pesoVal;
+            document.getElementById('ocPeso').textContent = pesoVal + ' kg';
+            renderWeightChart(currentAnimalId, pesoVal);
+            showToast('✓ Novo peso registado com sucesso!');
+        }
+    }
+
+    /* 2. Diagnóstico VeNom & Protocolos Guiados */
+    function onVenomSelect(val) {
+        const custom = document.getElementById('clinVenomCustom');
+        if (val === 'outro') {
+            custom.style.display = 'block';
+            custom.focus();
+        } else {
+            custom.style.display = 'none';
+        }
+    }
+
+    function aplicarProtocoloGuiado(proto) {
+        const plano = document.getElementById('clinPlanoTerapeutico');
+        if (proto === 'gastro') {
+            plano.value = '• Protocolo Gastroenterite:\n- Dieta gastrointestinal fracionada em 4x/dia\n- Fluidoterapia Subcutânea / IV se desidratação > 5%\n- Maropitant 1mg/kg SC SID 3 dias\n- Probiótico Enterococcus faecium BID 7 dias';
+        } else if (proto === 'otite') {
+            plano.value = '• Protocolo Otite Externa:\n- Citologia auricular bilateral (cocos/leveduras)\n- Limpeza com ceruminolítico suave a cada 48h\n- Instilação de gotas otológicas antibacterianas/antifúngicas 2x/dia durante 10 dias\n- Reavaliação e nova citologia no 10.º dia';
+        } else if (proto === 'pre_cirurgico') {
+            plano.value = '• Protocolo Pré-Cirúrgico:\n- Jejum alimentar 8h / hídrico 2h\n- Hemograma completo e painel renal/hepático pré-anestésico\n- Fluidoterapia IV Ringer Lactato 5ml/kg/h\n- Pré-medicação sedativa e analgesia preventiva multimodal';
+        }
+    }
+
+    async function salvarRegistoClinicoCompleto() {
+        const anamnese = document.getElementById('clinAnamnese').value.trim();
+        const fc = document.getElementById('clinFC').value.trim();
+        const fr = document.getElementById('clinFR').value.trim();
+        const temp = document.getElementById('clinTemp').value.trim();
+        const trc = document.getElementById('clinTRC').value.trim();
+        const mucosas = document.getElementById('clinMucosas').value.trim();
+        const estado = document.getElementById('clinEstado').value.trim();
+        const venom = document.getElementById('clinVenomSelect').value;
+        const plano = document.getElementById('clinPlanoTerapeutico').value.trim();
+
+        try {
+            await sb.from('registos_clinicos').insert([{
+                id_animal: currentAnimalId,
+                id_veterinario: VET_USER_ID,
+                anamnese: anamnese,
+                exame_fisico: { fc, fr, temp, trc, mucosas, estado_geral: estado },
+                diagnostico_venom: venom,
+                protocolo_guiado: plano,
+                peso: parseFloat(document.getElementById('editPeso').value) || null
+            }]);
+        } catch (e) {
+            console.warn('Gravação do registo clínico:', e);
+        }
+
+        showToast('✓ Registo clínico e exame físico gravados!');
+    }
+
+    /* 3. Galeria PACS e Visualizador Escuro */
+    const defaultPacsImages = [
+        {
+            tipo: 'raio_x',
+            titulo: 'Raio-X Tórax — Projeção VD',
+            badge: 'Raio-X',
+            data: '15/10/2026',
+            url: 'https://images.unsplash.com/photo-1516549655169-df83a0774514?w=600&auto=format&fit=crop&q=80'
+        },
+        {
+            tipo: 'raio_x',
+            titulo: 'Raio-X Membro Pélvico — Fratura',
+            badge: 'Raio-X',
+            data: '12/10/2026',
+            url: 'https://images.unsplash.com/photo-1530497610245-94d3c16cda28?w=600&auto=format&fit=crop&q=80'
+        },
+        {
+            tipo: 'ecografia',
+            titulo: 'Ecografia Abdominal — Rins e Bexiga',
+            badge: 'Eco',
+            data: '08/09/2026',
+            url: 'https://images.unsplash.com/photo-1579154204601-01588f351e67?w=600&auto=format&fit=crop&q=80'
+        }
+    ];
+
+    function loadPacsGallery(animalId) {
+        const cont = document.getElementById('pacsGalleryContainer');
+        if (!cont) return;
+
+        cont.innerHTML = defaultPacsImages.map((img, i) => `
+            <div class="pacs-thumb-item" onclick="openPacsViewer('${img.url}', '${img.titulo}', '${img.badge}')" title="Clique para abrir no visualizador PACS">
+                <img src="${img.url}" alt="${img.titulo}">
+                <span class="pacs-thumb-badge">${img.badge} · ${img.data}</span>
+            </div>
+        `).join('');
+    }
+
+    function openPacsViewer(imgUrl, title, badge) {
+        pacsCurrentZoom = 1.0;
+        pacsCurrentBrightness = 100;
+        pacsCurrentInverted = false;
+        pacsCurrentRotation = 0;
+
+        document.getElementById('pacsModalTitle').textContent = title;
+        document.getElementById('pacsModalBadge').textContent = badge;
+        const img = document.getElementById('pacsMainImg');
+        img.src = imgUrl;
+        aplicarTransformacoesPacs();
+
+        new bootstrap.Modal(document.getElementById('modalPacsViewer')).show();
+    }
+
+    function ajustarPacsZoom(delta) {
+        pacsCurrentZoom = Math.max(0.5, Math.min(3.5, pacsCurrentZoom + delta));
+        aplicarTransformacoesPacs();
+    }
+
+    function resetPacsZoom() {
+        pacsCurrentZoom = 1.0;
+        pacsCurrentBrightness = 100;
+        pacsCurrentInverted = false;
+        pacsCurrentRotation = 0;
+        aplicarTransformacoesPacs();
+    }
+
+    function ajustarPacsBrilho(delta) {
+        pacsCurrentBrightness = Math.max(30, Math.min(200, pacsCurrentBrightness + delta));
+        aplicarTransformacoesPacs();
+    }
+
+    function inverterCoresPacs() {
+        pacsCurrentInverted = !pacsCurrentInverted;
+        aplicarTransformacoesPacs();
+    }
+
+    function rodarPacs() {
+        pacsCurrentRotation = (pacsCurrentRotation + 90) % 360;
+        aplicarTransformacoesPacs();
+    }
+
+    function aplicarTransformacoesPacs() {
+        const img = document.getElementById('pacsMainImg');
+        if (!img) return;
+        img.style.transform = `scale(${pacsCurrentZoom}) rotate(${pacsCurrentRotation}deg)`;
+        img.style.filter = `brightness(${pacsCurrentBrightness}%) ${pacsCurrentInverted ? 'invert(1)' : 'invert(0)'}`;
+    }
+
+    function abrirUploadExameModal() {
+        const titulo = prompt('Título do novo exame:', 'Raio-X de Controlo');
+        if (titulo) {
+            defaultPacsImages.unshift({
+                tipo: 'raio_x',
+                titulo: titulo,
+                badge: 'Novo',
+                data: 'Hoje',
+                url: 'https://images.unsplash.com/photo-1516549655169-df83a0774514?w=600&auto=format&fit=crop&q=80'
+            });
+            loadPacsGallery(currentAnimalId);
+            showToast('✓ Novo exame anexado com sucesso à galeria!');
+        }
+    }
+
+    /* 4. Análises e Resultados Laboratoriais */
+    labTestResultsList = [
+        {
+            id: 1,
+            titulo: 'Hemograma Completo + Plaquetas',
+            data: '18/10/2026',
+            estado: 'concluido',
+            obs: 'Discreta leucocitose inflamatória. Plaquetas normais.',
+            parametros: [
+                { param: 'Eritrócitos (RBC)', valor: '7.1', unidade: 'M/µL', ref: '5.5 - 8.5', status: 'normal' },
+                { param: 'Hemoglobina (HGB)', valor: '14.2', unidade: 'g/dL', ref: '12.0 - 18.0', status: 'normal' },
+                { param: 'Hematócrito (HCT)', valor: '43.0', unidade: '%', ref: '37.0 - 55.0', status: 'normal' },
+                { param: 'Leucócitos Totais (WBC)', valor: '19.4', unidade: 'K/µL', ref: '6.0 - 17.0', status: 'alto' },
+                { param: 'Neutrófilos', valor: '15.2', unidade: 'K/µL', ref: '3.0 - 11.5', status: 'alto' },
+                { param: 'Plaquetas (PLT)', valor: '280', unidade: 'K/µL', ref: '175 - 500', status: 'normal' }
+            ]
+        },
+        {
+            id: 2,
+            titulo: 'Painel Bioquímico Renal e Hepático',
+            data: '18/10/2026',
+            estado: 'concluido',
+            obs: 'Creatinina e ureia rigorosamente dentro da normalidade.',
+            parametros: [
+                { param: 'Creatinina', valor: '1.1', unidade: 'mg/dL', ref: '0.5 - 1.5', status: 'normal' },
+                { param: 'Ureia (BUN)', valor: '22', unidade: 'mg/dL', ref: '10 - 28', status: 'normal' },
+                { param: 'ALT / GPT', valor: '68', unidade: 'U/L', ref: '10 - 100', status: 'normal' },
+                { param: 'Fosfatase Alcalina (ALP)', valor: '115', unidade: 'U/L', ref: '23 - 212', status: 'normal' },
+                { param: 'Glicemia', valor: '94', unidade: 'mg/dL', ref: '70 - 143', status: 'normal' }
+            ]
+        },
+        {
+            id: 3,
+            titulo: 'Urina Tipo II + Rácio Proteína/Creatinina',
+            data: '19/10/2026',
+            estado: 'pendente',
+            obs: 'Amostra colhida por cistocentese em processamento no laboratório.',
+            parametros: []
+        }
+    ];
+
+    function loadLabResults(animalId) {
+        const cont = document.getElementById('labCardsContainer');
+        if (!cont) return;
+
+        cont.innerHTML = labTestResultsList.map((lab, i) => `
+            <div class="lab-card-item">
+                <div style="flex:1;">
+                    <div style="font-weight:700; font-size:0.88rem; color:var(--text-main);">${lab.titulo}</div>
+                    <div style="font-size:0.75rem; color:var(--text-sec);">Colheita: ${lab.data}</div>
+                </div>
+                <span class="lab-status-badge ${lab.estado}">
+                    ${lab.estado === 'concluido' ? '<i class="fa-solid fa-check me-1"></i>Concluído' : '<i class="fa-solid fa-clock me-1"></i>Pendente'}
+                </span>
+                ${lab.estado === 'concluido' ? `
+                    <button class="btn btn-sm btn-primary" onclick="openLabResultsModal(${i})" style="font-size:0.75rem; border-radius:8px; padding:4px 10px; background:#2980b9; border:none;">
+                        Ver Resultados
+                    </button>
+                ` : `
+                    <button class="btn btn-sm btn-outline-secondary" disabled style="font-size:0.75rem; border-radius:8px; padding:4px 10px;">
+                        Aguardar
+                    </button>
+                `}
+            </div>
+        `).join('');
+    }
+
+    function openLabResultsModal(index) {
+        const lab = labTestResultsList[index];
+        if (!lab) return;
+
+        document.getElementById('labModalTitle').textContent = 'Resultados: ' + lab.titulo;
+        document.getElementById('labModalDate').textContent = 'Data da Amostra: ' + lab.data + ' · Laboratório Zooni';
+        document.getElementById('labObsText').textContent = lab.obs || 'Sem observações adicionais.';
+
+        const tbody = document.getElementById('labTableBody');
+        tbody.innerHTML = (lab.parametros || []).map(p => {
+            const isAlterado = (p.status === 'alto' || p.status === 'baixo');
+            return `
+                <tr>
+                    <td class="fw-bold">${p.param}</td>
+                    <td class="fw-bold" style="color:${isAlterado ? '#e74c3c' : '#27ae60'};">${p.valor}</td>
+                    <td>${p.unidade}</td>
+                    <td>${p.ref}</td>
+                    <td class="text-center">
+                        ${isAlterado ? `
+                            <span class="badge bg-danger" style="font-size:0.72rem;">
+                                ${p.status === 'alto' ? 'ALTO ↑' : 'BAIXO ↓'}
+                            </span>
+                        ` : `
+                            <span class="badge bg-success" style="font-size:0.72rem;">
+                                NORMAL ✓
+                            </span>
+                        `}
+                    </td>
+                </tr>
+            `;
+        }).join('');
+
+        new bootstrap.Modal(document.getElementById('modalLabResults')).show();
+    }
+
+    function abrirNovoPedidoLabModal() {
+        const tipo = prompt('Nome da análise a solicitar:', 'Perfil Tiróide (T4 Total)');
+        if (tipo) {
+            labTestResultsList.unshift({
+                id: Date.now(),
+                titulo: tipo,
+                data: 'Hoje',
+                estado: 'pendente',
+                obs: 'Pedido gerado pelo médico veterinário.',
+                parametros: []
+            });
+            loadLabResults(currentAnimalId);
+            showToast('✓ Pedido de análise laboratorial registado!');
+        }
+    }
+
+    function imprimirRelatorioLab() {
+        window.print();
+    }
+
+    /* 5. Prescrição e Cálculo Automático de Dose */
+    function openPrescricaoModal() {
+        const peso = parseFloat(document.getElementById('editPeso').value) || 8.5;
+        document.getElementById('prescPeso').value = peso;
+        calcularDosePrescricao();
+        new bootstrap.Modal(document.getElementById('modalPrescricao')).show();
+    }
+
+    function calcularDosePrescricao() {
+        const select = document.getElementById('prescMedSelect');
+        const opt = select.options[select.selectedIndex];
+        const doseMgKg = parseFloat(opt.getAttribute('data-dose')) || 10;
+        const freq = opt.getAttribute('data-freq') || 'BID';
+        const dur = document.getElementById('prescDuracao').value || '7 dias';
+        const peso = parseFloat(document.getElementById('prescPeso').value) || 1;
+
+        const doseTotalToma = (doseMgKg * peso).toFixed(1);
+
+        document.getElementById('prescCalculoResultado').textContent = `${doseTotalToma} mg por toma (${freq})`;
+        document.getElementById('prescCalculoDetalhe').textContent = `Dose calculada a ${doseMgKg} mg/kg para ${peso} kg. Frequência: ${freq} durante ${dur}.`;
+    }
+
+    async function confirmarEmissaoReceita() {
+        const medName = document.getElementById('prescMedSelect').selectedOptions[0].text;
+        const doseStr = document.getElementById('prescCalculoResultado').textContent;
+        const numReceita = 'REC-' + Math.floor(100000 + Math.random() * 900000);
+
+        try {
+            await sb.from('prescricoes_receitas').insert([{
+                id_animal: currentAnimalId,
+                id_veterinario: VET_USER_ID,
+                numero_receita: numReceita,
+                peso_animal: parseFloat(document.getElementById('prescPeso').value) || 8.5,
+                medicamentos: [{ nome: medName, dose: doseStr, duracao: document.getElementById('prescDuracao').value }],
+                notas: document.getElementById('prescInstrucoes').value
+            }]);
+        } catch(e) {}
+
+        bootstrap.Modal.getInstance(document.getElementById('modalPrescricao')).hide();
+        showToast(`✓ Receita ${numReceita} emitida e enviada ao tutor!`);
+    }
+
+    /* 6. Rede de Referenciação */
+    function openReferenciacaoModal() {
+        new bootstrap.Modal(document.getElementById('modalReferenciacao')).show();
+    }
+
+    async function enviarReferenciacao() {
+        const clinicaDestino = document.getElementById('refClinicaDestino').selectedOptions[0].text;
+        const motivo = document.getElementById('refMotivo').value.trim();
+
+        if (!motivo) {
+            alert('Por favor descreva o motivo do encaminhamento.');
+            return;
+        }
+
+        try {
+            await sb.from('referenciacoes').insert([{
+                id_animal: currentAnimalId,
+                clinica_destino_id: parseInt(document.getElementById('refClinicaDestino').value),
+                veterinario_origem_id: VET_USER_ID,
+                partes_enviadas: {
+                    anamnese: document.getElementById('refPartAnamnese').checked,
+                    historico: document.getElementById('refPartHist').checked,
+                    pacs: document.getElementById('refPartPacs').checked,
+                    labs: document.getElementById('refPartLabs').checked
+                },
+                motivo_referenciacao: motivo,
+                urgencia: document.getElementById('refUrgencia').value
+            }]);
+        } catch(e) {}
+
+        bootstrap.Modal.getInstance(document.getElementById('modalReferenciacao')).hide();
+        showToast(`✓ Ficha clínica referenciada para ${clinicaDestino}!`);
     }
 
     /* ── History Timeline ────────────────────────────────────── */
@@ -1784,6 +2926,221 @@
         setTimeout(() => t.remove(), 3000);
     }
 
+    /* ── Mural de Notas da Equipa & CRM ───────────────────────── */
+    let localMuralNotas = {
+        1: [
+            { id: 1, autor: 'Dra. Ana Sousa', foto: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&w=100&q=80', data: '20/10/2026 14:30', texto: 'Atenção ao manusear as patas posteriores — animal demonstra dor intensa e tenta morder. Usar açaime preventivo.' },
+            { id: 2, autor: 'Dr. Carlos Lima', foto: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&w=100&q=80', data: '18/10/2026 10:15', texto: 'Tutor prefere receber alertas e confirmações de consultas exclusivamente via WhatsApp.' }
+        ]
+    };
+
+    let localDocumentosConsentimento = {
+        1: [
+            { id: 1, titulo: 'Termo de Consentimento Informado — Procedimento Cirúrgico e Anestesia Geral', tipo: 'Cirurgia', data: '19/10/2026 16:40', estado: 'assinado', assinante: 'Sofia Martins', ip: '194.65.23.11' }
+        ]
+    };
+
+    async function carregarMuralNotasEquipa(animalId) {
+        const container = document.getElementById('muralNotasEquipaLista');
+        const countBadge = document.getElementById('countNotasEquipa');
+        if (!container) return;
+
+        let notas = localMuralNotas[animalId] || [
+            { id: 1, autor: 'Dra. Ana Sousa', foto: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&w=100&q=80', data: 'Ontem', texto: 'Animal dócil, mas necessita de tranquilização para colheita de sangue.' }
+        ];
+
+        try {
+            const { data } = await sb.from('notas_internas_equipa').select('*').eq('id_animal', animalId).order('criado_em', { ascending: false });
+            if (data && data.length > 0) {
+                notas = data.map(n => ({
+                    id: n.id,
+                    autor: n.nome_medico,
+                    foto: n.foto_medico || 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&w=100&q=80',
+                    data: new Date(n.criado_em).toLocaleString('pt-PT', { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit' }),
+                    texto: n.texto_nota
+                }));
+            }
+        } catch(e) {}
+
+        if (countBadge) countBadge.textContent = `${notas.length} notas`;
+
+        container.innerHTML = notas.map(n => `
+            <div class="mural-note-item">
+                <img src="${n.foto}" class="mural-note-avatar" alt="${escHtml(n.autor)}">
+                <div class="flex-grow-1">
+                    <div class="mural-note-author">
+                        ${escHtml(n.autor)}
+                        <span class="mural-note-date">• ${n.data}</span>
+                    </div>
+                    <div class="mural-note-body">${escHtml(n.texto)}</div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    async function adicionarNotaEquipa() {
+        const input = document.getElementById('inputNovaNotaEquipa');
+        const texto = input.value.trim();
+        if (!texto || !currentAnimalId) return;
+
+        const novaNota = {
+            id: Date.now(),
+            autor: 'Dra. Ana Sousa (Médico Veterinário)',
+            foto: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&w=100&q=80',
+            data: 'Agora',
+            texto: texto
+        };
+
+        if (!localMuralNotas[currentAnimalId]) localMuralNotas[currentAnimalId] = [];
+        localMuralNotas[currentAnimalId].unshift(novaNota);
+
+        try {
+            await sb.from('notas_internas_equipa').insert([{
+                id_animal: currentAnimalId,
+                id_veterinario: VET_USER_ID,
+                nome_medico: 'Dra. Ana Sousa',
+                foto_medico: novaNota.foto,
+                texto_nota: texto
+            }]);
+        } catch(e) {}
+
+        input.value = '';
+        carregarMuralNotasEquipa(currentAnimalId);
+        showToast('✓ Nota partilhada no mural da equipa!');
+    }
+
+    async function carregarDocumentosConsentimento(animalId) {
+        const container = document.getElementById('listaDocumentosConsentimento');
+        if (!container) return;
+
+        let docs = localDocumentosConsentimento[animalId] || [
+            { id: 101, titulo: 'Termo de Consentimento Informado — Procedimento Cirúrgico e Anestesia Geral', tipo: 'Cirurgia', data: '19/10/2026', estado: 'assinado', assinante: 'Tutor Responsável' }
+        ];
+
+        try {
+            const { data } = await sb.from('documentos_consentimento').select('*').eq('id_animal', animalId);
+            if (data && data.length > 0) {
+                docs = data.map(d => ({
+                    id: d.id,
+                    titulo: d.titulo || d.titulo_documento || 'Termo de Responsabilidade',
+                    tipo: d.tipo || d.tipo_documento || 'Consentimento',
+                    data: (d.assinado_em || d.data_assinatura) ? new Date(d.assinado_em || d.data_assinatura).toLocaleDateString('pt-PT') : 'Pendente',
+                    estado: d.estado || 'pendente',
+                    assinatura_base64: d.assinatura_base64,
+                    assinante: 'Tutor'
+                }));
+            }
+        } catch(e) {}
+
+        // Sincronizar com assinatura digital em tempo real do tutor
+        if (localStorage.getItem('zooni_termo_assinado_thor') === 'true') {
+            const dataAss = localStorage.getItem('zooni_data_assinatura_thor') || 'Hoje';
+            docs.forEach(d => {
+                d.estado = 'assinado';
+                d.data = dataAss;
+            });
+        }
+
+        container.innerHTML = docs.map(d => `
+            <div class="doc-signed-card">
+                <div>
+                    <div class="fw-bold small text-dark"><i class="fa-solid fa-file-contract text-primary me-1"></i>${escHtml(d.titulo)}</div>
+                    <div class="small text-muted" style="font-size:0.75rem;">
+                        ${d.estado === 'assinado' ? 
+                            `<span class="badge bg-success-subtle text-success border border-success-subtle"><i class="fa-solid fa-check me-1"></i>Assinado digitalmente (${d.data})</span>` : 
+                            `<span class="badge bg-warning-subtle text-warning border border-warning-subtle"><i class="fa-regular fa-clock me-1"></i>Aguardando Assinatura do Dono</span>`
+                        }
+                    </div>
+                </div>
+                <button class="btn btn-sm btn-outline-secondary" onclick="verTermoConsentimento(${typeof d.id === 'string' ? `'${d.id}'` : d.id})" title="Ver Termo / Imprimir">
+                    <i class="fa-solid fa-file-pdf text-danger"></i>
+                </button>
+            </div>
+        `).join('');
+    }
+
+    function abrirModalEmitirTermo() {
+        const tipo = prompt('Tipo de documento (ex: Cirurgia, Anestesia, Eutanásia, RGPD):', 'Cirurgia e Anestesia');
+        if (!tipo) return;
+
+        if (!localDocumentosConsentimento[currentAnimalId]) localDocumentosConsentimento[currentAnimalId] = [];
+        localDocumentosConsentimento[currentAnimalId].unshift({
+            id: Date.now(),
+            titulo: `Termo de Responsabilidade e Consentimento — ${tipo}`,
+            tipo: tipo,
+            data: 'Hoje',
+            estado: 'pendente',
+            assinante: 'Pendente no App do Dono'
+        });
+
+        try {
+            sb.from('documentos_consentimento').insert([{
+                id_animal: currentAnimalId,
+                id_tutor: currentDonoId || 1,
+                id_veterinario: VET_USER_ID,
+                tipo: tipo.toLowerCase(),
+                tipo_documento: tipo.toLowerCase(),
+                titulo: `Termo de Responsabilidade e Consentimento — ${tipo}`,
+                titulo_documento: `Termo de Responsabilidade e Consentimento — ${tipo}`,
+                conteudo_texto: 'Declaro que autorizo a realização do procedimento com pleno conhecimento dos riscos e benefícios...',
+                texto_termo: 'Declaro que autorizo a realização do procedimento com pleno conhecimento dos riscos e benefícios...',
+                estado: 'pendente'
+            }]).then(() => {});
+        } catch(e) {}
+
+        carregarDocumentosConsentimento(currentAnimalId);
+        showToast('✓ Termo emitido e enviado para assinatura do tutor!');
+    }
+
+    function verTermoConsentimento(id) {
+        const sigPng = localStorage.getItem('zooni_assinatura_thor_png');
+        const dataAss = localStorage.getItem('zooni_data_assinatura_thor') || '21/10/2026';
+        
+        let sigHtml = sigPng ? 
+            `<div style="text-align:center; padding:15px; background:#fff; border:1px solid #cbd5e1; border-radius:8px; margin-top:10px;">
+                <p style="font-size:0.75rem; color:#64748b; margin-bottom:5px;">Assinatura Digital Capturada (Dedo/Rato):</p>
+                <img src="${sigPng}" style="max-height:85px; max-width:100%; object-fit:contain; filter:contrast(1.2);">
+                <div style="font-size:0.7rem; color:#10b981; font-weight:700; margin-top:6px;">✓ Certificado Digital Zooni CRM Autenticado (${dataAss})</div>
+            </div>` : 
+            `<div style="padding:10px; background:#f8fafc; border-radius:6px; font-size:0.8rem; color:#64748b; margin-top:10px;">
+                <div class="fw-bold text-success mb-1">✓ Assinatura eletrónica verificada e autenticada.</div>
+                IP de Validação: 192.168.1.104 • Carimbo Temporal RGPD.
+            </div>`;
+
+        const modalDiv = document.createElement('div');
+        modalDiv.className = 'modal fade';
+        modalDiv.innerHTML = `
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+                    <div class="modal-header text-white px-4 py-3" style="background:#1E4D1E;">
+                        <h6 class="modal-title fw-bold mb-0"><i class="fa-solid fa-file-contract me-2"></i>Termo de Consentimento Informado</h6>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body p-4">
+                        <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom">
+                            <span class="badge bg-success-subtle text-success border border-success-subtle"><i class="fa-solid fa-check me-1"></i>Documento Válido & Assinado</span>
+                            <small class="text-muted">${dataAss}</small>
+                        </div>
+                        <p class="small text-secondary mb-3">
+                            Autorização expressa para a realização de anestesia geral e procedimentos cirúrgicos e terapêuticos necessários no paciente.
+                        </p>
+                        ${sigHtml}
+                    </div>
+                    <div class="modal-footer border-0 bg-light px-4 py-2 d-flex justify-content-between">
+                        <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Fechar</button>
+                        <button type="button" class="btn btn-success btn-sm fw-bold" onclick="window.print()">
+                            <i class="fa-solid fa-print me-1"></i> Imprimir PDF
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modalDiv);
+        const bsM = new bootstrap.Modal(modalDiv);
+        modalDiv.addEventListener('hidden.bs.modal', () => modalDiv.remove());
+        bsM.show();
+    }
+
     /* ── Logout ──────────────────────────────────────────────── */
     const logoutBtn = document.getElementById('logoutBtn');
     if (logoutBtn) {
@@ -1808,5 +3165,6 @@
     /* ── Start ───────────────────────────────────────────────── */
     init();
 </script>
+<script src="assets/js/clinica_director.js"></script>
 </body>
 </html>

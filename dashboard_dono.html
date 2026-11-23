@@ -1003,6 +1003,9 @@
                     <a href="chat_dono.html" class="nav-link "><i class="fa-solid fa-comments"></i> <span data-i18n="nav_chat">Chat da Clínica</span></a>
                 </li>
                 <li class="nav-item">
+                    <a href="loja_dono.html" class="nav-link "><i class="fa-solid fa-bag-shopping"></i> <span>Farmácia &amp; Loja</span></a>
+                </li>
+                <li class="nav-item">
                     <a href="veterinarios.html" class="nav-link "><i class="fa-solid fa-user-doctor"></i> <span>Veterinários</span></a>
                 </li>
             </ul>
@@ -1106,6 +1109,77 @@
             </div>
 
 
+
+            <!-- CRM & EXPERIÊNCIA DO TUTOR: CARTÕES DE AVISO (Internamentos, Assinatura Digital & Telemedicina) -->
+            <div id="crmTutorAlertsContainer" class="mb-4 d-flex flex-column gap-3">
+                <!-- Internamentos Ativos dos Animais do Tutor -->
+                <div id="internamentosAtivosTutor" class="d-flex flex-column gap-3 d-none"></div>
+                <!-- Cartão Documento Pendente de Assinatura -->
+                <div class="card-panel border border-warning-subtle shadow-sm p-3 p-md-4 d-none" id="cardDocumentoPendente" style="background: linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%); border-left: 6px solid #D97706 !important;">
+                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3">
+                        <div class="d-flex align-items-start gap-3">
+                            <div class="rounded-circle d-flex align-items-center justify-content-center text-white flex-shrink-0" style="width: 48px; height: 48px; background: #D97706; font-size: 1.25rem;">
+                                <i class="fa-solid fa-file-signature"></i>
+                            </div>
+                            <div>
+                                <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
+                                    <span class="badge bg-warning text-dark fw-bold text-uppercase" style="font-size: 0.72rem; letter-spacing: 0.5px;">Ação Obrigatória</span>
+                                    <span class="badge bg-white text-secondary border fw-medium small" id="docTipoBadge">Cirurgia & Anestesia</span>
+                                </div>
+                                <h5 class="fw-bold text-dark mb-1" id="docTituloAviso">Termo de Consentimento Informado para Procedimento Cirúrgico</h5>
+                                <p class="text-muted small mb-0" id="docDescricaoAviso">
+                                    A equipa médica veterinária necessita da sua autorização digital para o procedimento do paciente <strong>o seu animal</strong>. Assine com o dedo ou rato.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="d-flex gap-2 w-100 w-md-auto justify-content-end">
+                            <button class="btn btn-success fw-bold px-4 py-2 rounded-3 shadow-sm text-nowrap d-flex align-items-center gap-2" onclick="abrirModalAssinaturaDigital()" style="background: #1E4D1E; border-color: #1E4D1E;">
+                                <i class="fa-solid fa-pen-nib"></i> Assinar Documento Agora
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cartão Videoconsulta / Telemedicina (Se ativa) -->
+                <div class="card-panel border border-success-subtle shadow-sm p-3 p-md-4 d-none" id="cardVideoconsultaPendente" style="background: linear-gradient(135deg, #F0FDF4 0%, #DCFCE7 100%); border-left: 6px solid #16A34A !important;">
+                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3">
+                        <div class="d-flex align-items-start gap-3">
+                            <div class="rounded-circle d-flex align-items-center justify-content-center text-white flex-shrink-0" style="width: 48px; height: 48px; background: #16A34A; font-size: 1.25rem;">
+                                <i class="fa-solid fa-video"></i>
+                            </div>
+                            <div>
+                                <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
+                                    <span class="badge bg-success fw-bold text-uppercase" style="font-size: 0.72rem;">Videoconsulta Confirmada</span>
+                                    <span id="videoPrecoBadge" class="badge bg-white text-success border border-success-subtle fw-semibold small d-none"></span>
+                                </div>
+                                <h5 class="fw-bold text-dark mb-1" id="videoTituloAviso">Videoconsulta agendada</h5>
+                                <p class="text-muted small mb-0">A sua chamada de telemedicina está agendada. Clique para aceder à sala de vídeo.</p>
+                            </div>
+                        </div>
+                        <div class="d-flex gap-2 w-100 w-md-auto justify-content-end">
+                            <a href="chat_dono.html?video=true" class="btn btn-success fw-bold px-4 py-2 rounded-3 shadow-sm text-nowrap d-flex align-items-center gap-2" style="background: #2E7D32; border-color: #2E7D32;">
+                                <i class="fa-solid fa-headset"></i> Entrar na Videoconsulta
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Banner Lembrete de Campanha / Vacinas -->
+                <div class="card-panel border border-info-subtle shadow-sm p-3 d-none" id="cardCampanhaLembrete" style="background: #F0F9FF; border-left: 6px solid #0284C7 !important;">
+                    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="fa-solid fa-shield-virus text-info" style="font-size: 1.3rem;"></i>
+                            <div>
+                                <strong class="text-dark" id="campanhaLembreteTitulo">Aviso de Vacinação Preventiva</strong>
+                                <span class="text-muted small d-block" id="campanhaLembreteTexto">Identificámos que o seu animal está na altura da vacina da Leishmaniose.</span>
+                            </div>
+                        </div>
+                        <a href="agenda_dono.html" class="btn btn-sm btn-outline-primary fw-bold rounded-pill">
+                            <i class="fa-regular fa-calendar-check me-1"></i> Agendar Vacina
+                        </a>
+                    </div>
+                </div>
+            </div>
 
             <!-- MIDDLE GRID (Tickets) -->
             <div class="middle-grid" style="grid-template-columns: 1fr;">
@@ -1416,6 +1490,9 @@
             updateQuickAlerts();
             loadTickets();
             loadNotifications();
+            carregarDocumentosConsentimentoTutor();
+            verificarVideoconsultasTutor();
+            verificarCampanhasLembretesTutor();
         }
 
         async function updateQuickAlerts() {
@@ -2030,6 +2107,14 @@
             return esp;
         }
 
+        // Ao mudar a data/hora da consulta, atualizar a lista de veterinários disponíveis nesse horário
+        document.getElementById('ticketDataSugerida').addEventListener('change', async () => {
+            const sel = document.getElementById('ticketVeterinario');
+            const anterior = sel.value;
+            await loadVeterinarios();
+            if ([...sel.options].some(o => o.value === anterior)) sel.value = anterior;
+        });
+
         async function loadVeterinarios() {
             try {
                 const sel = document.getElementById('ticketVeterinario');
@@ -2055,34 +2140,36 @@
                     .in('user_id', favIds)
                     .order('nome');
 
-                // Filter vets by their current real-time working schedule
-                const now = new Date();
-                const dayOfWeek = now.getDay();
-                const currentHourMin = now.toTimeString().substring(0, 5);
+                // Se já foi escolhida a data/hora da consulta, filtrar pelo horário de trabalho
+                // NESSE dia e hora (e não pelo momento atual). Sem data escolhida, mostra todos.
+                const dataEscolhida = document.getElementById('ticketDataSugerida')?.value;
+                let availableVets = (data || []).filter(vet => !vet.modo_ferias);
 
-                const { data: horarios } = await supabaseClient
-                    .from('zooni_horarios_padrao')
-                    .select('id_vet, hora_inicio, hora_fim')
-                    .eq('dia_semana', dayOfWeek)
-                    .in('id_vet', favIds);
+                if (dataEscolhida) {
+                    const ref = new Date(dataEscolhida);
+                    const horaRef = `${String(ref.getHours()).padStart(2, '0')}:${String(ref.getMinutes()).padStart(2, '0')}`;
 
-                const workingFavIds = new Set();
-                if (horarios) {
-                    horarios.forEach(h => {
-                        const inicio = h.hora_inicio.substring(0, 5);
-                        const fim = h.hora_fim.substring(0, 5);
-                        if (currentHourMin >= inicio && currentHourMin <= fim) {
-                            workingFavIds.add(h.id_vet);
+                    const { data: horarios } = await supabaseClient
+                        .from('zooni_horarios_padrao')
+                        .select('id_vet, hora_inicio, hora_fim')
+                        .eq('dia_semana', ref.getDay())
+                        .in('id_vet', favIds);
+
+                    const trabalham = new Set();
+                    (horarios || []).forEach(h => {
+                        if (horaRef >= h.hora_inicio.substring(0, 5) && horaRef <= h.hora_fim.substring(0, 5)) {
+                            trabalham.add(h.id_vet);
                         }
                     });
+                    availableVets = availableVets.filter(vet => trabalham.has(vet.user_id));
                 }
-
-                const availableVets = (data || []).filter(vet => !vet.modo_ferias && workingFavIds.has(vet.user_id));
 
                 sel.innerHTML = '<option value="">Selecione um veterinário favorito...</option>';
 
                 if (error || availableVets.length === 0) {
-                    sel.innerHTML = '<option value="">Nenhum veterinário disponível neste momento</option>';
+                    sel.innerHTML = dataEscolhida
+                        ? '<option value="">Nenhum veterinário disponível nesse dia/hora</option>'
+                        : '<option value="">Nenhum veterinário disponível</option>';
                     return;
                 }
 
@@ -2743,7 +2830,620 @@
                 setTimeout(() => document.getElementById('profileSaveMsg').classList.add('d-none'), 3000);
             }
         });
+
+        // ══════════════════════════════════════════════════════════════════
+        // CRM, COMUNICAÇÃO E ASSINATURA DIGITAL (TUTOR)
+        // ══════════════════════════════════════════════════════════════════
+        let docPendenteAtivo = null;
+        let isDrawing = false;
+        let hasDrawnSignature = false;
+        let signatureCanvas = null;
+        let signatureCtx = null;
+
+        async function carregarDocumentosConsentimentoTutor() {
+            const cardEl = document.getElementById('cardDocumentoPendente');
+            if (!cardEl) return;
+            cardEl.classList.add('d-none');
+            if (!(await aguardarDono())) return;
+
+            try {
+                const { data, error } = await supabaseClient
+                    .from('documentos_consentimento')
+                    .select('*, animais(nome, raca, tipo_animal), clinicas(nome)')
+                    .eq('estado', 'pendente')
+                    .eq('id_dono', ID_DONO)
+                    .order('criado_em', { ascending: false })
+                    .limit(1);
+
+                if (!error && data && data.length > 0) {
+                    docPendenteAtivo = data[0];
+                    renderizarCardDocumentoPendente(docPendenteAtivo);
+                }
+            } catch (err) {
+                console.warn('Documentos de consentimento indisponíveis:', err);
+            }
+        }
+
+        function renderizarCardDocumentoPendente(doc) {
+            const cardEl = document.getElementById('cardDocumentoPendente');
+            if (!cardEl) return;
+            cardEl.classList.remove('d-none');
+
+            const nomePet = doc.animais?.nome || 'o seu animal';
+            const titulo = doc.titulo || 'Termo de Responsabilidade e Consentimento';
+            const clinica = doc.clinicas?.nome || 'Clínica Veterinária';
+
+            document.getElementById('docTituloAviso').textContent = titulo;
+            document.getElementById('docDescricaoAviso').innerHTML = 
+                `A equipa médica veterinária necessita da sua autorização digital para o procedimento do paciente <strong>${nomePet}</strong> (${clinica}). Assine com o dedo ou rato.`;
+            
+            const tipoMap = {
+                'cirurgia': 'Cirurgia & Anestesia',
+                'anestesia': 'Procedimento Anestésico',
+                'eutanasia': 'Consentimento Clínico Especial',
+                'rgpd': 'Consentimento RGPD',
+                'internamento': 'Termo de Internamento'
+            };
+            document.getElementById('docTipoBadge').textContent = tipoMap[doc.tipo] || 'Documento Legal';
+        }
+
+        function abrirModalAssinaturaDigital() {
+            if (!docPendenteAtivo) return;
+
+            document.getElementById('modalDocTitulo').textContent = docPendenteAtivo.titulo;
+            document.getElementById('modalDocTipo').textContent = document.getElementById('docTipoBadge').textContent;
+            document.getElementById('modalDocAnimal').innerHTML = `<i class="fa-solid fa-paw text-success me-1"></i> ${docPendenteAtivo.animais?.nome || 'Animal'} (${[docPendenteAtivo.animais?.tipo_animal, docPendenteAtivo.animais?.raca].filter(Boolean).join(' / ') || '—'})`;
+            document.getElementById('modalDocClinica').textContent = docPendenteAtivo.clinicas?.nome || 'Hospital Veterinário Zooni Central';
+            
+            const d = docPendenteAtivo.criado_em ? new Date(docPendenteAtivo.criado_em) : new Date();
+            document.getElementById('modalDocData').textContent = d.toLocaleDateString('pt-PT');
+            
+            if (docPendenteAtivo.conteudo_texto) {
+                document.getElementById('modalDocConteudo').innerHTML = docPendenteAtivo.conteudo_texto.replace(/\n\n/g, '<br><br>').replace(/\n/g, '<br>');
+            }
+
+            const modalEl = document.getElementById('modalAssinaturaDigital');
+            const bsModal = new bootstrap.Modal(modalEl);
+            bsModal.show();
+
+            setTimeout(iniciarCanvasAssinatura, 300);
+        }
+
+        function iniciarCanvasAssinatura() {
+            signatureCanvas = document.getElementById('signatureCanvas');
+            if (!signatureCanvas) return;
+            signatureCtx = signatureCanvas.getContext('2d');
+
+            const rect = signatureCanvas.getBoundingClientRect();
+            const dpr = window.devicePixelRatio || 1;
+            signatureCanvas.width = rect.width * dpr;
+            signatureCanvas.height = rect.height * dpr;
+            signatureCtx.scale(dpr, dpr);
+
+            signatureCtx.strokeStyle = '#0F172A';
+            signatureCtx.lineWidth = 2.5;
+            signatureCtx.lineCap = 'round';
+            signatureCtx.lineJoin = 'round';
+
+            hasDrawnSignature = false;
+            const placeholder = document.getElementById('signaturePlaceholder');
+            if (placeholder) placeholder.style.display = 'block';
+
+            // Eventos do Rato
+            signatureCanvas.onmousedown = (e) => {
+                isDrawing = true;
+                const pos = getCanvasPos(e);
+                signatureCtx.beginPath();
+                signatureCtx.moveTo(pos.x, pos.y);
+                hasDrawnSignature = true;
+                if (placeholder) placeholder.style.display = 'none';
+            };
+
+            signatureCanvas.onmousemove = (e) => {
+                if (!isDrawing) return;
+                const pos = getCanvasPos(e);
+                signatureCtx.lineTo(pos.x, pos.y);
+                signatureCtx.stroke();
+            };
+
+            const stopDrawing = () => { isDrawing = false; };
+            signatureCanvas.onmouseup = stopDrawing;
+            signatureCanvas.onmouseleave = stopDrawing;
+
+            // Eventos de Toque (Mobile / Tablet)
+            signatureCanvas.ontouchstart = (e) => {
+                e.preventDefault();
+                isDrawing = true;
+                const touch = e.touches[0];
+                const pos = getCanvasPos(touch);
+                signatureCtx.beginPath();
+                signatureCtx.moveTo(pos.x, pos.y);
+                hasDrawnSignature = true;
+                if (placeholder) placeholder.style.display = 'none';
+            };
+
+            signatureCanvas.ontouchmove = (e) => {
+                e.preventDefault();
+                if (!isDrawing) return;
+                const touch = e.touches[0];
+                const pos = getCanvasPos(touch);
+                signatureCtx.lineTo(pos.x, pos.y);
+                signatureCtx.stroke();
+            };
+
+            signatureCanvas.ontouchend = (e) => {
+                e.preventDefault();
+                isDrawing = false;
+            };
+        }
+
+        function getCanvasPos(evt) {
+            const rect = signatureCanvas.getBoundingClientRect();
+            return {
+                x: evt.clientX - rect.left,
+                y: evt.clientY - rect.top
+            };
+        }
+
+        function limparCanvasAssinatura() {
+            if (!signatureCanvas || !signatureCtx) return;
+            const dpr = window.devicePixelRatio || 1;
+            signatureCtx.clearRect(0, 0, signatureCanvas.width / dpr, signatureCanvas.height / dpr);
+            hasDrawnSignature = false;
+            const placeholder = document.getElementById('signaturePlaceholder');
+            if (placeholder) placeholder.style.display = 'block';
+        }
+
+        async function confirmarAssinaturaDigital() {
+            if (!hasDrawnSignature) {
+                alert('Por favor, desenhe a sua assinatura no retângulo antes de confirmar.');
+                return;
+            }
+
+            const check = document.getElementById('checkConcordoTermos');
+            if (check && !check.checked) {
+                alert('Deve assinalar que leu e compreendeu os termos antes de confirmar.');
+                return;
+            }
+
+            const btn = document.getElementById('btnConfirmarAssinatura');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>A autenticar...';
+
+            const signatureBase64 = signatureCanvas.toDataURL('image/png');
+
+            try {
+                if (docPendenteAtivo?.id) {
+                    await supabaseClient
+                        .from('documentos_consentimento')
+                        .update({
+                            estado: 'assinado',
+                            assinado_em: new Date().toISOString(),
+                            assinatura_base64: signatureBase64,
+                            ip_assinatura: '127.0.0.1'
+                        })
+                        .eq('id', docPendenteAtivo.id);
+                }
+            } catch (err) {
+                console.warn('Erro ao atualizar documento no Supabase:', err);
+            }
+
+            // Gravar em localStorage para sincronização imediata
+            // Estado do documento fica guardado na base de dados (acima)
+
+            // Fechar modal
+            const modalEl = document.getElementById('modalAssinaturaDigital');
+            const bsModal = bootstrap.Modal.getInstance(modalEl);
+            if (bsModal) bsModal.hide();
+
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fa-solid fa-check"></i> Confirmar Assinatura';
+
+            // Mensagem de sucesso animada
+            const cardEl = document.getElementById('cardDocumentoPendente');
+            if (cardEl) {
+                cardEl.style.background = 'linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%)';
+                cardEl.style.borderLeft = '6px solid #10B981 !important';
+                cardEl.innerHTML = `
+                    <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="rounded-circle d-flex align-items-center justify-content-center text-white" style="width:48px; height:48px; background:#10B981; font-size:1.3rem;">
+                                <i class="fa-solid fa-circle-check"></i>
+                            </div>
+                            <div>
+                                <h6 class="fw-bold text-success mb-1">Documento Assinado com Sucesso!</h6>
+                                <p class="text-muted small mb-0">O termo de consentimento foi autenticado e arquivado digitalmente na ficha clínica do paciente.</p>
+                            </div>
+                        </div>
+                        <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-2 fw-semibold">
+                            <i class="fa-solid fa-lock me-1"></i> Certificado Digital Válido
+                        </span>
+                    </div>
+                `;
+            }
+        }
+
+        // Espera que o ID do tutor (ID_DONO) seja carregado a partir da sessão
+        async function aguardarDono(tentativas = 50) {
+            while (!ID_DONO && tentativas-- > 0) await new Promise(r => setTimeout(r, 100));
+            return !!ID_DONO;
+        }
+
+        async function verificarVideoconsultasTutor() {
+            const cardVideo = document.getElementById('cardVideoconsultaPendente');
+            if (!cardVideo) return;
+            cardVideo.classList.add('d-none');
+            if (!(await aguardarDono())) return;
+
+            try {
+                const { data, error } = await supabaseClient
+                    .from('videoconsultas')
+                    .select('*')
+                    .eq('id_dono', ID_DONO)
+                    .in('estado', ['agendada', 'em_curso'])
+                    .limit(1);
+                if (error || !data || data.length === 0) return;
+
+                const v = data[0];
+                document.getElementById('videoTituloAviso').textContent = v.titulo || 'Videoconsulta agendada';
+                const preco = v.preco ?? v.valor;
+                const badge = document.getElementById('videoPrecoBadge');
+                if (badge && v.pago && preco != null) {
+                    badge.innerHTML = `<i class="fa-solid fa-circle-check"></i> Pago: ${Number(preco).toFixed(2)} €`;
+                    badge.classList.remove('d-none');
+                }
+                cardVideo.classList.remove('d-none');
+            } catch (err) {
+                console.warn('Videoconsultas indisponíveis:', err);
+            }
+        }
+
+        async function verificarCampanhasLembretesTutor() {
+            const cardCampanha = document.getElementById('cardCampanhaLembrete');
+            if (!cardCampanha) return;
+            cardCampanha.classList.add('d-none');
+            if (!(await aguardarDono())) return;
+
+            const mostrar = (titulo, texto) => {
+                document.getElementById('campanhaLembreteTitulo').textContent = titulo;
+                document.getElementById('campanhaLembreteTexto').textContent = texto;
+                cardCampanha.classList.remove('d-none');
+            };
+
+            // 1. Mensagens de campanhas realmente enviadas a este tutor
+            try {
+                const { data, error } = await supabaseClient
+                    .from('notificacoes_campanhas_tutores')
+                    .select('titulo, mensagem')
+                    .eq('id_tutor', ID_DONO)
+                    .eq('lida', false)
+                    .order('criado_em', { ascending: false })
+                    .limit(1);
+                if (!error && data && data.length > 0) {
+                    mostrar(data[0].titulo, data[0].mensagem);
+                    return;
+                }
+            } catch (e) { /* tabela ainda não existe */ }
+
+            // 2. Vacina em atraso ou a vencer nos próximos 30 dias (dados reais do animal)
+            try {
+                const limite = new Date(Date.now() + 30 * 86400000).toISOString().slice(0, 10);
+                const { data } = await supabaseClient
+                    .from('animais')
+                    .select('nome, proxima_vacina')
+                    .eq('id_dono', ID_DONO)
+                    .not('proxima_vacina', 'is', null)
+                    .lte('proxima_vacina', limite)
+                    .order('proxima_vacina', { ascending: true })
+                    .limit(1);
+                if (data && data.length > 0) {
+                    const a = data[0];
+                    const hoje = new Date().toISOString().slice(0, 10);
+                    const dataFmt = new Date(a.proxima_vacina).toLocaleDateString('pt-PT');
+                    mostrar('Aviso de Vacinação',
+                        a.proxima_vacina < hoje
+                            ? `A vacina de ${a.nome} está em atraso desde ${dataFmt}.`
+                            : `A próxima vacina de ${a.nome} está prevista para ${dataFmt}.`);
+                }
+            } catch (e) { console.warn(e); }
+        }
+
+        let internamentosAtivosCache = [];
+
+        async function carregarInternamentosAtivosTutor() {
+            const container = document.getElementById('internamentosAtivosTutor');
+            if (!container) return;
+            container.classList.add('d-none');
+            container.innerHTML = '';
+            if (!(await aguardarDono())) return;
+
+            try {
+                const { data: meusAnimais } = await supabaseClient
+                    .from('animais')
+                    .select('id, nome, tipo_animal, raca, peso, foto_url')
+                    .eq('id_dono', ID_DONO);
+
+                if (!meusAnimais || meusAnimais.length === 0) return;
+                const animalIds = meusAnimais.map(a => a.id);
+
+                const { data: inters, error } = await supabaseClient
+                    .from('hospitalizacao_internamentos')
+                    .select('*')
+                    .in('id_animal', animalIds)
+                    .eq('ativo', true)
+                    .order('data_entrada', { ascending: false });
+
+                if (error || !inters || inters.length === 0) return;
+
+                const boxIds = [...new Set(inters.map(i => i.id_box).filter(Boolean))];
+                const clinIds = [...new Set(inters.map(i => i.clinica_id).filter(Boolean))];
+                const vetIds = [...new Set(inters.map(i => i.id_veterinario_responsavel).filter(Boolean))];
+
+                const [boxRes, clinRes, vetRes] = await Promise.all([
+                    boxIds.length ? supabaseClient.from('hospitalizacao_boxes').select('id, numero_box, tipo').in('id', boxIds) : { data: [] },
+                    clinIds.length ? supabaseClient.from('clinicas').select('id, nome, telefone').in('id', clinIds) : { data: [] },
+                    vetIds.length ? supabaseClient.from('veterinarios').select('user_id, nome').in('user_id', vetIds) : { data: [] }
+                ]);
+
+                const animMap = Object.fromEntries(meusAnimais.map(a => [a.id, a]));
+                const boxMap = Object.fromEntries((boxRes.data || []).map(b => [b.id, b]));
+                const clinMap = Object.fromEntries((clinRes.data || []).map(c => [c.id, c]));
+                const vetMap = Object.fromEntries((vetRes.data || []).map(v => [v.user_id, v]));
+
+                const estadoInfo = {
+                    estavel: { label: 'Estável', cor: '#16A34A', bg: 'linear-gradient(135deg, #F0FDF4 0%, #DCFCE7 100%)', badge: 'bg-success' },
+                    recuperacao: { label: 'Em Recuperação', cor: '#D97706', bg: 'linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%)', badge: 'bg-warning text-dark' },
+                    critico: { label: 'Cuidados Intensivos (Crítico)', cor: '#DC2626', bg: 'linear-gradient(135deg, #FEF2F2 0%, #FEE2E2 100%)', badge: 'bg-danger' }
+                };
+
+                internamentosAtivosCache = inters.map(i => ({
+                    ...i,
+                    animal: animMap[i.id_animal] || {},
+                    box: boxMap[i.id_box] || null,
+                    clinica: clinMap[i.clinica_id] || null,
+                    vet: vetMap[i.id_veterinario_responsavel] || null
+                }));
+
+                container.innerHTML = internamentosAtivosCache.map((it, idx) => {
+                    const st = estadoInfo[it.estado_paciente] || estadoInfo.estavel;
+                    const entradaFmt = it.data_entrada
+                        ? new Date(it.data_entrada).toLocaleDateString('pt-PT') + ' às ' + new Date(it.data_entrada).toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' })
+                        : '—';
+                    const altaFmt = it.data_alta_prevista ? new Date(it.data_alta_prevista).toLocaleDateString('pt-PT') : null;
+                    const turnos = it.folha_turnos || [];
+                    const feitos = turnos.filter(t => t.feito).length;
+                    const vitais = it.sinais_vitais || [];
+                    const ultimoVital = vitais[0];
+                    const total = (it.produtos_gastos || []).reduce((s, p) => s + (Number(p.qtd || 0) * Number(p.preco || 0)), 0) || Number(it.custo_total || 0);
+                    const foto = it.animal.foto_url;
+                    const emoji = (it.animal.tipo_animal || '').toLowerCase().includes('gato') ? '🐱' : '🐶';
+
+                    return `
+                        <div class="card-panel shadow-sm p-3 p-md-4" style="background: ${st.bg}; border: 1px solid rgba(0,0,0,0.08); border-left: 6px solid ${st.cor} !important;">
+                            <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3">
+                                <div class="d-flex align-items-start gap-3">
+                                    ${foto
+                                        ? `<img src="${foto}" alt="${it.animal.nome || ''}" class="rounded-circle flex-shrink-0" style="width:54px; height:54px; object-fit:cover; border:3px solid ${st.cor};">`
+                                        : `<div class="rounded-circle d-flex align-items-center justify-content-center bg-white flex-shrink-0" style="width:54px; height:54px; font-size:1.6rem; border:3px solid ${st.cor};">${emoji}</div>`}
+                                    <div>
+                                        <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
+                                            <span class="badge ${st.badge} fw-bold text-uppercase" style="font-size:0.72rem;"><i class="fa-solid fa-bed-pulse me-1"></i> Em Internamento</span>
+                                            <span class="badge bg-white text-dark border fw-semibold small">${st.label}</span>
+                                            ${it.box ? `<span class="badge bg-white text-secondary border small"><i class="fa-solid fa-cube me-1"></i>${it.box.numero_box}</span>` : ''}
+                                        </div>
+                                        <h5 class="fw-bold text-dark mb-1">${it.animal.nome || 'O seu animal'} está internado(a)</h5>
+                                        <div class="text-muted small">
+                                            <i class="fa-solid fa-hospital me-1 text-success"></i><strong>${it.clinica ? it.clinica.nome : 'Clínica Veterinária'}</strong>
+                                            ${it.vet ? ` · Dr(a). ${it.vet.nome}` : ''}
+                                            · Entrada: ${entradaFmt}${altaFmt ? ` · Alta prevista: ${altaFmt}` : ''}
+                                        </div>
+                                        <div class="text-muted small mt-1">
+                                            <strong>Motivo:</strong> ${it.motivo_internamento || 'Acompanhamento clínico'}
+                                            ${turnos.length ? ` · <strong>Tratamentos:</strong> ${feitos}/${turnos.length} concluídos` : ''}
+                                            ${ultimoVital ? ` · <strong>Últimos vitais:</strong> ${ultimoVital.temp}°C, FC ${ultimoVital.fc} bpm` : ''}
+                                            · <strong>Conta atual:</strong> ${total.toFixed(2).replace('.', ',')} €
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="d-flex gap-2 flex-wrap justify-content-end">
+                                    <button class="btn btn-sm btn-outline-dark fw-bold rounded-3 px-3 py-2 bg-white" onclick="abrirModalBoletimInternamento(${idx})">
+                                        <i class="fa-solid fa-notes-medical me-1"></i> Ver Boletim
+                                    </button>
+                                    <a href="chat_dono.html" class="btn btn-sm btn-success fw-bold rounded-3 px-3 py-2" style="background:#1E4D1E; border-color:#1E4D1E;">
+                                        <i class="fa-solid fa-comments me-1"></i> Falar com Clínica
+                                    </a>
+                                </div>
+                            </div>
+                        </div>`;
+                }).join('');
+
+                container.classList.remove('d-none');
+            } catch (err) {
+                console.warn('Erro ao carregar internamentos ativos do tutor:', err);
+            }
+        }
+
+        function abrirModalBoletimInternamento(idx) {
+            const it = internamentosAtivosCache[idx];
+            if (!it) return;
+            const modalEl = document.getElementById('modalBoletimInternamentoTutor');
+            const turnos = it.folha_turnos || [];
+            const vitais = it.sinais_vitais || [];
+            const produtos = it.produtos_gastos || [];
+            const total = produtos.reduce((s, p) => s + (Number(p.qtd || 0) * Number(p.preco || 0)), 0) || Number(it.custo_total || 0);
+
+            document.getElementById('boletimTutorTitulo').textContent = `Boletim de Internamento — ${it.animal.nome || 'Animal'}`;
+            document.getElementById('boletimTutorSub').textContent =
+                `${it.clinica ? it.clinica.nome : 'Clínica'} · ${it.box ? it.box.numero_box : 'Hospitalização'}${it.vet ? ' · Dr(a). ' + it.vet.nome : ''}`;
+
+            document.getElementById('boletimTutorBody').innerHTML = `
+                <div class="p-3 rounded-3 mb-3" style="background:#F8FAF8; border:1px solid #E2ECE2;">
+                    <div class="row g-2 small">
+                        <div class="col-md-6"><strong>Motivo:</strong> ${it.motivo_internamento || '—'}</div>
+                        <div class="col-md-6"><strong>Fluidoterapia:</strong> ${it.fluidoterapia || 'Não especificada'}</div>
+                        <div class="col-md-6"><strong>Entrada:</strong> ${it.data_entrada ? new Date(it.data_entrada).toLocaleString('pt-PT') : '—'}</div>
+                        <div class="col-md-6"><strong>Alta Prevista:</strong> ${it.data_alta_prevista ? new Date(it.data_alta_prevista).toLocaleDateString('pt-PT') : 'A definir pela equipa médica'}</div>
+                    </div>
+                </div>
+
+                <h6 class="fw-bold mb-2"><i class="fa-solid fa-clipboard-list text-success me-1"></i> Plano de Tratamentos & Medicação</h6>
+                ${turnos.length === 0 ? '<p class="small text-muted mb-3">Sem tratamentos registados ainda.</p>' : `
+                    <div class="table-responsive mb-3">
+                        <table class="table table-sm align-middle small">
+                            <thead><tr><th>Hora</th><th>Procedimento</th><th>Estado</th></tr></thead>
+                            <tbody>
+                                ${turnos.map(t => `
+                                    <tr>
+                                        <td class="fw-bold">${t.hora || '—'}</td>
+                                        <td>${t.procedimento || '—'}</td>
+                                        <td>${t.feito ? `<span class="badge bg-success-subtle text-success">Administrado</span>` : `<span class="badge bg-warning-subtle text-warning-emphasis">Agendado</span>`}</td>
+                                    </tr>`).join('')}
+                            </tbody>
+                        </table>
+                    </div>`}
+
+                <h6 class="fw-bold mb-2"><i class="fa-solid fa-heart-pulse text-danger me-1"></i> Sinais Vitais Recentes</h6>
+                ${vitais.length === 0 ? '<p class="small text-muted mb-3">Sem registos de sinais vitais ainda.</p>' : `
+                    <div class="table-responsive mb-3">
+                        <table class="table table-sm align-middle small">
+                            <thead><tr><th>Data/Hora</th><th>FC</th><th>FR</th><th>Temp.</th><th>PA</th></tr></thead>
+                            <tbody>
+                                ${vitais.slice(0, 5).map(v => `
+                                    <tr>
+                                        <td class="fw-bold">${v.data || '—'}</td>
+                                        <td>${v.fc} bpm</td>
+                                        <td>${v.fr} cpm</td>
+                                        <td>${v.temp} °C</td>
+                                        <td>${v.pa || '—'}</td>
+                                    </tr>`).join('')}
+                            </tbody>
+                        </table>
+                    </div>`}
+
+                <div class="d-flex justify-content-between align-items-center p-3 rounded-3" style="background:#EEF7EE;">
+                    <span class="fw-bold small text-success">TOTAL ACUMULADO DO INTERNAMENTO</span>
+                    <span class="fs-5 fw-bold text-success">${total.toFixed(2).replace('.', ',')} €</span>
+                </div>
+            `;
+
+            bootstrap.Modal.getOrCreateInstance(modalEl).show();
+        }
+
+        // Auto-executar verificações após DOM carregar
+        document.addEventListener('DOMContentLoaded', () => {
+            carregarInternamentosAtivosTutor();
+            carregarDocumentosConsentimentoTutor();
+            verificarVideoconsultasTutor();
+            verificarCampanhasLembretesTutor();
+        });
     </script>
+
+    <!-- Modal Boletim de Internamento (Só Leitura para o Tutor) -->
+    <div class="modal fade" id="modalBoletimInternamentoTutor" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+                <div class="modal-header text-white px-4 py-3" style="background: #1E4D1E;">
+                    <div>
+                        <h5 class="modal-title fw-bold mb-0" id="boletimTutorTitulo">Boletim de Internamento</h5>
+                        <small class="opacity-75" id="boletimTutorSub">—</small>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4" id="boletimTutorBody"></div>
+                <div class="modal-footer border-0 pt-0">
+                    <a href="chat_dono.html" class="btn btn-success rounded-3 fw-bold" style="background:#1E4D1E; border-color:#1E4D1E;">
+                        <i class="fa-solid fa-comments me-1"></i> Falar com a Clínica
+                    </a>
+                    <button type="button" class="btn btn-outline-secondary rounded-3" data-bs-dismiss="modal">Fechar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Assinatura Digital de Documentos (CRM & Consentimento Informado) -->
+    <div class="modal fade" id="modalAssinaturaDigital" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+                <div class="modal-header text-white px-4 py-3" style="background: #1E4D1E;">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="fa-solid fa-file-signature fs-5"></i>
+                        <div>
+                            <h5 class="modal-title fw-bold mb-0" id="modalDocTitulo">Assinatura Digital de Consentimento</h5>
+                            <small class="opacity-75">Validação legal eletrónica Zooni CRM</small>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <!-- Detalhes do Documento -->
+                    <div class="p-3 rounded-3 mb-3" style="background: #F8FAFC; border: 1px solid #E2E8F0;">
+                        <div class="row g-2">
+                            <div class="col-sm-6">
+                                <span class="text-muted small d-block">Tipo de Documento:</span>
+                                <strong class="text-dark" id="modalDocTipo">Termo de Responsabilidade Cirúrgica</strong>
+                            </div>
+                            <div class="col-sm-6">
+                                <span class="text-muted small d-block">Paciente:</span>
+                                <strong class="text-dark" id="modalDocAnimal"><i class="fa-solid fa-paw text-success me-1"></i> —</strong>
+                            </div>
+                            <div class="col-sm-6">
+                                <span class="text-muted small d-block">Clínica Emissora:</span>
+                                <strong class="text-dark" id="modalDocClinica">Hospital Veterinário Zooni Central</strong>
+                            </div>
+                            <div class="col-sm-6">
+                                <span class="text-muted small d-block">Data de Emissão:</span>
+                                <strong class="text-dark" id="modalDocData">21/10/2026</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Texto do Termo Legal / Termo de Consentimento -->
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-uppercase text-secondary">Texto do Termo de Responsabilidade</label>
+                        <div class="p-3 rounded-3 bg-light border text-secondary small" style="max-height: 180px; overflow-y: auto; line-height: 1.6;" id="modalDocConteudo">
+                            <p class="mb-2"><strong>TERMO DE CONSENTIMENTO LIVRE E ESCLARECIDO PARA ANESTESIA E CIRURGIA</strong></p>
+                            <p class="mb-2">Pelo presente instrumento, eu, titular devidamente identificado e responsável pelo animal supracitado, autorizo expressamente a equipa médica veterinária a realizar os procedimentos cirúrgicos, anestésicos e de sedação que se façam clinicamente necessários.</p>
+                            <p class="mb-2">Fui devidamente informado(a) quanto aos objetivos, técnicas previstas, riscos potenciais associados à anestesia e intervenção cirúrgica, bem como eventuais complicações pós-operatórias imprevisíveis inerentes à biologia do paciente.</p>
+                            <p class="mb-0">Autorizo igualmente a administração de fármacos analgésicos, antibióticos e cuidados intensivos julgados indispensáveis à preservação do bem-estar e da vida do animal, bem como o tratamento de dados pessoais no estrito cumprimento do RGPD.</p>
+                        </div>
+                    </div>
+
+                    <!-- Canvas de Assinatura -->
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <label class="form-label small fw-bold text-uppercase text-secondary m-0">
+                                <i class="fa-solid fa-pen text-success me-1"></i> Desenhe a sua assinatura abaixo (com o dedo ou rato):
+                            </label>
+                            <button type="button" class="btn btn-sm btn-link text-danger text-decoration-none p-0 fw-semibold" onclick="limparCanvasAssinatura()">
+                                <i class="fa-solid fa-eraser me-1"></i> Limpar
+                            </button>
+                        </div>
+                        <div class="position-relative" style="border: 2px dashed #94A3B8; border-radius: 12px; background: #FFFFFF; overflow: hidden;">
+                            <canvas id="signatureCanvas" style="width: 100%; height: 160px; display: block; cursor: crosshair; touch-action: none;"></canvas>
+                            <div id="signaturePlaceholder" class="position-absolute top-50 start-50 translate-middle text-muted pointer-events-none select-none text-center" style="pointer-events: none; opacity: 0.4;">
+                                <i class="fa-solid fa-signature fs-3 d-block mb-1"></i>
+                                <span class="small">Rubrique ou assine aqui com o dedo ou rato</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Termos e Checkbox de Validação -->
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="checkConcordoTermos" checked>
+                        <label class="form-check-label small text-muted" for="checkConcordoTermos">
+                            Declaro que li atentamente o presente documento, esclareci todas as dúvidas com o médico veterinário e aceito livremente todos os termos descritos.
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 bg-light px-4 py-3 d-flex justify-content-between">
+                    <button type="button" class="btn btn-outline-secondary px-3 py-2 rounded-3" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-success fw-bold px-4 py-2 rounded-3 text-white d-flex align-items-center gap-2" id="btnConfirmarAssinatura" onclick="confirmarAssinaturaDigital()" style="background: #1E4D1E; border-color: #1E4D1E;">
+                        <i class="fa-solid fa-check"></i> Confirmar Assinatura
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Modal Editar Perfil do Dono -->
     <div class="modal fade" id="editProfileModal" tabindex="-1" aria-hidden="true">

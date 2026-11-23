@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zooni — A Saúde do Seu Melhor Amigo, Sempre à Mão</title>
+    <title>Zooni — A Saúde do Teu Melhor Amigo, Sempre à Mão</title>
     <meta name="description"
         content="A Zooni é a caderneta digital inteligente e a ligação direta ao seu médico veterinário. Consultas, vacinas e urgências 24h, tudo num só lugar.">
     <meta name="keywords"
@@ -164,6 +164,135 @@
             background: var(--green);
             transform: translateY(-1px);
             box-shadow: 0 6px 20px rgba(76, 175, 80, .4);
+        }
+
+        /* ── MINI-MENU REGISTO (DROPDOWN) ── */
+        .register-dropdown {
+            position: relative;
+        }
+
+        .btn-cta-nav {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            font-family: var(--font);
+        }
+
+        .btn-cta-nav .chevron-icon {
+            font-size: .72rem;
+            transition: transform .22s ease;
+        }
+
+        .register-dropdown.open .btn-cta-nav .chevron-icon {
+            transform: rotate(180deg);
+        }
+
+        .register-menu {
+            position: absolute;
+            top: calc(100% + 10px);
+            right: 0;
+            width: 285px;
+            background: #ffffff;
+            border: 1px solid #e0ebe0;
+            border-radius: 18px;
+            padding: 8px;
+            box-shadow: 0 18px 45px rgba(13, 27, 14, 0.22);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-8px) scale(0.98);
+            transition: opacity .2s ease, transform .2s ease, visibility .2s;
+            z-index: 1200;
+        }
+
+        .register-dropdown.open .register-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0) scale(1);
+        }
+
+        .register-dropdown.align-center .register-menu {
+            left: 50%;
+            right: auto;
+            transform: translate(-50%, -8px) scale(0.98);
+            text-align: left;
+        }
+
+        .register-dropdown.align-center.open .register-menu {
+            transform: translate(-50%, 0) scale(1);
+        }
+
+        .btn-cta-main {
+            cursor: pointer;
+            font-family: var(--font);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-cta-main .chevron-icon {
+            font-size: .78rem;
+            transition: transform .22s ease;
+        }
+
+        .register-dropdown.open .btn-cta-main .chevron-icon {
+            transform: rotate(180deg);
+        }
+
+        .register-menu-header {
+            font-size: .72rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: .8px;
+            color: var(--muted);
+            padding: 6px 12px 4px;
+        }
+
+        .register-option {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
+            border-radius: 12px;
+            color: var(--text);
+            transition: background .15s ease, transform .15s ease;
+        }
+
+        .register-option:hover {
+            background: var(--green-pale);
+            color: var(--green);
+        }
+
+        .register-option-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 11px;
+            background: var(--green-pale);
+            color: var(--green);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            flex-shrink: 0;
+            transition: background .15s, color .15s;
+        }
+
+        .register-option:hover .register-option-icon {
+            background: var(--green);
+            color: #fff;
+        }
+
+        .register-option-title {
+            font-size: .9rem;
+            font-weight: 700;
+            line-height: 1.2;
+        }
+
+        .register-option-sub {
+            font-size: .75rem;
+            color: var(--muted);
+            margin-top: 2px;
+            line-height: 1.25;
         }
 
         /* ── HERO ─────────────────────────────────────────────── */
@@ -802,7 +931,8 @@
             background: linear-gradient(135deg, var(--dark) 0%, #1B3A1C 100%);
             text-align: center;
             position: relative;
-            overflow: hidden;
+            overflow: visible;
+            overflow-x: clip;
         }
 
         .cta-section::before {
@@ -1165,7 +1295,7 @@
             width: 520px;
             background: #1a1a1a;
             border-radius: 16px 16px 10px 10px;
-            box-shadow: 0 40px 80px rgba(0,0,0,.55), 0 0 0 1px rgba(255,255,255,.07);
+            box-shadow: 0 40px 80px rgba(0, 0, 0, .55), 0 0 0 1px rgba(255, 255, 255, .07);
             overflow: hidden;
         }
 
@@ -1175,7 +1305,7 @@
             display: flex;
             align-items: center;
             gap: 12px;
-            border-bottom: 1px solid rgba(255,255,255,.06);
+            border-bottom: 1px solid rgba(255, 255, 255, .06);
         }
 
         .dt-dots {
@@ -1189,17 +1319,25 @@
             border-radius: 50%;
         }
 
-        .dt-dots span:nth-child(1) { background: #ff5f57; }
-        .dt-dots span:nth-child(2) { background: #febc2e; }
-        .dt-dots span:nth-child(3) { background: #28c840; }
+        .dt-dots span:nth-child(1) {
+            background: #ff5f57;
+        }
+
+        .dt-dots span:nth-child(2) {
+            background: #febc2e;
+        }
+
+        .dt-dots span:nth-child(3) {
+            background: #28c840;
+        }
 
         .dt-url-bar {
             flex: 1;
-            background: rgba(255,255,255,.07);
+            background: rgba(255, 255, 255, .07);
             border-radius: 6px;
             padding: 5px 12px;
             font-size: .72rem;
-            color: rgba(255,255,255,.45);
+            color: rgba(255, 255, 255, .45);
             font-family: monospace;
             display: flex;
             align-items: center;
@@ -1237,7 +1375,7 @@
             font-size: .85rem;
             font-weight: 800;
             color: white;
-            border-bottom: 1px solid rgba(255,255,255,.1);
+            border-bottom: 1px solid rgba(255, 255, 255, .1);
             margin-bottom: 8px;
             display: flex;
             align-items: center;
@@ -1251,14 +1389,14 @@
             gap: 8px;
             font-size: .7rem;
             font-weight: 600;
-            color: rgba(255,255,255,.65);
+            color: rgba(255, 255, 255, .65);
             border-radius: 0;
             transition: all .2s;
             cursor: default;
         }
 
         .ds-nav-item.active {
-            background: rgba(255,255,255,.12);
+            background: rgba(255, 255, 255, .12);
             color: white;
         }
 
@@ -1308,7 +1446,7 @@
             background: white;
             border-radius: 10px;
             padding: 10px 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,.06);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, .06);
         }
 
         .ds-stat-card .ds-val {
@@ -1336,7 +1474,7 @@
             background: white;
             border-radius: 10px;
             overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0,0,0,.05);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, .05);
         }
 
         .ds-table-row {
@@ -1377,9 +1515,20 @@
             font-size: .58rem;
         }
 
-        .dt-badge.confirmed  { background: #E8F5E9; color: #2E7D32; }
-        .dt-badge.pending    { background: #FFF8E1; color: #F57F17; }
-        .dt-badge.urgent     { background: #FFEBEE; color: #c62828; }
+        .dt-badge.confirmed {
+            background: #E8F5E9;
+            color: #2E7D32;
+        }
+
+        .dt-badge.pending {
+            background: #FFF8E1;
+            color: #F57F17;
+        }
+
+        .dt-badge.urgent {
+            background: #FFEBEE;
+            color: #c62828;
+        }
 
         /* Desktop stand/base */
         .desktop-stand {
@@ -1401,12 +1550,17 @@
             height: 10px;
             background: linear-gradient(180deg, #222, #1a1a1a);
             border-radius: 0 0 8px 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,.4);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, .4);
         }
 
         /* Device visibility helpers */
-        .show-on-mobile  { display: none; }
-        .show-on-desktop { display: none; }
+        .show-on-mobile {
+            display: none;
+        }
+
+        .show-on-desktop {
+            display: none;
+        }
 
         /* ── Responsive ───────────────────────────────────────── */
         @media (max-width: 1400px) {
@@ -1742,7 +1896,36 @@
         </ul>
         <div class="nav-actions">
             <a href="login.html" class="btn-login" id="btnLogin">Entrar</a>
-            <a href="login.html" class="btn-cta-nav" id="btnRegister">Criar Conta Grátis</a>
+            <div class="register-dropdown" id="registerDropdown">
+                <button type="button" class="btn-cta-nav" id="btnRegister" aria-haspopup="true" aria-expanded="false">
+                    Criar Conta Grátis
+                    <i class="fa-solid fa-chevron-down chevron-icon"></i>
+                </button>
+                <div class="register-menu" id="registerMenu" role="menu">
+                    <div class="register-menu-header">Escolha o tipo de conta</div>
+                    <a href="login.html?role=dono&tab=registo" class="register-option" role="menuitem">
+                        <div class="register-option-icon"><i class="fa-solid fa-paw"></i></div>
+                        <div>
+                            <div class="register-option-title">Dono de Animal</div>
+                            <div class="register-option-sub">Caderneta digital, vacinas e consultas</div>
+                        </div>
+                    </a>
+                    <a href="registo_veterinario.html" class="register-option" role="menuitem">
+                        <div class="register-option-icon"><i class="fa-solid fa-user-doctor"></i></div>
+                        <div>
+                            <div class="register-option-title">Médico Veterinário</div>
+                            <div class="register-option-sub">Agenda, fichas clínicas e internamento</div>
+                        </div>
+                    </a>
+                    <a href="registo_clinica.html" class="register-option" role="menuitem">
+                        <div class="register-option-icon"><i class="fa-solid fa-hospital"></i></div>
+                        <div>
+                            <div class="register-option-title">Clínica Veterinária</div>
+                            <div class="register-option-sub">Registar clínica e gerir equipa médica</div>
+                        </div>
+                    </a>
+                </div>
+            </div>
         </div>
     </nav>
 
@@ -2069,9 +2252,36 @@
             </div>
             <h2 id="cta-title">Pronto para começar?</h2>
             <div class="cta-btns">
-                <a href="login.html" class="btn-cta-main" id="btnCtaMain">
-                    <i class="fa-solid fa-paw me-2"></i>Criar Conta Grátis
-                </a>
+                <div class="register-dropdown align-center" id="registerDropdownCta">
+                    <button type="button" class="btn-cta-main" id="btnCtaMain" aria-haspopup="true" aria-expanded="false">
+                        <i class="fa-solid fa-paw"></i>Criar Conta Grátis
+                        <i class="fa-solid fa-chevron-down chevron-icon"></i>
+                    </button>
+                    <div class="register-menu" role="menu">
+                        <div class="register-menu-header">Escolha o tipo de conta</div>
+                        <a href="login.html?role=dono&tab=registo" class="register-option" role="menuitem">
+                            <div class="register-option-icon"><i class="fa-solid fa-paw"></i></div>
+                            <div>
+                                <div class="register-option-title">Dono de Animal</div>
+                                <div class="register-option-sub">Caderneta digital, vacinas e consultas</div>
+                            </div>
+                        </a>
+                        <a href="registo_veterinario.html" class="register-option" role="menuitem">
+                            <div class="register-option-icon"><i class="fa-solid fa-user-doctor"></i></div>
+                            <div>
+                                <div class="register-option-title">Médico Veterinário</div>
+                                <div class="register-option-sub">Agenda, fichas clínicas e internamento</div>
+                            </div>
+                        </a>
+                        <a href="registo_clinica.html" class="register-option" role="menuitem">
+                            <div class="register-option-icon"><i class="fa-solid fa-hospital"></i></div>
+                            <div>
+                                <div class="register-option-title">Clínica Veterinária</div>
+                                <div class="register-option-sub">Registar clínica e gerir equipa médica</div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
                 <a href="#como-funciona" class="btn-cta-secondary" id="btnCtaSecondary">
                     Saber Mais
                 </a>
@@ -2166,7 +2376,7 @@
                 || window.innerWidth <= 820;
 
             const desktopEls = document.querySelectorAll('.show-on-desktop');
-            const mobileEls  = document.querySelectorAll('.show-on-mobile');
+            const mobileEls = document.querySelectorAll('.show-on-mobile');
 
             desktopEls.forEach(el => {
                 el.style.display = isMobile ? 'none' : (el.classList.contains('desktop-mockup') ? 'block' : 'flex');
@@ -2178,6 +2388,41 @@
 
         applyDeviceMockup();
         window.addEventListener('resize', applyDeviceMockup, { passive: true });
+
+        // ── Mini-menus de opções de registo (navbar e CTA) ──────────
+        const allRegDropdowns = document.querySelectorAll('.register-dropdown');
+        allRegDropdowns.forEach(dd => {
+            const btn = dd.querySelector('button');
+            if (!btn) return;
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const willOpen = !dd.classList.contains('open');
+                allRegDropdowns.forEach(other => {
+                    other.classList.remove('open');
+                    other.querySelector('button')?.setAttribute('aria-expanded', 'false');
+                });
+                if (willOpen) {
+                    dd.classList.add('open');
+                    btn.setAttribute('aria-expanded', 'true');
+                }
+            });
+        });
+        document.addEventListener('click', (e) => {
+            allRegDropdowns.forEach(dd => {
+                if (!dd.contains(e.target)) {
+                    dd.classList.remove('open');
+                    dd.querySelector('button')?.setAttribute('aria-expanded', 'false');
+                }
+            });
+        });
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                allRegDropdowns.forEach(dd => {
+                    dd.classList.remove('open');
+                    dd.querySelector('button')?.setAttribute('aria-expanded', 'false');
+                });
+            }
+        });
     </script>
 </body>
 

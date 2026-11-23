@@ -1,0 +1,1027 @@
+<!DOCTYPE html>
+<html lang="pt">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zooni — Farmácia & Histórico de Compras (Veterinário)</title>
+    <link rel="icon" href="assets/icon-512.png" type="image/png">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="assets/js/theme.js"></script>
+    <link rel="stylesheet" href="assets/css/theme.css">
+    <style>
+        :root {
+            --primary: #3D8B3D;
+            --primary-dark: #1E4D1E;
+            --primary-light: #5CB85C;
+            --bg-color: #F4F9F4;
+            --text-main: #1a2e1a;
+            --text-sec: #5a7a5a;
+            --card-bg: #ffffff;
+            --border-color: #e4efe4;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #121212;
+            --text-main: #E4E4E7;
+            --text-sec: #A1A1AA;
+            --card-bg: #202024;
+            --border-color: rgba(255, 255, 255, 0.1);
+            --primary: #34D399;
+            --primary-dark: #059669;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Outfit', sans-serif; background: var(--bg-color); color: var(--text-main); overflow-x: hidden; }
+
+        .app-container { display: grid; grid-template-columns: 260px 1fr; min-height: 100vh; }
+
+        /* ── SIDEBAR VETERINÁRIO (verde igual ao Internamento) ── */
+        .sidebar {
+            width: 260px;
+            background-color: var(--primary-dark);
+            color: #fff;
+            padding: 2rem 1.5rem;
+            display: flex; flex-direction: column;
+            position: sticky; top: 0; height: 100vh; z-index: 1000;
+            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.08);
+            transition: transform .3s ease;
+        }
+        .logo-container { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; margin-bottom: 2.2rem; }
+        .logo-img-sidebar { max-width: 155px; width: 100%; height: auto; object-fit: contain; filter: brightness(0) invert(1); }
+        .logo-subtext {
+            font-size: .82rem; letter-spacing: 2px; font-weight: 600;
+            color: rgba(255, 255, 255, .8); padding-left: 4px;
+        }
+        .nav-links { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 7px; flex-grow: 1; }
+        .nav-link {
+            display: flex; align-items: center; gap: 12px;
+            padding: 11px 14px; border-radius: 12px;
+            color: rgba(255, 255, 255, .82); font-weight: 500; font-size: .92rem;
+            text-decoration: none; transition: all .2s;
+        }
+        .nav-link i { width: 20px; text-align: center; font-size: 1.05rem; }
+        .nav-link:hover, .nav-link.active { background: rgba(255, 255, 255, .18); color: #fff !important; }
+        .nav-link.active { font-weight: 700; border-left: 4px solid #fff; background: rgba(255, 255, 255, .22); }
+        .nav-line-break { border-top: 1px solid rgba(255, 255, 255, .14); margin: 12px 0; }
+
+        /* ── MAIN ── */
+        .main-content { min-width: 0; width: 100%; }
+        .navbar-area {
+            background: var(--card-bg); border-bottom: 1px solid var(--border-color);
+            padding: 14px 28px; display: flex; align-items: center;
+            justify-content: space-between; flex-wrap: wrap; gap: 12px;
+        }
+        .clinic-pill-header {
+            display: inline-flex; align-items: center; gap: 8px;
+            background: rgba(61, 139, 61, 0.1); color: var(--primary);
+            padding: 7px 14px; border-radius: 99px; font-weight: 700; font-size: .88rem;
+        }
+        .page-body { padding: 1.8rem 2.2rem; }
+
+        .btn-vet-primary {
+            background: var(--primary); color: #fff; border: none;
+            padding: 9px 18px; border-radius: 12px; font-weight: 700;
+            display: inline-flex; align-items: center; gap: 8px; cursor: pointer;
+            transition: all .2s;
+        }
+        .btn-vet-primary:hover { background: var(--primary-dark); transform: translateY(-1px); }
+
+        /* ── KPIS ── */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 16px; margin-bottom: 1.6rem; }
+        .stat-card {
+            background: var(--card-bg); border: 1px solid var(--border-color);
+            border-radius: 18px; padding: 1.25rem 1.4rem;
+            display: flex; justify-content: space-between; align-items: center;
+            box-shadow: 0 3px 12px rgba(30, 77, 30, 0.05);
+        }
+        .stat-val { font-size: 1.8rem; font-weight: 800; line-height: 1.1; }
+        .stat-label { font-size: .78rem; font-weight: 700; text-transform: uppercase; color: var(--text-sec); letter-spacing: .4px; margin-top: 4px; }
+        .stat-icon { width: 46px; height: 46px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; }
+
+        /* ── TABS & CARDS ── */
+        .zooni-tabs {
+            display: inline-flex; gap: 6px; padding: 6px;
+            background: var(--card-bg); border: 1px solid var(--border-color);
+            border-radius: 16px; margin-bottom: 1.5rem; flex-wrap: wrap;
+        }
+        .zooni-tab {
+            border: none; background: transparent; color: var(--text-sec);
+            font-weight: 700; font-size: .92rem; padding: 10px 18px;
+            border-radius: 12px; cursor: pointer; display: inline-flex;
+            align-items: center; gap: 8px; transition: all .2s;
+        }
+        .zooni-tab.active { background: var(--primary); color: #fff; }
+
+        .card-panel {
+            background: var(--card-bg); border: 1px solid var(--border-color);
+            border-radius: 18px; padding: 1.3rem; margin-bottom: 1.3rem;
+            box-shadow: 0 3px 12px rgba(30, 77, 30, 0.04);
+        }
+
+        .order-card {
+            background: var(--card-bg); border: 1px solid var(--border-color);
+            border-radius: 18px; padding: 1.25rem; margin-bottom: 14px;
+            transition: box-shadow .2s;
+        }
+        .order-card.mine { border-left: 5px solid var(--primary); }
+        .order-card.other-clinic { border-left: 5px solid #0284c7; }
+        .order-card:hover { box-shadow: 0 8px 22px rgba(30, 77, 30, 0.08); }
+
+        .where-strip {
+            background: rgba(61, 139, 61, 0.07); border: 1px solid rgba(61, 139, 61, 0.18);
+            border-radius: 12px; padding: 9px 14px; font-size: .85rem;
+            display: flex; flex-wrap: wrap; gap: 14px; align-items: center;
+        }
+        .where-strip.external {
+            background: rgba(2, 132, 199, 0.07); border-color: rgba(2, 132, 199, 0.2);
+        }
+
+        .status-badge {
+            display: inline-flex; align-items: center; gap: 5px;
+            padding: 4px 11px; border-radius: 99px; font-size: .76rem; font-weight: 700;
+        }
+        .st-pendente { background: #fef3c7; color: #92400e; }
+        .st-confirmada { background: #dbeafe; color: #1e40af; }
+        .st-em_preparacao { background: #e0e7ff; color: #3730a3; }
+        .st-pronta_levantamento { background: #d1fae5; color: #065f46; }
+        .st-enviada { background: #cffafe; color: #155e75; }
+        .st-entregue { background: #dcfce7; color: #166534; }
+        .st-cancelada { background: #fee2e2; color: #991b1b; }
+
+        /* ── FILTER BUTTONS (estilo Tickets) ── */
+        .filter-bar {
+            display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 1rem;
+        }
+        .filter-btn {
+            padding: 7px 14px; border-radius: 20px;
+            border: 2px solid var(--border-color); background: var(--card-bg);
+            color: var(--text-sec); font-weight: 600; font-size: .83rem;
+            cursor: pointer; transition: all .2s;
+            display: inline-flex; align-items: center; gap: 6px;
+        }
+        .filter-btn:hover { border-color: var(--primary); color: var(--primary); }
+        .filter-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+        .filter-btn .cnt {
+            background: rgba(0, 0, 0, .08); border-radius: 99px;
+            padding: 1px 7px; font-size: .74rem; font-weight: 700;
+        }
+        .filter-btn.active .cnt { background: rgba(255, 255, 255, .25); color: #fff; }
+
+        .toast-zooni {
+            position: fixed; bottom: 24px; right: 24px; z-index: 9999;
+            background: var(--primary-dark); color: #fff; padding: 14px 20px;
+            border-radius: 14px; font-weight: 600; display: none;
+            align-items: center; gap: 10px; box-shadow: 0 12px 30px rgba(0, 0, 0, .25);
+        }
+
+        [data-theme="dark"] .form-control,
+        [data-theme="dark"] .form-select,
+        [data-theme="dark"] .modal-content {
+            background-color: var(--card-bg) !important;
+            color: var(--text-main) !important;
+            border-color: var(--border-color) !important;
+        }
+
+        @media (max-width: 768px) {
+            .app-container { grid-template-columns: 1fr; }
+            .sidebar { position: fixed; inset: 0 auto 0 0; transform: translateX(-100%); }
+            .sidebar.active { transform: translateX(0); }
+            .page-body { padding: 1rem; }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- SIDEBAR VETERINÁRIO -->
+        <aside class="sidebar">
+            <div class="logo-container">
+                <a href="dashboard_veterinario.html"><img src="assets/logo.png" alt="Zooni Logo" class="logo-img-sidebar"></a>
+                <div class="logo-subtext">VETERINÁRIO</div>
+            </div>
+            <ul class="nav-links">
+                <li><a href="dashboard_veterinario.html" class="nav-link"><i class="fa-solid fa-chart-pie"></i> Visão Geral</a></li>
+                <li><a href="agenda_veterinario.html" class="nav-link"><i class="fa-regular fa-calendar"></i> Agenda</a></li>
+                <li><a href="tickets_veterinario.html" class="nav-link"><i class="fa-solid fa-ticket"></i> Tickets</a></li>
+                <li><a href="chat_veterinario.html" class="nav-link"><i class="fa-solid fa-comments"></i> Chat Médico</a></li>
+                <li><a href="pacientes_veterinario.html" class="nav-link"><i class="fa-solid fa-users"></i> Pacientes</a></li>
+                <li><a href="internamento.html" class="nav-link"><i class="fa-solid fa-bed-pulse"></i> Internamento</a></li>
+                <li><a href="loja_veterinario.html" class="nav-link active"><i class="fa-solid fa-prescription-bottle-medical"></i> Farmácia & Compras</a></li>
+                <li><a href="campanhas.html" class="nav-link"><i class="fa-solid fa-bullhorn"></i> Campanhas CRM</a></li>
+                <div class="nav-line-break"></div>
+                <li><a href="definicoes_veterinario.html" class="nav-link"><i class="fa-solid fa-gear"></i> Configurações</a></li>
+                <li><a href="login.html?logout=true" class="nav-link" style="color:#ff9b9b;"><i class="fa-solid fa-arrow-right-from-bracket"></i> Sair</a></li>
+            </ul>
+        </aside>
+
+        <!-- MAIN -->
+        <main class="main-content">
+            <div class="navbar-area">
+                <div class="d-flex align-items-center gap-2">
+                    <button class="btn btn-sm btn-outline-secondary d-md-none" onclick="document.querySelector('.sidebar').classList.toggle('active')">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+                    <div class="clinic-pill-header">
+                        <i class="fa-solid fa-hospital"></i>
+                        <span id="vetClinicName">A carregar clínica...</span>
+                    </div>
+                </div>
+                <div class="d-flex gap-2">
+                    <button class="btn-vet-primary" onclick="abrirModalProduto(null)">
+                        <i class="fa-solid fa-plus"></i> Novo Produto / Medicamento
+                    </button>
+                </div>
+            </div>
+
+            <div class="page-body">
+                <div class="mb-4">
+                    <h1 class="fw-bold fs-3 mb-1"><i class="fa-solid fa-prescription-bottle-medical text-success me-2"></i>Farmácia, Encomendas & Histórico de Compras</h1>
+                    <p class="text-secondary small mb-0">Acesso completo a todo o histórico de compras dos tutores (incluindo local onde foi comprado) e gestão do catálogo da clínica.</p>
+                </div>
+
+                <div id="sqlMissingBanner" class="alert alert-warning rounded-4 d-none mb-4">
+                    <i class="fa-solid fa-triangle-exclamation me-2"></i>
+                    <strong>Base de dados por configurar:</strong> Execute o script <code>sql/farmacia_encomendas.sql</code> no SQL Editor do Supabase para ativar as tabelas de farmácia e histórico de compras.
+                </div>
+
+                <!-- KPIS -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div>
+                            <div class="stat-val text-warning" id="kpiPendentes">0</div>
+                            <div class="stat-label">Encomendas Pendentes</div>
+                        </div>
+                        <div class="stat-icon" style="background:#fef3c7; color:#d97706;"><i class="fa-solid fa-hourglass-half"></i></div>
+                    </div>
+                    <div class="stat-card">
+                        <div>
+                            <div class="stat-val text-primary" id="kpiTotalHistorico">0</div>
+                            <div class="stat-label">Total Compras (Histórico)</div>
+                        </div>
+                        <div class="stat-icon" style="background:#dbeafe; color:#2563eb;"><i class="fa-solid fa-clock-rotate-left"></i></div>
+                    </div>
+                    <div class="stat-card">
+                        <div>
+                            <div class="stat-val text-success" id="kpiFaturado">0,00 €</div>
+                            <div class="stat-label">Volume Minha Clínica</div>
+                        </div>
+                        <div class="stat-icon" style="background:#dcfce7; color:#16a34a;"><i class="fa-solid fa-euro-sign"></i></div>
+                    </div>
+                    <div class="stat-card">
+                        <div>
+                            <div class="stat-val" id="kpiProdutos">0</div>
+                            <div class="stat-label">Produtos no Catálogo</div>
+                        </div>
+                        <div class="stat-icon" style="background:#e8f5e9; color:#2e7d32;"><i class="fa-solid fa-pills"></i></div>
+                    </div>
+                </div>
+
+                <!-- ABAS -->
+                <div class="zooni-tabs">
+                    <button class="zooni-tab active" id="tabBtnEncomendas" onclick="mudarAba('encomendas')">
+                        <i class="fa-solid fa-receipt"></i> Histórico Completo & Encomendas
+                    </button>
+                    <button class="zooni-tab" id="tabBtnCatalogo" onclick="mudarAba('catalogo')">
+                        <i class="fa-solid fa-boxes-stacked"></i> Catálogo da Clínica
+                    </button>
+                </div>
+
+                <!-- ══ ABA 1: HISTÓRICO COMPLETO E ENCOMENDAS ══ -->
+                <section id="secEncomendas">
+                    <div class="filter-bar" id="filterBarEncomendas">
+                        <button class="filter-btn active" data-estado="todos" onclick="setEstadoEncomenda('todos', this)"><i class="fa-solid fa-list"></i> Todos <span class="cnt" data-cnt="todos">0</span></button>
+                        <button class="filter-btn" data-estado="pendente" onclick="setEstadoEncomenda('pendente', this)"><i class="fa-regular fa-clock"></i> Pendentes <span class="cnt" data-cnt="pendente">0</span></button>
+                        <button class="filter-btn" data-estado="confirmada" onclick="setEstadoEncomenda('confirmada', this)"><i class="fa-solid fa-circle-check"></i> Confirmadas <span class="cnt" data-cnt="confirmada">0</span></button>
+                        <button class="filter-btn" data-estado="em_preparacao" onclick="setEstadoEncomenda('em_preparacao', this)"><i class="fa-solid fa-box-open"></i> Em Preparação <span class="cnt" data-cnt="em_preparacao">0</span></button>
+                        <button class="filter-btn" data-estado="pronta_levantamento" onclick="setEstadoEncomenda('pronta_levantamento', this)"><i class="fa-solid fa-store"></i> Prontas <span class="cnt" data-cnt="pronta_levantamento">0</span></button>
+                        <button class="filter-btn" data-estado="enviada" onclick="setEstadoEncomenda('enviada', this)"><i class="fa-solid fa-truck"></i> Enviadas <span class="cnt" data-cnt="enviada">0</span></button>
+                        <button class="filter-btn" data-estado="entregue" onclick="setEstadoEncomenda('entregue', this)"><i class="fa-solid fa-check-double"></i> Entregues <span class="cnt" data-cnt="entregue">0</span></button>
+                        <button class="filter-btn" data-estado="cancelada" onclick="setEstadoEncomenda('cancelada', this)"><i class="fa-solid fa-circle-xmark"></i> Canceladas <span class="cnt" data-cnt="cancelada">0</span></button>
+                    </div>
+                    <div class="card-panel">
+                        <div class="row g-2">
+                            <div class="col-md-5">
+                                <input type="text" id="buscaEncomendas" class="form-control rounded-3" placeholder="Pesquisar tutor, animal, produto, clínica ou nº..." oninput="renderEncomendas()">
+                            </div>
+                            <div class="col-md-4">
+                                <select id="filtroAmbito" class="form-select rounded-3" onchange="renderEncomendas()">
+                                    <option value="todos">Todo o histórico de compras</option>
+                                    <option value="minhas">Só minhas / minha clínica</option>
+                                    <option value="externas">Compradas noutras clínicas</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <select id="filtroDonoEnc" class="form-select rounded-3" onchange="renderEncomendas()">
+                                    <option value="todos">Todos os tutores</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="listaEncomendasVet"></div>
+                </section>
+
+                <!-- ══ ABA 2: CATÁLOGO DE PRODUTOS ══ -->
+                <section id="secCatalogo" style="display:none;">
+                    <div class="filter-bar" id="filterBarProdutos">
+                        <button class="filter-btn active" data-estado="todos" onclick="setEstadoProduto('todos', this)"><i class="fa-solid fa-list"></i> Todos <span class="cnt" data-cnt="todos">0</span></button>
+                        <button class="filter-btn" data-estado="ativo" onclick="setEstadoProduto('ativo', this)"><i class="fa-solid fa-circle-check"></i> Ativos <span class="cnt" data-cnt="ativo">0</span></button>
+                        <button class="filter-btn" data-estado="stock_baixo" onclick="setEstadoProduto('stock_baixo', this)"><i class="fa-solid fa-triangle-exclamation"></i> Stock Baixo <span class="cnt" data-cnt="stock_baixo">0</span></button>
+                        <button class="filter-btn" data-estado="sem_stock" onclick="setEstadoProduto('sem_stock', this)"><i class="fa-solid fa-box-open"></i> Sem Stock <span class="cnt" data-cnt="sem_stock">0</span></button>
+                        <button class="filter-btn" data-estado="oculto" onclick="setEstadoProduto('oculto', this)"><i class="fa-solid fa-eye-slash"></i> Ocultos <span class="cnt" data-cnt="oculto">0</span></button>
+                    </div>
+                    <div class="card-panel">
+                        <div class="row g-2 align-items-center mb-3">
+                            <div class="col-md-5">
+                                <input type="text" id="buscaCatalogoVet" class="form-control rounded-3" placeholder="Pesquisar produto ou medicamento..." oninput="renderCatalogoVet()">
+                            </div>
+                            <div class="col-md-4">
+                                <select id="filtroCatVet" class="form-select rounded-3" onchange="renderCatalogoVet()">
+                                    <option value="todos">Todas as categorias</option>
+                                    <option value="medicamento">Medicamentos</option>
+                                    <option value="desparasitante">Desparasitantes</option>
+                                    <option value="alimentacao">Alimentação</option>
+                                    <option value="suplemento">Suplementos</option>
+                                    <option value="higiene">Higiene</option>
+                                    <option value="acessorio">Acessórios</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3 text-md-end">
+                                <button class="btn-vet-primary btn-sm" onclick="abrirModalProduto(null)">
+                                    <i class="fa-solid fa-plus"></i> Adicionar Produto
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="table align-middle mb-0">
+                                <thead>
+                                    <tr class="small text-secondary">
+                                        <th>Produto / Medicamento</th>
+                                        <th>Categoria</th>
+                                        <th>Preço</th>
+                                        <th>Stock</th>
+                                        <th>Estado</th>
+                                        <th class="text-end">Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tabelaCatalogoVet"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- MODAL CRIAR / EDITAR PRODUTO -->
+    <div class="modal fade" id="modalProduto" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content rounded-4 border-0 shadow-lg">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold" id="modalProdutoTitulo">Novo Produto / Medicamento</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form onsubmit="guardarProduto(event)">
+                    <input type="hidden" id="prodEditId">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="small fw-bold mb-1">Nome do Produto / Medicamento *</label>
+                            <input type="text" id="prodNome" class="form-control rounded-3" required placeholder="Ex: Bravecto 10-20kg, Milbemax Gato, Ração Hypoallergenic...">
+                        </div>
+                        <div class="row g-2 mb-3">
+                            <div class="col-6">
+                                <label class="small fw-bold mb-1">Categoria</label>
+                                <select id="prodCategoria" class="form-select rounded-3">
+                                    <option value="medicamento">Medicamento</option>
+                                    <option value="desparasitante">Desparasitante</option>
+                                    <option value="alimentacao">Alimentação</option>
+                                    <option value="suplemento">Suplemento</option>
+                                    <option value="higiene">Higiene</option>
+                                    <option value="acessorio">Acessório</option>
+                                </select>
+                            </div>
+                            <div class="col-6">
+                                <label class="small fw-bold mb-1">Espécie Alvo</label>
+                                <select id="prodEspecie" class="form-select rounded-3">
+                                    <option value="todos">Todas</option>
+                                    <option value="cao">Cão</option>
+                                    <option value="gato">Gato</option>
+                                    <option value="outro">Exótico / Outro</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row g-2 mb-3">
+                            <div class="col-6">
+                                <label class="small fw-bold mb-1">Preço (€) *</label>
+                                <input type="number" step="0.01" min="0" id="prodPreco" class="form-control rounded-3" required value="0.00">
+                            </div>
+                            <div class="col-6">
+                                <label class="small fw-bold mb-1">Stock Disponível *</label>
+                                <input type="number" min="0" id="prodStock" class="form-control rounded-3" required value="10">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="small fw-bold mb-1">Descrição / Posologia</label>
+                            <textarea id="prodDescricao" rows="2" class="form-control rounded-3" placeholder="Indicações, peso recomendado, composição..."></textarea>
+                        </div>
+                        <div class="d-flex gap-4">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="prodReceita">
+                                <label class="form-check-label small fw-semibold" for="prodReceita">Requer receita médica</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="prodAtivo" checked>
+                                <label class="form-check-label small fw-semibold" for="prodAtivo">Visível na loja</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-0 pt-0">
+                        <button type="button" class="btn btn-outline-secondary rounded-3" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn-vet-primary"><i class="fa-solid fa-check"></i> Guardar Produto</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL GERIR ESTADO DA ENCOMENDA -->
+    <div class="modal fade" id="modalGerirEncomenda" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content rounded-4 border-0 shadow-lg">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold"><i class="fa-solid fa-clipboard-check text-success me-2"></i>Gerir Encomenda <span id="gerirEncNum"></span></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form onsubmit="guardarGestaoEncomenda(event)">
+                    <input type="hidden" id="gerirEncId">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="small fw-bold mb-1">Estado da Encomenda</label>
+                            <select id="gerirEncEstado" class="form-select rounded-3">
+                                <option value="pendente">Pendente</option>
+                                <option value="confirmada">Confirmada</option>
+                                <option value="em_preparacao">Em Preparação</option>
+                                <option value="pronta_levantamento">Pronta para Levantamento</option>
+                                <option value="enviada">Enviada</option>
+                                <option value="entregue">Entregue</option>
+                                <option value="cancelada">Cancelada</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="small fw-bold mb-1">Total (€) — pode ajustar se havia itens personalizados</label>
+                            <input type="number" step="0.01" min="0" id="gerirEncTotal" class="form-control rounded-3">
+                        </div>
+                        <div class="mb-2">
+                            <label class="small fw-bold mb-1">Notas para o Tutor (visível no histórico do dono)</label>
+                            <textarea id="gerirEncNotas" rows="3" class="form-control rounded-3" placeholder="Ex: Pode levantar na receção das 09h às 19h. Administrar 1 comprimido de 12 em 12 horas."></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-0 pt-0">
+                        <button type="button" class="btn btn-outline-secondary rounded-3" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn-vet-primary"><i class="fa-solid fa-save"></i> Atualizar Encomenda</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast-zooni" id="toastZooni"><i class="fa-solid fa-circle-check"></i><span id="toastMsg"></span></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+
+    <script>
+        const SUPABASE_URL = 'https://xqtbtggmwejnkhckduti.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhxdGJ0Z2dtd2VqbmtoY2tkdXRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc2OTU5NjEsImV4cCI6MjA4MzI3MTk2MX0.G1wG0UC6sF7r6tMxGdqLGvsHa_dxlVD1-j6QNEw32IM';
+        const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        let vetAtual = null;
+        let clinicaAtual = null;
+        let todasEncomendas = [];
+        let produtosClinica = [];
+        let clientesMap = {};
+        let animaisMap = {};
+        let estadoEncomendaFiltro = 'todos';
+        let estadoProdutoFiltro = 'todos';
+
+        const CAT_LABELS = {
+            medicamento: 'Medicamento',
+            desparasitante: 'Desparasitante',
+            alimentacao: 'Alimentação',
+            suplemento: 'Suplemento',
+            higiene: 'Higiene',
+            acessorio: 'Acessório'
+        };
+
+        const ESTADO_LABELS = {
+            pendente: 'Pendente',
+            confirmada: 'Confirmada',
+            em_preparacao: 'Em Preparação',
+            pronta_levantamento: 'Pronta p/ Levantamento',
+            enviada: 'Enviada',
+            entregue: 'Entregue',
+            cancelada: 'Cancelada'
+        };
+
+        const PAGAMENTO_LABELS = {
+            clinica: 'Na Clínica',
+            mbway: 'MB Way',
+            multibanco: 'Multibanco',
+            cartao: 'Cartão'
+        };
+
+        function esc(s) {
+            return (s ?? '').toString().replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+        }
+        function euro(v) { return Number(v || 0).toFixed(2).replace('.', ',') + ' €'; }
+        function fmtData(d) {
+            if (!d) return '—';
+            const dt = new Date(d);
+            return dt.toLocaleDateString('pt-PT') + ' ' + dt.toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' });
+        }
+        function showToast(msg) {
+            const el = document.getElementById('toastZooni');
+            document.getElementById('toastMsg').textContent = msg;
+            el.style.display = 'flex';
+            clearTimeout(el._t);
+            el._t = setTimeout(() => { el.style.display = 'none'; }, 3500);
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const ok = await initVet();
+            if (!ok) return;
+            await carregarTudo();
+        });
+
+        async function initVet() {
+            const { data: { session } } = await sb.auth.getSession();
+            if (!session) { window.location.href = 'login.html?role=veterinario'; return false; }
+
+            const { data: vet } = await sb.from('veterinarios').select('*').eq('user_id', session.user.id).maybeSingle();
+            if (!vet) { window.location.href = 'login.html?role=veterinario'; return false; }
+            vetAtual = vet;
+
+            if (vet.clinica_id) {
+                const { data: cl } = await sb.from('clinicas').select('*').eq('id', vet.clinica_id).maybeSingle();
+                clinicaAtual = cl;
+            }
+            document.getElementById('vetClinicName').textContent =
+                (clinicaAtual && clinicaAtual.nome) || vet.clinica || `Dr(a). ${vet.nome}`;
+            return true;
+        }
+
+        async function carregarTudo() {
+            const [encRes, prodRes, cliRes, animRes] = await Promise.all([
+                sb.from('farmacia_encomendas').select('*').order('criado_em', { ascending: false }),
+                vetAtual.clinica_id
+                    ? sb.from('farmacia_produtos').select('*').or(`clinica_id.eq.${vetAtual.clinica_id},id_veterinario.eq.${vetAtual.user_id}`).order('nome')
+                    : sb.from('farmacia_produtos').select('*').eq('id_veterinario', vetAtual.user_id).order('nome'),
+                sb.from('clientes').select('id, nome, telemovel, telefone, email').limit(5000),
+                sb.from('animais').select('id, nome, tipo_animal, raca').limit(5000)
+            ]);
+
+            if ((encRes.error && (encRes.error.code === 'PGRST205' || encRes.error.code === '42P01')) ||
+                (prodRes.error && (prodRes.error.code === 'PGRST205' || prodRes.error.code === '42P01'))) {
+                document.getElementById('sqlMissingBanner').classList.remove('d-none');
+            }
+
+            clientesMap = {};
+            (cliRes.data || []).forEach(c => { clientesMap[c.id] = c; });
+            animaisMap = {};
+            (animRes.data || []).forEach(a => { animaisMap[a.id] = a; });
+
+            todasEncomendas = encRes.data || [];
+            produtosClinica = prodRes.data || [];
+
+            preencherFiltroDonos();
+            atualizarKpis();
+            renderEncomendas();
+            renderCatalogoVet();
+        }
+
+        function eMinhaEncomenda(enc) {
+            return enc.id_veterinario === vetAtual.user_id ||
+                (vetAtual.clinica_id && enc.clinica_id === vetAtual.clinica_id);
+        }
+
+        function preencherFiltroDonos() {
+            const sel = document.getElementById('filtroDonoEnc');
+            const atual = sel.value;
+            const ids = [...new Set(todasEncomendas.map(e => e.id_dono))];
+            sel.innerHTML = '<option value="todos">Todos os tutores</option>' +
+                ids.map(id => {
+                    const c = clientesMap[id];
+                    return `<option value="${id}">${esc(c ? c.nome : 'Tutor #' + id)}</option>`;
+                }).join('');
+            if ([...sel.options].some(o => o.value === atual)) sel.value = atual;
+        }
+
+        function atualizarKpis() {
+            const minhas = todasEncomendas.filter(eMinhaEncomenda);
+            const pendentes = minhas.filter(e => ['pendente', 'confirmada', 'em_preparacao'].includes(e.estado)).length;
+            const faturado = minhas.filter(e => e.estado !== 'cancelada').reduce((s, e) => s + Number(e.total || 0), 0);
+
+            document.getElementById('kpiPendentes').textContent = pendentes;
+            document.getElementById('kpiTotalHistorico').textContent = todasEncomendas.length;
+            document.getElementById('kpiFaturado').textContent = euro(faturado);
+            document.getElementById('kpiProdutos').textContent = produtosClinica.filter(p => p.ativo).length;
+        }
+
+        function setEstadoEncomenda(estado, btn) {
+            estadoEncomendaFiltro = estado;
+            document.querySelectorAll('#filterBarEncomendas .filter-btn').forEach(b => b.classList.remove('active'));
+            if (btn) btn.classList.add('active');
+            renderEncomendas();
+        }
+
+        function setEstadoProduto(estado, btn) {
+            estadoProdutoFiltro = estado;
+            document.querySelectorAll('#filterBarProdutos .filter-btn').forEach(b => b.classList.remove('active'));
+            if (btn) btn.classList.add('active');
+            renderCatalogoVet();
+        }
+
+        function atualizarContadoresFiltros() {
+            const cntEnc = { todos: todasEncomendas.length };
+            todasEncomendas.forEach(e => { cntEnc[e.estado] = (cntEnc[e.estado] || 0) + 1; });
+            document.querySelectorAll('#filterBarEncomendas [data-cnt]').forEach(el => {
+                el.textContent = cntEnc[el.dataset.cnt] || 0;
+            });
+
+            const cntProd = {
+                todos: produtosClinica.length,
+                ativo: produtosClinica.filter(p => p.ativo).length,
+                stock_baixo: produtosClinica.filter(p => p.ativo && p.stock > 0 && p.stock <= 2).length,
+                sem_stock: produtosClinica.filter(p => (p.stock || 0) <= 0).length,
+                oculto: produtosClinica.filter(p => !p.ativo).length
+            };
+            document.querySelectorAll('#filterBarProdutos [data-cnt]').forEach(el => {
+                el.textContent = cntProd[el.dataset.cnt] || 0;
+            });
+        }
+
+        function renderEncomendas() {
+            atualizarContadoresFiltros();
+            const box = document.getElementById('listaEncomendasVet');
+            const termo = (document.getElementById('buscaEncomendas')?.value || '').toLowerCase().trim();
+            const ambito = document.getElementById('filtroAmbito')?.value || 'todos';
+            const estado = estadoEncomendaFiltro;
+            const donoFiltro = document.getElementById('filtroDonoEnc')?.value || 'todos';
+
+            const filtradas = todasEncomendas.filter(e => {
+                const minha = eMinhaEncomenda(e);
+                if (ambito === 'minhas' && !minha) return false;
+                if (ambito === 'externas' && minha) return false;
+                if (estado !== 'todos' && e.estado !== estado) return false;
+                if (donoFiltro !== 'todos' && String(e.id_dono) !== donoFiltro) return false;
+                if (termo) {
+                    const cli = clientesMap[e.id_dono];
+                    const anim = animaisMap[e.id_animal];
+                    const itensStr = (e.itens || []).map(i => i.nome).join(' ');
+                    const hay = `${e.numero_encomenda} ${e.local_compra} ${e.nome_veterinario || ''} ${cli?.nome || ''} ${anim?.nome || ''} ${itensStr}`.toLowerCase();
+                    if (!hay.includes(termo)) return false;
+                }
+                return true;
+            });
+
+            if (filtradas.length === 0) {
+                box.innerHTML = `
+                    <div class="card-panel text-center py-5">
+                        <i class="fa-solid fa-receipt fa-3x text-secondary opacity-25 mb-3"></i>
+                        <h5 class="fw-bold text-secondary">Nenhuma compra registada com estes filtros</h5>
+                        <p class="small text-secondary mb-0">Quando os tutores fizerem compras ou encomendas, todo o histórico aparecerá aqui.</p>
+                    </div>`;
+                return;
+            }
+
+            box.innerHTML = filtradas.map(enc => {
+                const minha = eMinhaEncomenda(enc);
+                const cli = clientesMap[enc.id_dono] || {};
+                const anim = animaisMap[enc.id_animal];
+                const itens = enc.itens || [];
+
+                return `
+                    <div class="order-card ${minha ? 'mine' : 'other-clinic'}">
+                        <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">
+                            <div>
+                                <div class="d-flex align-items-center gap-2 flex-wrap">
+                                    <span class="fw-bold fs-6">${esc(enc.numero_encomenda)}</span>
+                                    <span class="status-badge st-${esc(enc.estado)}">${esc(ESTADO_LABELS[enc.estado] || enc.estado)}</span>
+                                    ${enc.encomenda_origem_id ? '<span class="badge bg-info-subtle text-info border border-info-subtle"><i class="fa-solid fa-rotate-right me-1"></i>Recompra</span>' : ''}
+                                    ${!minha ? '<span class="badge bg-primary-subtle text-primary border border-primary-subtle">Outra Clínica</span>' : ''}
+                                </div>
+                                <div class="small text-secondary mt-1">
+                                    <i class="fa-regular fa-clock me-1"></i>${fmtData(enc.criado_em)}
+                                    · <i class="fa-solid fa-user ms-2 me-1"></i><strong>${esc(cli.nome || 'Tutor #' + enc.id_dono)}</strong> ${cli.telemovel || cli.telefone ? `(${esc(cli.telemovel || cli.telefone)})` : ''}
+                                    ${anim ? ` · <i class="fa-solid fa-paw text-success ms-2 me-1"></i><strong>${esc(anim.nome)}</strong> (${esc(anim.raca || anim.tipo_animal || 'Animal')})` : ''}
+                                </div>
+                            </div>
+                            <div class="text-md-end">
+                                <div class="fs-5 fw-bold text-success">${euro(enc.total)}</div>
+                                <div class="small text-secondary">${esc(PAGAMENTO_LABELS[enc.metodo_pagamento] || enc.metodo_pagamento)} · ${enc.tipo_entrega === 'entrega' ? 'Envio domicílio' : 'Levantamento clínica'}</div>
+                            </div>
+                        </div>
+
+                        <div class="where-strip ${minha ? '' : 'external'} mb-3">
+                            <div><i class="fa-solid fa-location-dot me-1 ${minha ? 'text-success' : 'text-primary'}"></i><strong>Onde foi comprado:</strong> ${esc(enc.local_compra)}</div>
+                            <div><i class="fa-solid fa-user-doctor me-1 ${minha ? 'text-success' : 'text-primary'}"></i><strong>Veterinário:</strong> Dr(a). ${esc(enc.nome_veterinario || '—')}</div>
+                            ${enc.morada_entrega ? `<div><i class="fa-solid fa-truck me-1"></i><strong>Morada entrega:</strong> ${esc(enc.morada_entrega)}</div>` : ''}
+                        </div>
+
+                        <div class="table-responsive mb-2">
+                            <table class="table table-sm align-middle mb-0">
+                                <thead>
+                                    <tr class="small text-secondary">
+                                        <th>Medicamento / Produto</th>
+                                        <th>Categoria</th>
+                                        <th class="text-center">Qtd.</th>
+                                        <th class="text-end">Preço Un.</th>
+                                        <th class="text-end">Subtotal</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${itens.map(it => `
+                                        <tr>
+                                            <td class="fw-semibold">
+                                                ${esc(it.nome)}
+                                                ${it.requer_receita ? '<span class="badge bg-warning-subtle text-warning-emphasis ms-1">Receita</span>' : ''}
+                                                ${it.personalizado ? '<span class="badge bg-light text-secondary border ms-1">Pedido Personalizado</span>' : ''}
+                                            </td>
+                                            <td class="small text-secondary">${esc(CAT_LABELS[it.categoria] || it.categoria || '—')}</td>
+                                            <td class="text-center fw-bold">${it.quantidade}</td>
+                                            <td class="text-end small">${it.preco_unitario > 0 ? euro(it.preco_unitario) : 'A definir'}</td>
+                                            <td class="text-end fw-bold">${it.subtotal > 0 ? euro(it.subtotal) : '—'}</td>
+                                        </tr>`).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        ${enc.notas_dono ? `<div class="small text-secondary mb-2"><i class="fa-regular fa-comment-dots me-1"></i><strong>Obs. do Tutor:</strong> ${esc(enc.notas_dono)}</div>` : ''}
+                        ${enc.notas_veterinario ? `<div class="small text-success mb-2"><i class="fa-solid fa-notes-medical me-1"></i><strong>Nota Clínica:</strong> ${esc(enc.notas_veterinario)}</div>` : ''}
+
+                        <div class="d-flex justify-content-end gap-2 mt-2 flex-wrap">
+                            <button class="btn btn-sm btn-outline-secondary rounded-3 fw-semibold" onclick="gerarPdfVet(${enc.id})">
+                                <i class="fa-solid fa-file-pdf me-1"></i> Comprovativo PDF
+                            </button>
+                            ${minha ? `
+                                <button class="btn-vet-primary btn-sm py-1 px-3" onclick="abrirModalGerirEncomenda(${enc.id})">
+                                    <i class="fa-solid fa-pen-to-square"></i> Gerir Estado / Notas
+                                </button>` : ''}
+                        </div>
+                    </div>`;
+            }).join('');
+        }
+
+        function abrirModalGerirEncomenda(encId) {
+            const enc = todasEncomendas.find(e => e.id === encId);
+            if (!enc) return;
+            document.getElementById('gerirEncId').value = enc.id;
+            document.getElementById('gerirEncNum').textContent = enc.numero_encomenda;
+            document.getElementById('gerirEncEstado').value = enc.estado;
+            document.getElementById('gerirEncTotal').value = Number(enc.total || 0).toFixed(2);
+            document.getElementById('gerirEncNotas').value = enc.notas_veterinario || '';
+            new bootstrap.Modal(document.getElementById('modalGerirEncomenda')).show();
+        }
+
+        async function guardarGestaoEncomenda(e) {
+            e.preventDefault();
+            const id = parseInt(document.getElementById('gerirEncId').value);
+            const estado = document.getElementById('gerirEncEstado').value;
+            const total = parseFloat(document.getElementById('gerirEncTotal').value) || 0;
+            const notas = document.getElementById('gerirEncNotas').value.trim() || null;
+
+            const encAnterior = todasEncomendas.find(x => x.id === id);
+            const { error } = await sb.from('farmacia_encomendas')
+                .update({ estado, total, notas_veterinario: notas })
+                .eq('id', id);
+
+            if (error) { showToast('Erro ao atualizar: ' + error.message); return; }
+
+            // Descontar stock automaticamente ao passar de pendente para confirmada/entregue
+            if (encAnterior && encAnterior.estado === 'pendente' && ['confirmada', 'em_preparacao', 'pronta_levantamento', 'enviada', 'entregue'].includes(estado)) {
+                for (const it of (encAnterior.itens || [])) {
+                    if (!it.produto_id) continue;
+                    const p = produtosClinica.find(x => x.id === it.produto_id);
+                    if (p) {
+                        const novoStock = Math.max(0, (p.stock || 0) - (it.quantidade || 1));
+                        await sb.from('farmacia_produtos').update({ stock: novoStock }).eq('id', p.id);
+                    }
+                }
+            }
+
+            bootstrap.Modal.getInstance(document.getElementById('modalGerirEncomenda')).hide();
+            await carregarTudo();
+            showToast('Encomenda atualizada com sucesso!');
+        }
+
+        /* ── GESTÃO DO CATÁLOGO ── */
+        function renderCatalogoVet() {
+            const tbody = document.getElementById('tabelaCatalogoVet');
+            const termo = (document.getElementById('buscaCatalogoVet')?.value || '').toLowerCase().trim();
+            const cat = document.getElementById('filtroCatVet')?.value || 'todos';
+
+            const lista = produtosClinica.filter(p => {
+                if (estadoProdutoFiltro === 'ativo' && !p.ativo) return false;
+                if (estadoProdutoFiltro === 'oculto' && p.ativo) return false;
+                if (estadoProdutoFiltro === 'sem_stock' && (p.stock || 0) > 0) return false;
+                if (estadoProdutoFiltro === 'stock_baixo' && !(p.ativo && p.stock > 0 && p.stock <= 2)) return false;
+                if (cat !== 'todos' && p.categoria !== cat) return false;
+                if (termo && !`${p.nome} ${p.descricao || ''}`.toLowerCase().includes(termo)) return false;
+                return true;
+            });
+
+            if (lista.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="text-center text-secondary py-4">Nenhum produto no catálogo. Clique em "Novo Produto / Medicamento" para adicionar.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = lista.map(p => `
+                <tr>
+                    <td>
+                        <div class="fw-bold">${esc(p.nome)} ${p.requer_receita ? '<span class="badge bg-warning-subtle text-warning-emphasis ms-1">Receita</span>' : ''}</div>
+                        <div class="small text-secondary">${esc(p.descricao || '—')}</div>
+                    </td>
+                    <td><span class="badge bg-success-subtle text-success">${esc(CAT_LABELS[p.categoria] || p.categoria)}</span></td>
+                    <td class="fw-bold">${euro(p.preco)}</td>
+                    <td>
+                        <div class="d-inline-flex align-items-center gap-2">
+                            <button class="btn btn-sm btn-outline-secondary py-0 px-2" onclick="ajustarStock(${p.id}, -1)">-</button>
+                            <span class="fw-bold ${p.stock <= 2 ? 'text-danger' : ''}">${p.stock}</span>
+                            <button class="btn btn-sm btn-outline-secondary py-0 px-2" onclick="ajustarStock(${p.id}, 1)">+</button>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="badge ${p.ativo ? 'bg-success-subtle text-success' : 'bg-secondary-subtle text-secondary'}">${p.ativo ? 'Ativo' : 'Oculto'}</span>
+                    </td>
+                    <td class="text-end text-nowrap">
+                        <button class="btn btn-sm btn-outline-primary rounded-3 me-1" onclick="abrirModalProduto(${p.id})" title="Editar"><i class="fa-solid fa-pen"></i></button>
+                        <button class="btn btn-sm btn-outline-danger rounded-3" onclick="apagarProduto(${p.id})" title="Apagar"><i class="fa-regular fa-trash-can"></i></button>
+                    </td>
+                </tr>`).join('');
+        }
+
+        function abrirModalProduto(id) {
+            const p = id ? produtosClinica.find(x => x.id === id) : null;
+            document.getElementById('modalProdutoTitulo').textContent = p ? 'Editar Produto / Medicamento' : 'Novo Produto / Medicamento';
+            document.getElementById('prodEditId').value = p ? p.id : '';
+            document.getElementById('prodNome').value = p ? p.nome : '';
+            document.getElementById('prodCategoria').value = p ? p.categoria : 'medicamento';
+            document.getElementById('prodEspecie').value = p ? (p.especie_alvo || 'todos') : 'todos';
+            document.getElementById('prodPreco').value = p ? Number(p.preco).toFixed(2) : '0.00';
+            document.getElementById('prodStock').value = p ? p.stock : 10;
+            document.getElementById('prodDescricao').value = p ? (p.descricao || '') : '';
+            document.getElementById('prodReceita').checked = p ? !!p.requer_receita : false;
+            document.getElementById('prodAtivo').checked = p ? !!p.ativo : true;
+            new bootstrap.Modal(document.getElementById('modalProduto')).show();
+        }
+
+        async function guardarProduto(e) {
+            e.preventDefault();
+            const editId = document.getElementById('prodEditId').value;
+            const payload = {
+                clinica_id: vetAtual.clinica_id || null,
+                id_veterinario: vetAtual.user_id,
+                nome: document.getElementById('prodNome').value.trim(),
+                categoria: document.getElementById('prodCategoria').value,
+                especie_alvo: document.getElementById('prodEspecie').value,
+                preco: parseFloat(document.getElementById('prodPreco').value) || 0,
+                stock: parseInt(document.getElementById('prodStock').value) || 0,
+                descricao: document.getElementById('prodDescricao').value.trim() || null,
+                requer_receita: document.getElementById('prodReceita').checked,
+                ativo: document.getElementById('prodAtivo').checked
+            };
+
+            const { error } = editId
+                ? await sb.from('farmacia_produtos').update(payload).eq('id', parseInt(editId))
+                : await sb.from('farmacia_produtos').insert([payload]);
+
+            if (error) { showToast('Erro ao guardar produto: ' + error.message); return; }
+
+            bootstrap.Modal.getInstance(document.getElementById('modalProduto')).hide();
+            await carregarTudo();
+            showToast(editId ? 'Produto atualizado!' : 'Produto adicionado ao catálogo!');
+        }
+
+        async function ajustarStock(prodId, delta) {
+            const p = produtosClinica.find(x => x.id === prodId);
+            if (!p) return;
+            const novo = Math.max(0, (p.stock || 0) + delta);
+            const { error } = await sb.from('farmacia_produtos').update({ stock: novo }).eq('id', prodId);
+            if (error) { showToast('Erro ao atualizar stock.'); return; }
+            p.stock = novo;
+            atualizarContadoresFiltros();
+            renderCatalogoVet();
+        }
+
+        async function apagarProduto(prodId) {
+            if (!confirm('Remover este produto do catálogo?')) return;
+            const { error } = await sb.from('farmacia_produtos').delete().eq('id', prodId);
+            if (error) { showToast('Erro ao remover: ' + error.message); return; }
+            await carregarTudo();
+            showToast('Produto removido.');
+        }
+
+        function mudarAba(aba) {
+            document.getElementById('secEncomendas').style.display = aba === 'encomendas' ? 'block' : 'none';
+            document.getElementById('secCatalogo').style.display = aba === 'catalogo' ? 'block' : 'none';
+            document.getElementById('tabBtnEncomendas').classList.toggle('active', aba === 'encomendas');
+            document.getElementById('tabBtnCatalogo').classList.toggle('active', aba === 'catalogo');
+        }
+
+        function carregarLogoZooni() {
+            return new Promise(resolve => {
+                const img = new Image();
+                img.onload = () => {
+                    try {
+                        const c = document.createElement('canvas');
+                        c.width = img.naturalWidth; c.height = img.naturalHeight;
+                        c.getContext('2d').drawImage(img, 0, 0);
+                        resolve({ data: c.toDataURL('image/png'), w: img.naturalWidth, h: img.naturalHeight });
+                    } catch (e) { resolve(null); }
+                };
+                img.onerror = () => resolve(null);
+                img.src = 'assets/logo.png';
+            });
+        }
+
+        async function gerarPdfVet(encId) {
+            const enc = todasEncomendas.find(e => e.id === encId);
+            if (!enc || !window.jspdf) return;
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+            const W = 210, H = 297, M = 15;
+            const VERDE = [30, 77, 30], VERDE2 = [61, 139, 61], CINZA = [100, 116, 100], TEXTO = [30, 41, 30];
+            const logo = await carregarLogoZooni();
+            const cli = clientesMap[enc.id_dono] || {};
+            const anim = animaisMap[enc.id_animal];
+
+            doc.setFillColor(...VERDE); doc.rect(0, 0, W, 40, 'F');
+            doc.setFillColor(...VERDE2); doc.rect(0, 40, W, 2, 'F');
+            doc.setFillColor(255, 255, 255); doc.roundedRect(M, 7, 44, 26, 4, 4, 'F');
+            if (logo) {
+                const r = Math.min(38 / logo.w, 20 / logo.h);
+                const lw = logo.w * r, lh = logo.h * r;
+                doc.addImage(logo.data, 'PNG', M + (44 - lw) / 2, 7 + (26 - lh) / 2, lw, lh);
+            } else {
+                doc.setTextColor(...VERDE); doc.setFont('helvetica', 'bold'); doc.setFontSize(17);
+                doc.text('ZOONI', M + 22, 23, { align: 'center' });
+            }
+
+            doc.setTextColor(255, 255, 255); doc.setFont('helvetica', 'bold'); doc.setFontSize(18);
+            doc.text('Registo de Compra / Farmácia', W - M, 18, { align: 'right' });
+            doc.setFont('helvetica', 'normal'); doc.setFontSize(9.5);
+            doc.text(`${enc.numero_encomenda}  ·  ${fmtData(enc.criado_em)}`, W - M, 26, { align: 'right' });
+            doc.text(`Estado: ${ESTADO_LABELS[enc.estado] || enc.estado}`, W - M, 32, { align: 'right' });
+
+            let y = 52;
+            doc.setFillColor(238, 247, 238); doc.roundedRect(M, y, W - 2 * M, 30, 4, 4, 'F');
+            doc.setTextColor(...VERDE); doc.setFont('helvetica', 'bold'); doc.setFontSize(8);
+            doc.text('LOCAL DA COMPRA', M + 6, y + 7);
+            doc.setTextColor(...TEXTO); doc.setFont('helvetica', 'bold'); doc.setFontSize(10.5);
+            doc.text(doc.splitTextToSize(enc.local_compra, W - 2 * M - 12)[0], M + 6, y + 13);
+            doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(...CINZA);
+            doc.text(`Veterinário: Dr(a). ${enc.nome_veterinario || '—'}   ·   Tutor: ${cli.nome || '—'}   ·   Animal: ${anim ? anim.nome : 'Geral'}`, M + 6, y + 21);
+            doc.text(`Entrega: ${enc.tipo_entrega === 'entrega' ? 'Domicílio' : 'Levantamento'}   ·   Pagamento: ${PAGAMENTO_LABELS[enc.metodo_pagamento] || enc.metodo_pagamento}`, M + 6, y + 26.5);
+
+            y += 38;
+            doc.setFillColor(...VERDE); doc.roundedRect(M, y, W - 2 * M, 9, 2, 2, 'F');
+            doc.setTextColor(255, 255, 255); doc.setFont('helvetica', 'bold'); doc.setFontSize(8.5);
+            doc.text('MEDICAMENTO / PRODUTO', M + 4, y + 6);
+            doc.text('QTD.', M + 115, y + 6, { align: 'center' });
+            doc.text('PREÇO UN.', M + 148, y + 6, { align: 'right' });
+            doc.text('SUBTOTAL', W - M - 4, y + 6, { align: 'right' });
+            y += 12;
+
+            (enc.itens || []).forEach((it, idx) => {
+                if (idx % 2 === 0) { doc.setFillColor(246, 250, 246); doc.rect(M, y - 4.5, W - 2 * M, 8, 'F'); }
+                doc.setTextColor(...TEXTO); doc.setFont('helvetica', 'bold'); doc.setFontSize(9);
+                doc.text(doc.splitTextToSize(it.nome, 100)[0], M + 4, y);
+                doc.setFont('helvetica', 'normal');
+                doc.text(String(it.quantidade), M + 115, y, { align: 'center' });
+                doc.text(it.preco_unitario > 0 ? euro(it.preco_unitario) : 'A definir', M + 148, y, { align: 'right' });
+                doc.setFont('helvetica', 'bold');
+                doc.text(it.subtotal > 0 ? euro(it.subtotal) : '—', W - M - 4, y, { align: 'right' });
+                y += 8;
+            });
+
+            y += 6;
+            doc.setFillColor(...VERDE); doc.roundedRect(W - M - 72, y, 72, 20, 4, 4, 'F');
+            doc.setTextColor(200, 230, 200); doc.setFont('helvetica', 'bold'); doc.setFontSize(8);
+            doc.text('TOTAL', W - M - 36, y + 7, { align: 'center' });
+            doc.setTextColor(255, 255, 255); doc.setFontSize(16);
+            doc.text(euro(enc.total), W - M - 36, y + 15.5, { align: 'center' });
+
+            doc.setTextColor(...CINZA); doc.setFont('helvetica', 'normal'); doc.setFontSize(7.5);
+            doc.text('Zooni — Gestão Veterinária', M, H - 10);
+            doc.save(`${enc.numero_encomenda}.pdf`);
+            showToast('PDF gerado!');
+        }
+    </script>
+    <script src="assets/js/clinica_director.js"></script>
+</body>
+
+</html>

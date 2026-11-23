@@ -641,7 +641,7 @@
         /* WIDE PET CARDS (Top Section) */
         .pets-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(min(400px, 100%), 1fr));
             gap: 20px;
             margin-bottom: 3rem;
         }
@@ -662,6 +662,10 @@
         .pet-photo {
             width: 90px;
             height: 90px;
+            min-width: 90px;
+            min-height: 90px;
+            flex-shrink: 0;
+            aspect-ratio: 1 / 1;
             border-radius: 50%;
             object-fit: cover;
             border: 3px solid var(--lavender);
@@ -670,6 +674,8 @@
         .pet-emoji {
             width: 90px;
             height: 90px;
+            min-width: 90px;
+            flex-shrink: 0;
             border-radius: 50%;
             background: #f1f2f6;
             display: flex;
@@ -1143,6 +1149,9 @@
                             data-i18n="nav_chat">Chat da Clínica</span></a>
                 </li>
                 <li class="nav-item">
+                    <a href="loja_dono.html" class="nav-link "><i class="fa-solid fa-bag-shopping"></i> <span>Farmácia &amp; Loja</span></a>
+                </li>
+                <li class="nav-item">
                     <a href="veterinarios.html" class="nav-link "><i class="fa-solid fa-user-doctor"></i>
                         <span>Veterinários</span></a>
                 </li>
@@ -1459,7 +1468,7 @@
                                 placeholder="Ex: Amendoim, determinados antibióticos..."></textarea>
                         </div>
 
-                        <div class="mb-4">
+                        <div class="mb-3">
                             <div class="form-check form-switch mb-2">
                                 <input class="form-check-input" type="checkbox" id="temDoencas"
                                     onchange="toggleDoencas()">
@@ -1469,6 +1478,18 @@
                             <textarea class="form-control" id="doencas_cronicas" rows="2" style="display: none;"
                                 data-i18n-placeholder="modal_pet_diseases_ph"
                                 placeholder="Ex: Diabetes, Leishmaniose..."></textarea>
+                        </div>
+
+                        <div class="mb-4">
+                            <div class="form-check form-switch mb-2">
+                                <input class="form-check-input" type="checkbox" id="temAlertasComp"
+                                    onchange="toggleAlertasComp()">
+                                <label class="form-check-label small text-muted fw-bold" for="temAlertasComp">
+                                    <i class="fa-solid fa-triangle-exclamation text-warning me-1"></i> Alertas Comportamentais / Manuseamento?
+                                </label>
+                            </div>
+                            <textarea class="form-control" id="alertas_comportamentais" rows="2" style="display: none;"
+                                placeholder="Ex: Agressivo na pesagem, Medo de veterinários, Tende a morder se tocarem nas orelhas..."></textarea>
                         </div>
 
                         <button type="submit" class="btn-primary-modal" id="btnSalvar"
@@ -1897,6 +1918,13 @@
             let age = today.getFullYear() - birthDate.getFullYear();
             const m = today.getMonth() - birthDate.getMonth();
             if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) { age--; }
+            if (age < 1) {
+                // Menos de 1 ano: mostrar meses completos
+                let months = (today.getFullYear() - birthDate.getFullYear()) * 12 + (today.getMonth() - birthDate.getMonth());
+                if (today.getDate() < birthDate.getDate()) { months--; }
+                months = Math.max(0, months);
+                return months + " " + ZOONI_I18N.t(months === 1 ? 'profile_month' : 'profile_months');
+            }
             return age + " " + ZOONI_I18N.t('profile_years');
         }
 
@@ -1923,6 +1951,35 @@
                     return;
                 }
                 listDiv.innerHTML = '';
+
+                // Carregar internamentos ativos para destacar os animais internados
+                window.internamentosAtivosMap = {};
+                try {
+                    const petIds = data.map(p => p.id);
+                    const { data: inters } = await supabaseClient
+                        .from('hospitalizacao_internamentos')
+                        .select('*')
+                        .in('id_animal', petIds)
+                        .eq('ativo', true);
+
+                    if (inters && inters.length > 0) {
+                        const boxIds = [...new Set(inters.map(i => i.id_box).filter(Boolean))];
+                        const clinIds = [...new Set(inters.map(i => i.clinica_id).filter(Boolean))];
+                        const [bRes, cRes] = await Promise.all([
+                            boxIds.length ? supabaseClient.from('hospitalizacao_boxes').select('id, numero_box').in('id', boxIds) : { data: [] },
+                            clinIds.length ? supabaseClient.from('clinicas').select('id, nome').in('id', clinIds) : { data: [] }
+                        ]);
+                        const bMap = Object.fromEntries((bRes.data || []).map(b => [b.id, b.numero_box]));
+                        const cMap = Object.fromEntries((cRes.data || []).map(c => [c.id, c.nome]));
+                        inters.forEach(i => {
+                            window.internamentosAtivosMap[i.id_animal] = {
+                                ...i,
+                                box_nome: bMap[i.id_box] || '',
+                                clinica_nome: cMap[i.clinica_id] || 'Clínica Veterinária'
+                            };
+                        });
+                    }
+                } catch (e) { console.warn('Internamentos indisponíveis:', e); }
 
                 const today = new Date();
                 today.setHours(0, 0, 0, 0);
@@ -1968,6 +2025,17 @@
                         ? '<span title="Vacina em Atraso" style="color:var(--danger); font-size:1.1rem;">🔴</span>'
                         : '<span title="Tudo em dia" style="color:var(--mint); font-size:1.1rem;">🟢</span>';
 
+                    const interAtivo = (window.internamentosAtivosMap || {})[pet.id];
+                    const estadoMapInter = {
+                        estavel: { txt: 'Estável', cls: 'bg-success text-white' },
+                        recuperacao: { txt: 'Recuperação', cls: 'bg-warning text-dark' },
+                        critico: { txt: 'Crítico (UCI)', cls: 'bg-danger text-white' }
+                    };
+                    const stInter = interAtivo ? (estadoMapInter[interAtivo.estado_paciente] || estadoMapInter.estavel) : null;
+                    if (interAtivo) {
+                        card.style.border = '2px solid ' + (interAtivo.estado_paciente === 'critico' ? '#DC2626' : '#16A34A');
+                    }
+
                     card.innerHTML = `
                         <div class="pet-actions-absolute" style="top:10px; right:10px;">
                              <button class="btn btn-sm btn-icon border-0 text-secondary" title="Editar" onclick="openEditModal(${pet.id})"><i class="fa-solid fa-pen"></i></button>
@@ -1980,6 +2048,15 @@
                         </div>
                         <div class="pet-info w-100">
                             <h3 class="pet-name mb-1" style="font-size:1.3rem;">${pet.nome}</h3>
+                            ${interAtivo ? `
+                                <div class="mb-2">
+                                    <span class="badge ${stInter.cls} rounded-pill px-3 py-1">
+                                        <i class="fa-solid fa-bed-pulse me-1"></i> Internado · ${stInter.txt}
+                                    </span>
+                                    <div class="small text-success fw-semibold mt-1" style="font-size:.75rem;">
+                                        <i class="fa-solid fa-hospital me-1"></i>${interAtivo.clinica_nome}${interAtivo.box_nome ? ' · ' + interAtivo.box_nome : ''}
+                                    </div>
+                                </div>` : ''}
                             <div class="pet-breed small text-muted mb-2">${ZOONI_I18N.translateBreed(pet.raca) || ZOONI_I18N.t('profile_no_breed')}</div>
                             
                             <div class="d-flex justify-content-center gap-2 mt-2">
@@ -2068,6 +2145,10 @@
                 document.getElementById('temDoencas').checked = !!data.doencas_cronicas;
                 toggleDoencas();
 
+                document.getElementById('alertas_comportamentais').value = data.alertas_comportamentais || '';
+                document.getElementById('temAlertasComp').checked = !!data.alertas_comportamentais;
+                toggleAlertasComp();
+
                 // Important: clear the file input from any previous operation so selecting the same file works again
                 document.getElementById('foto').value = '';
 
@@ -2098,6 +2179,11 @@
             document.getElementById('doencas_cronicas').style.display = tem ? 'block' : 'none';
             if (!tem) document.getElementById('doencas_cronicas').value = '';
         }
+        function toggleAlertasComp() {
+            const tem = document.getElementById('temAlertasComp').checked;
+            document.getElementById('alertas_comportamentais').style.display = tem ? 'block' : 'none';
+            if (!tem) document.getElementById('alertas_comportamentais').value = '';
+        }
 
         /* Modal Event Handlers */
         document.querySelector('[data-bs-target="#addPetModal"]').addEventListener('click', () => {
@@ -2117,6 +2203,9 @@
             document.getElementById('doencas_cronicas').value = '';
             document.getElementById('temDoencas').checked = false;
             toggleDoencas();
+            document.getElementById('alertas_comportamentais').value = '';
+            document.getElementById('temAlertasComp').checked = false;
+            toggleAlertasComp();
         });
 
         document.getElementById('tipo').addEventListener('change', (e) => loadRacas(e.target.value));
@@ -2236,6 +2325,7 @@
             const microchip = document.getElementById('microchip').value.trim() || null;
             const alergias = document.getElementById('alergias').value.trim() || null;
             const doencas_cronicas = document.getElementById('doencas_cronicas').value.trim() || null;
+            const alertas_comportamentais = document.getElementById('alertas_comportamentais').value.trim() || null;
 
             const p_id_tipo = selTipo.value; // we use string IDs now
             const p_id_raca = null; // deprecated integer relation
@@ -2255,6 +2345,7 @@
                 microchip: microchip,
                 alergias: alergias,
                 doencas_cronicas: doencas_cronicas,
+                alertas_comportamentais: alertas_comportamentais,
                 /* Fallbacks for backward compatibility if needed */
                 id_tipo_animal: null,
                 id_raca: null
@@ -2437,6 +2528,14 @@
             return esp;
         }
 
+        // Ao mudar a data/hora da consulta, atualizar a lista de veterinários disponíveis nesse horário
+        document.getElementById('ticketDataSugerida').addEventListener('change', async () => {
+            const sel = document.getElementById('ticketVeterinario');
+            const anterior = sel.value;
+            await loadVeterinarios();
+            if ([...sel.options].some(o => o.value === anterior)) sel.value = anterior;
+        });
+
         async function loadVeterinarios() {
             const sel = document.getElementById('ticketVeterinario');
             sel.innerHTML = '<option value="">A carregar...</option>';
@@ -2471,34 +2570,37 @@
                     .in('user_id', favIds)
                     .order('nome');
 
-                // 3. Filter vets by their current real-time working schedule
-                const now = new Date();
-                const dayOfWeek = now.getDay();
-                const currentHourMin = now.toTimeString().substring(0, 5);
+                // 3. Se já foi escolhida a data/hora da consulta, filtrar pelo horário de trabalho
+                //    NESSE dia e hora (e não pelo momento atual). Sem data escolhida, mostra todos.
+                const dataEscolhida = document.getElementById('ticketDataSugerida')?.value;
+                let availableVets = (data || []).filter(vet => !vet.modo_ferias);
 
-                const { data: horarios } = await supabaseClient
-                    .from('zooni_horarios_padrao')
-                    .select('id_vet, hora_inicio, hora_fim')
-                    .eq('dia_semana', dayOfWeek)
-                    .in('id_vet', favIds);
+                if (dataEscolhida) {
+                    const ref = new Date(dataEscolhida);
+                    const horaRef = `${String(ref.getHours()).padStart(2, '0')}:${String(ref.getMinutes()).padStart(2, '0')}`;
 
-                const workingFavIds = new Set();
-                if (horarios) {
-                    horarios.forEach(h => {
-                        const inicio = h.hora_inicio.substring(0, 5);
-                        const fim = h.hora_fim.substring(0, 5);
-                        if (currentHourMin >= inicio && currentHourMin <= fim) {
-                            workingFavIds.add(h.id_vet);
+                    const { data: horarios } = await supabaseClient
+                        .from('zooni_horarios_padrao')
+                        .select('id_vet, hora_inicio, hora_fim')
+                        .eq('dia_semana', ref.getDay())
+                        .in('id_vet', favIds);
+
+                    const trabalham = new Set();
+                    (horarios || []).forEach(h => {
+                        if (horaRef >= h.hora_inicio.substring(0, 5) && horaRef <= h.hora_fim.substring(0, 5)) {
+                            trabalham.add(h.id_vet);
                         }
                     });
+                    availableVets = availableVets.filter(vet => trabalham.has(vet.user_id));
                 }
-
-                const availableVets = (data || []).filter(vet => !vet.modo_ferias && workingFavIds.has(vet.user_id));
 
                 sel.innerHTML = '<option value="">Selecione um veterinário...</option>';
 
+
                 if (error || availableVets.length === 0) {
-                    sel.innerHTML = '<option value="">Nenhum veterinário disponível neste momento</option>';
+                    sel.innerHTML = dataEscolhida
+                        ? '<option value="">Nenhum veterinário disponível nesse dia/hora</option>'
+                        : '<option value="">Nenhum veterinário disponível</option>';
                     return;
                 }
 
@@ -2889,6 +2991,33 @@
             document.getElementById('profileCastrado').innerHTML = castradoHtml;
             document.getElementById('profileAlergias').textContent = pet.alergias || ZOONI_I18N.t('profile_no_allergies');
             document.getElementById('profileDoencas').textContent = pet.doencas_cronicas || ZOONI_I18N.t('profile_no_diseases');
+
+            // Banner de internamento ativo no perfil do animal
+            const interBanner = document.getElementById('profileInternamentoBanner');
+            if (interBanner) {
+                const inter = (window.internamentosAtivosMap || {})[id];
+                if (inter) {
+                    const stLbl = { estavel: 'Estável', recuperacao: 'Em Recuperação', critico: 'Crítico (UCI)' }[inter.estado_paciente] || 'Estável';
+                    const total = (inter.produtos_gastos || []).reduce((s, p) => s + (Number(p.qtd || 0) * Number(p.preco || 0)), 0) || Number(inter.custo_total || 0);
+                    const entrada = inter.data_entrada ? new Date(inter.data_entrada).toLocaleString('pt-PT') : '—';
+                    interBanner.innerHTML = `
+                        <div class="p-3 rounded-3" style="background:#EEF7EE; border:1px solid #C8E6C9; border-left:5px solid #2E7D32;">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <span class="badge bg-success"><i class="fa-solid fa-bed-pulse me-1"></i> Em Internamento</span>
+                                <span class="small fw-bold text-success">${stLbl}</span>
+                            </div>
+                            <div class="small fw-bold text-dark">${inter.clinica_nome}${inter.box_nome ? ' · ' + inter.box_nome : ''}</div>
+                            <div class="small text-muted mt-1"><strong>Entrada:</strong> ${entrada}</div>
+                            <div class="small text-muted"><strong>Motivo:</strong> ${inter.motivo_internamento || '—'}</div>
+                            ${inter.fluidoterapia ? `<div class="small text-muted"><strong>Fluidos:</strong> ${inter.fluidoterapia}</div>` : ''}
+                            <div class="small fw-bold text-success mt-1">Conta atual: ${total.toFixed(2).replace('.', ',')} €</div>
+                        </div>`;
+                    interBanner.classList.remove('d-none');
+                } else {
+                    interBanner.classList.add('d-none');
+                    interBanner.innerHTML = '';
+                }
+            }
 
             // Reset to first tab
             document.querySelector('#petProfileTabs .nav-link.active')?.classList.remove('active');
@@ -3338,6 +3467,7 @@
 
         <!-- Tab A: Dados Básicos -->
         <div class="tab-pane fade show active" id="tabDados">
+            <div id="profileInternamentoBanner" class="mb-3 d-none"></div>
             <div class="info-grid">
                 <div>
                     <div class="info-label" data-i18n="profile_microchip">Microchip</div>

@@ -1,0 +1,1601 @@
+<!DOCTYPE html>
+<html lang="pt">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zooni — Gestão de Equipa e Comissões</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="assets/js/theme.js"></script>
+    <link rel="stylesheet" href="assets/css/theme.css">
+    <style>
+        :root {
+            --primary: #3D8B3D;
+            --primary-dark: #1E4D1E;
+            --primary-light: #5CB85C;
+            --gold: #FDCB6E;
+            --gold-dark: #D35400;
+            --bg-color: #F8FAF8;
+            --card-bg: #FFFFFF;
+            --card-hover: #F0FDF4;
+            --border-color: #E2ECE2;
+            --text-main: #2D3436;
+            --text-sec: #636E72;
+            --danger: #EF4444;
+            --warning: #F59E0B;
+            --success: #10B981;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #121812;
+            --card-bg: #1B241B;
+            --card-hover: #222E22;
+            --border-color: #2D3C2D;
+            --text-main: #F1F5F1;
+            --text-sec: #94A394;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: var(--bg-color);
+            color: var(--text-main);
+            overflow-x: hidden;
+        }
+
+        .app-container {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            min-height: 100vh;
+        }
+
+        /* ── SIDEBAR ── */
+        .sidebar {
+            background-color: var(--primary-dark);
+            color: white;
+            padding: 2rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            z-index: 100;
+            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .logo-container {
+            margin-bottom: 2.2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            align-items: flex-start;
+        }
+
+        .logo-img-sidebar {
+            max-width: 155px;
+            filter: brightness(0) invert(1);
+        }
+
+        /* Etiqueta Dourada de Diretor Clínico */
+        .director-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: linear-gradient(135deg, #FFEAA7, #FDCB6E);
+            color: #5D4037;
+            font-weight: 800;
+            font-size: 0.72rem;
+            letter-spacing: 1px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            box-shadow: 0 2px 8px rgba(253, 203, 110, 0.35);
+            text-transform: uppercase;
+            margin-top: 4px;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+
+        .director-badge i {
+            color: #D35400;
+            font-size: 0.75rem;
+        }
+
+        .nav-links {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+            flex-grow: 1;
+            overflow-y: auto;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 11px 14px;
+            color: rgba(255, 255, 255, 0.82);
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 500;
+            font-size: 0.92rem;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background-color: rgba(255, 255, 255, 0.16);
+            color: white;
+        }
+
+        .nav-link.active {
+            border-left: 4px solid #FDCB6E;
+            background: rgba(255, 255, 255, 0.22);
+            font-weight: 700;
+        }
+
+        .nav-link i {
+            width: 20px;
+            text-align: center;
+            font-size: 1.05rem;
+        }
+
+        .nav-badge {
+            margin-left: auto;
+            background: #E74C3C;
+            color: white;
+            font-size: 0.7rem;
+            font-weight: 800;
+            padding: 2px 7px;
+            border-radius: 10px;
+        }
+
+        .nav-section-title {
+            font-size: 0.68rem;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            color: rgba(255, 255, 255, 0.5);
+            margin: 14px 0 6px 12px;
+            font-weight: 700;
+        }
+
+        .nav-line-break {
+            border-top: 1px solid rgba(255, 255, 255, 0.12);
+            margin: 12px 0;
+        }
+
+        /* ── MAIN CONTENT AREA ── */
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Top Navbar */
+        .navbar-area {
+            padding: 1rem 2.2rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--card-bg);
+            min-height: 70px;
+            position: sticky;
+            top: 0;
+            z-index: 90;
+        }
+
+        .clinic-pill-header {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #f0fdf4;
+            color: var(--primary-dark);
+            border: 1.5px solid #c8e6c8;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .clinic-pill-header i {
+            color: var(--primary);
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .avatar-circle {
+            width: 38px;
+            height: 38px;
+            background: linear-gradient(135deg, #FDCB6E, #E67E22);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Page Container */
+        .page-body {
+            padding: 2.2rem;
+            flex: 1;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .page-title {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--text-main);
+            margin-bottom: 4px;
+        }
+
+        .page-subtitle {
+            font-size: 0.92rem;
+            color: var(--text-sec);
+        }
+
+        .btn-invite {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+            cursor: pointer;
+            box-shadow: 0 4px 14px rgba(61, 139, 61, 0.2);
+        }
+
+        .btn-invite:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+
+        /* ── 3 RESUMO CARDS (IGUAIS A GESTÃO DE PACIENTES) ── */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 1.4rem 1.6rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 26px rgba(61, 139, 61, 0.08);
+            border-color: #c8e6c8;
+        }
+
+        .stat-value {
+            font-size: 2.2rem;
+            font-weight: 800;
+            line-height: 1;
+            color: var(--text-main);
+        }
+
+        .stat-label {
+            font-size: 0.88rem;
+            color: var(--text-sec);
+            margin-top: 6px;
+            font-weight: 600;
+        }
+
+        .stat-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            flex-shrink: 0;
+        }
+
+        .stat-icon.green {
+            background: #e8f5e8;
+            color: var(--primary);
+        }
+
+        .stat-icon.orange {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .stat-icon.purple {
+            background: #ede9fe;
+            color: #7c3aed;
+        }
+
+        /* ── SEARCH & FILTER BAR ── */
+        .filter-bar {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 1rem 1.4rem;
+            margin-bottom: 1.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .search-wrap {
+            position: relative;
+            flex: 1;
+            min-width: 260px;
+        }
+
+        .search-wrap i {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-sec);
+        }
+
+        .search-wrap input {
+            width: 100%;
+            padding: 9px 14px 9px 40px;
+            border: 1.5px solid var(--border-color);
+            border-radius: 12px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.9rem;
+            outline: none;
+            background: var(--card-bg);
+            color: var(--text-main);
+            transition: border-color 0.2s;
+        }
+
+        .search-wrap input:focus {
+            border-color: var(--primary);
+        }
+
+        .filter-pills {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            overflow-x: auto;
+        }
+
+        .filter-pill {
+            padding: 7px 16px;
+            border: 1.5px solid var(--border-color);
+            border-radius: 20px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            background: var(--card-bg);
+            color: var(--text-sec);
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+            user-select: none;
+        }
+
+        .filter-pill:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .filter-pill.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+
+        /* ── GRELHA DE CARTÕES BRANCOS (ESTILO "OS MEUS ANIMAIS") ── */
+        .vets-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+            gap: 24px;
+        }
+
+        .vet-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 22px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            position: relative;
+            transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+            overflow: hidden;
+        }
+
+        .vet-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(61, 139, 61, 0.1);
+            border-color: #c8e6c8;
+        }
+
+        .vet-card.pending-card {
+            border: 1.5px dashed #F59E0B;
+            background: #FFFDF9;
+        }
+
+        /* Topo do Cartão: Foto redonda e detalhes */
+        .vet-card-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+        }
+
+        .vet-avatar-wrap {
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .vet-avatar-img {
+            width: 78px;
+            height: 78px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #c8e6c8;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+            background: #f8faf8;
+        }
+
+        .status-dot {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            border: 2.5px solid white;
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+        }
+
+        .status-dot.active {
+            background: #10B981;
+        }
+
+        .status-dot.pending {
+            background: #F59E0B;
+        }
+
+        .vet-details {
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .vet-name-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+        }
+
+        .vet-name {
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: var(--text-main);
+            margin: 0;
+            line-height: 1.25;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .badge-vinculo {
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: inline-block;
+            margin-top: 4px;
+        }
+
+        .badge-vinculo.residente {
+            background: #e0f2fe;
+            color: #0369a1;
+            border: 1px solid #bae6fd;
+        }
+
+        .badge-vinculo.externo {
+            background: #fef3c7;
+            color: #b45309;
+            border: 1px solid #fde68a;
+        }
+
+        .badge-vinculo.diretor {
+            background: #fef9c3;
+            color: #854d0e;
+            border: 1px solid #fef08a;
+            font-weight: 800;
+        }
+
+        .vet-cedula {
+            font-size: 0.78rem;
+            color: var(--text-sec);
+            margin-top: 4px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* Etiquetas verdes de Especialidade */
+        .specialties-wrap {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .spec-tag-green {
+            background: #eef9ee;
+            color: #2D6A2D;
+            border: 1px solid #c8e6c8;
+            font-size: 0.76rem;
+            font-weight: 600;
+            padding: 3px 9px;
+            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .spec-tag-green i {
+            font-size: 0.7rem;
+            color: var(--primary);
+        }
+
+        /* Contactos */
+        .vet-contacts {
+            font-size: 0.78rem;
+            color: var(--text-sec);
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 10px;
+        }
+
+        .vet-contact-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .vet-contact-item i {
+            color: var(--primary);
+            width: 14px;
+            text-align: center;
+        }
+
+        /* ── SECÇÃO INFERIOR: % DE COMISSÃO & BOTÕES REDONDOS ── */
+        .vet-footer {
+            border-top: 1px solid var(--border-color);
+            padding-top: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-top: auto;
+        }
+
+        .comissao-box {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .comissao-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-sec);
+        }
+
+        .comissao-input-group {
+            display: inline-flex;
+            align-items: center;
+            background: #f8faf8;
+            border: 1.5px solid #c8e6c8;
+            border-radius: 12px;
+            padding: 2px 8px;
+            transition: border-color 0.2s;
+        }
+
+        .comissao-input-group:focus-within {
+            border-color: var(--primary);
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(61, 139, 61, 0.12);
+        }
+
+        .comissao-input {
+            width: 58px;
+            border: none;
+            background: transparent;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--primary-dark);
+            text-align: right;
+            outline: none;
+            padding: 4px 2px;
+        }
+
+        .comissao-percent {
+            font-weight: 800;
+            font-size: 0.95rem;
+            color: var(--primary);
+            margin-left: 2px;
+        }
+
+        .comissao-feedback {
+            font-size: 0.7rem;
+            color: var(--primary);
+            opacity: 0;
+            transition: opacity 0.3s;
+            height: 14px;
+            font-weight: 600;
+        }
+
+        .comissao-feedback.show {
+            opacity: 1;
+        }
+
+        /* Botões Redondos Verde (✓) e Vermelho (✕) */
+        .vet-actions-btns {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-circle {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+        }
+
+        /* Botão Redondo Verde (✓) */
+        .btn-circle.green {
+            background: #10B981;
+            color: white;
+        }
+
+        .btn-circle.green:hover {
+            background: #059669;
+            transform: scale(1.08);
+            box-shadow: 0 6px 16px rgba(16, 185, 129, 0.35);
+        }
+
+        /* Botão Redondo Vermelho (✕) */
+        .btn-circle.red {
+            background: #EF4444;
+            color: white;
+        }
+
+        .btn-circle.red:hover {
+            background: #DC2626;
+            transform: scale(1.08);
+            box-shadow: 0 6px 16px rgba(239, 68, 68, 0.35);
+        }
+
+        .btn-circle:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        /* Status Pendente Banner */
+        .pending-banner {
+            background: #FEF3C7;
+            color: #92400E;
+            padding: 6px 12px;
+            border-radius: 10px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 2px;
+        }
+
+        /* Modal Styles */
+        .modal-custom {
+            border-radius: 20px;
+            border: none;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        .modal-custom .modal-header {
+            background: #f8faf8;
+            border-bottom: 1.5px solid #e0ede0;
+            padding: 1.4rem 1.8rem;
+        }
+
+        .modal-custom .modal-body {
+            padding: 1.8rem;
+        }
+
+        /* Toast de Notificação */
+        .toast-custom {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: #1E4D1E;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 14px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            z-index: 9999;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .toast-custom.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        @media (max-width: 900px) {
+            .app-container {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                display: none;
+            }
+
+            .stats-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- ── SIDEBAR COM ETIQUETA DOURADA DE DIRETOR CLÍNICO ── -->
+        <aside class="sidebar">
+            <div class="logo-container">
+                <a href="dashboard_veterinario.html" style="text-decoration:none;">
+                    <img src="assets/logo.png" alt="Zooni Logo" class="logo-img-sidebar">
+                </a>
+                <!-- Etiqueta Dourada de Diretor Clínico -->
+                <div class="director-badge" id="directorBadge">
+                    <i class="fa-solid fa-crown"></i> DIRETOR CLÍNICO
+                </div>
+            </div>
+
+            <ul class="nav-links">
+                <li>
+                    <a href="dashboard_veterinario.html" class="nav-link">
+                        <i class="fa-solid fa-chart-pie"></i> Visão Geral
+                    </a>
+                </li>
+                <li>
+                    <a href="agenda_veterinario.html" class="nav-link">
+                        <i class="fa-regular fa-calendar"></i> Agenda
+                    </a>
+                </li>
+                <li>
+                    <a href="tickets_veterinario.html" class="nav-link">
+                        <i class="fa-solid fa-ticket"></i> Tickets
+                    </a>
+                </li>
+                <li>
+                    <a href="chat_veterinario.html" class="nav-link">
+                        <i class="fa-solid fa-comments"></i> Chat Médico
+                    </a>
+                </li>
+                <li>
+                    <a href="pacientes_veterinario.html" class="nav-link">
+                        <i class="fa-solid fa-users"></i> Pacientes
+                    </a>
+                </li>
+                <li>
+                    <a href="internamento.html" class="nav-link">
+                        <i class="fa-solid fa-bed-pulse"></i> Internamento
+                    </a>
+                </li>
+                                <li class="nav-item"><a href="loja_veterinario.html" class="nav-link"><i class="fa-solid fa-prescription-bottle-medical"></i> Farmácia &amp; Compras</a></li>
+<li>
+                    <a href="campanhas.html" class="nav-link">
+                        <i class="fa-solid fa-bullhorn"></i> Campanhas CRM
+                    </a>
+                </li>
+
+                <!-- Secção Exclusiva da Direção Clínica Desbloqueada -->
+                <div class="nav-section-title">DIREÇÃO DA CLÍNICA</div>
+
+                <li>
+                    <a href="equipa_clinica.html" class="nav-link active">
+                        <i class="fa-solid fa-user-doctor"></i> Gestão de Equipa
+                        <span class="nav-badge" id="sidebarPendingBadge" style="display:none;">0</span>
+                    </a>
+                </li>
+
+                <div class="nav-line-break"></div>
+
+                <li>
+                    <a href="definicoes_veterinario.html" class="nav-link">
+                        <i class="fa-solid fa-gear"></i> Configurações
+                    </a>
+                </li>
+                <li>
+                    <a href="login.html?logout=true" class="nav-link text-danger" style="color:#ff7675;">
+                        <i class="fa-solid fa-arrow-right-from-bracket"></i> Sair
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <!-- ── CONTEÚDO PRINCIPAL ── -->
+        <main class="main-content">
+            <!-- Barra Superior -->
+            <div class="navbar-area">
+                <div class="clinic-pill-header" id="clinicBadgeHeader">
+                    <i class="fa-solid fa-hospital"></i>
+                    <span id="clinicNameDisplay">Hospital Veterinário Central Zooni</span>
+                    <span style="font-size:0.75rem; color:#88a088; margin-left:4px;">(Série <span id="clinicSeriesDisplay">FT 2026</span>)</span>
+                </div>
+
+                <div class="nav-actions">
+                    <button class="btn btn-sm btn-outline-success" onclick="alternarModoVisualizacao()" title="Simular como Veterinário Regular ou Diretor">
+                        <i class="fa-solid fa-repeat"></i> <span id="toggleDirectorBtn">Modo Diretor</span>
+                    </button>
+                    <div class="avatar-circle" id="directorAvatarInitials" title="Diretor Clínico">
+                        DC
+                    </div>
+                </div>
+            </div>
+
+            <!-- Corpo da Página -->
+            <div class="page-body">
+                <!-- Cabeçalho -->
+                <div class="page-header">
+                    <div>
+                        <div class="page-title">Gestão de Equipa e Comissões</div>
+                        <div class="page-subtitle">Aprovações de médicos, gestão de vínculos e parametrização de percentagem de comissões.</div>
+                    </div>
+                    <button class="btn-invite" onclick="openInviteModal()">
+                        <i class="fa-solid fa-user-plus"></i> Convidar Médico
+                    </button>
+                </div>
+
+                <!-- ── 3 CARTÕES DE RESUMO (IGUAIS A GESTÃO DE PACIENTES) ── -->
+                <div class="stats-row">
+                    <!-- Cartão 1: Total de Médicos -->
+                    <div class="stat-card">
+                        <div>
+                            <div class="stat-value" id="statTotalMedicos">0</div>
+                            <div class="stat-label">Total de Médicos</div>
+                        </div>
+                        <div class="stat-icon green">
+                            <i class="fa-solid fa-user-doctor"></i>
+                        </div>
+                    </div>
+
+                    <!-- Cartão 2: Pendentes de Aprovação -->
+                    <div class="stat-card">
+                        <div>
+                            <div class="stat-value" id="statPendentesAprovacao">0</div>
+                            <div class="stat-label">Pendentes de Aprovação</div>
+                        </div>
+                        <div class="stat-icon orange">
+                            <i class="fa-solid fa-user-clock"></i>
+                        </div>
+                    </div>
+
+                    <!-- Cartão 3: Comissões do Mês -->
+                    <div class="stat-card">
+                        <div>
+                            <div class="stat-value" id="statComissoesMes">€ 4.850</div>
+                            <div class="stat-label">Comissões do Mês</div>
+                        </div>
+                        <div class="stat-icon purple">
+                            <i class="fa-solid fa-sack-dollar"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ── BARRA DE PESQUISA E FILTROS ── -->
+                <div class="filter-bar">
+                    <div class="search-wrap">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" id="vetSearchInput" placeholder="Pesquisar médico por nome, especialidade ou cédula..." oninput="filtrarMedicos()">
+                    </div>
+
+                    <div class="filter-pills">
+                        <div class="filter-pill active" onclick="setFiltro('todos', this)">Todos (<span id="countTodos">0</span>)</div>
+                        <div class="filter-pill" onclick="setFiltro('pendentes', this)">
+                            <i class="fa-solid fa-clock" style="color:#d97706;"></i> Pendentes (<span id="countPendentes">0</span>)
+                        </div>
+                        <div class="filter-pill" onclick="setFiltro('ativos', this)">Aprovados (<span id="countAtivos">0</span>)</div>
+                        <div class="filter-pill" onclick="setFiltro('residentes', this)">Residentes</div>
+                        <div class="filter-pill" onclick="setFiltro('externos', this)">Especialistas Externos</div>
+                    </div>
+                </div>
+
+                <!-- ── GRELHA DE CARTÕES BRANCOS (ESTILO "OS MEUS ANIMAIS") ── -->
+                <div class="vets-grid" id="vetsGridContainer">
+                    <!-- Renderizado dinamicamente pelo JavaScript -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal de Convite de Médico -->
+    <div class="modal fade" id="inviteModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content modal-custom">
+                <div class="modal-header">
+                    <h5 class="modal-title" style="font-weight:800; color:var(--primary-dark);">
+                        <i class="fa-solid fa-user-plus" style="color:var(--primary);"></i> Convidar Médico para a Clínica
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p style="font-size:0.88rem; color:var(--text-sec); margin-bottom:1.2rem;">
+                        Envie um convite direto para o email do médico ou associe um novo especialista à sua clínica.
+                    </p>
+                    <form id="inviteForm" onsubmit="handleSendInvite(event)">
+                        <div class="mb-3">
+                            <label class="form-label" style="font-size:0.85rem; font-weight:700;">Nome Completo do Médico</label>
+                            <input type="text" class="form-control" id="invNome" placeholder="Ex: Dr. Tiago Ramos" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" style="font-size:0.85rem; font-weight:700;">Email Institucional</label>
+                            <input type="email" class="form-control" id="invEmail" placeholder="medico@zooni.pt" required>
+                        </div>
+                        <div class="row g-2 mb-3">
+                            <div class="col-6">
+                                <label class="form-label" style="font-size:0.85rem; font-weight:700;">Tipo de Vínculo</label>
+                                <select class="form-select" id="invVinculo">
+                                    <option value="residente">Residente</option>
+                                    <option value="especialista_externo">Especialista Externo</option>
+                                </select>
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label" style="font-size:0.85rem; font-weight:700;">% Comissão</label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control" id="invComissao" value="35" min="0" max="100">
+                                    <span class="input-group-text">%</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" style="font-size:0.85rem; font-weight:700;">Especialidades Principais</label>
+                            <input type="text" class="form-control" id="invEspecialidades" placeholder="Ex: Cirurgia de Tecidos Moles, Ortopedia">
+                        </div>
+                        <button type="submit" class="btn w-100" style="background:var(--primary); color:white; font-weight:700; padding:11px; border-radius:12px;">
+                            <i class="fa-solid fa-paper-plane"></i> Registar e Associar à Clínica
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Confirmação de Remoção -->
+    <div class="modal fade" id="removeConfirmModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content modal-custom" style="text-align:center;">
+                <div class="modal-body p-4">
+                    <div style="width:60px; height:60px; border-radius:50%; background:#FEE2E2; color:#DC2626; display:flex; align-items:center; justify-content:center; margin:0 auto 1rem; font-size:1.6rem;">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                    </div>
+                    <h5 style="font-weight:800; color:var(--text-main); margin-bottom:0.5rem;">Remover da Clínica?</h5>
+                    <p style="font-size:0.85rem; color:var(--text-sec); margin-bottom:1.5rem;" id="removeConfirmText">
+                        Tem a certeza de que pretende desassociar este médico da clínica?
+                    </p>
+                    <div style="display:flex; gap:10px;">
+                        <button type="button" class="btn btn-light flex-fill" data-bs-dismiss="modal" style="border-radius:12px; font-weight:600;">Cancelar</button>
+                        <button type="button" class="btn btn-danger flex-fill" id="btnConfirmDelete" style="border-radius:12px; font-weight:700;">Remover</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast de Feedback -->
+    <div class="toast-custom" id="toastFeedback">
+        <i class="fa-solid fa-circle-check" style="color:#55efc4; font-size:1.2rem;"></i>
+        <span id="toastMessage">Alteração gravada com sucesso!</span>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const SUPABASE_URL = 'https://xqtbtggmwejnkhckduti.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhxdGJ0Z2dtd2VqbmtoY2tkdXRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc2OTU5NjEsImV4cCI6MjA4MzI3MTk2MX0.G1wG0UC6sF7r6tMxGdqLGvsHa_dxlVD1-j6QNEw32IM';
+        const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        let currentClinic = {
+            id: 1,
+            nome: 'Hospital Veterinário Central Zooni (Lisboa)',
+            series_faturacao: 'FT 2026-LIS',
+            nif: '509123456'
+        };
+
+        let teamVets = [];
+        let filtroAtual = 'todos';
+        let vetParaRemover = null;
+
+        // Dados de demonstração ricos e realistas
+        const fallbackTeam = [
+            {
+                id: 101,
+                user_id: 'vet-demo-1',
+                nome: 'Dra. Mariana Vasconcelos',
+                email: 'mariana.vasconcelos@zooni.pt',
+                telefone: '912 345 678',
+                cedula_profissional: '14285',
+                especialidade: 'Cirurgia Geral, Medicina Interna',
+                tipo_vinculo: 'residente',
+                percentagem_comissao: 35.0,
+                aprovado_pela_clinica: true,
+                is_diretor: false,
+                status: 'ativo',
+                foto_url: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=160&auto=format&fit=crop&q=80'
+            },
+            {
+                id: 102,
+                user_id: 'vet-demo-2',
+                nome: 'Dr. Diogo Ferreira',
+                email: 'diogo.ferreira@zooni.pt',
+                telefone: '934 567 890',
+                cedula_profissional: '18920',
+                especialidade: 'Ortopedia Veterinária, Neurologia',
+                tipo_vinculo: 'especialista_externo',
+                percentagem_comissao: 45.0,
+                aprovado_pela_clinica: true,
+                is_diretor: false,
+                status: 'ativo',
+                foto_url: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=160&auto=format&fit=crop&q=80'
+            },
+            {
+                id: 103,
+                user_id: 'vet-demo-3',
+                nome: 'Dra. Inês Carmo Castelo',
+                email: 'ines.castelo@gmail.com',
+                telefone: '961 234 567',
+                cedula_profissional: '21045',
+                especialidade: 'Dermatologia, Animais Exóticos',
+                tipo_vinculo: 'residente',
+                percentagem_comissao: 30.0,
+                aprovado_pela_clinica: false, // PENDENTE DE APROVAÇÃO
+                is_diretor: false,
+                status: 'pendente',
+                foto_url: 'https://images.unsplash.com/photo-1594824813583-4a7b458b66e3?w=160&auto=format&fit=crop&q=80'
+            },
+            {
+                id: 104,
+                user_id: 'vet-demo-4',
+                nome: 'Dr. Pedro Alvim Rocha',
+                email: 'pedro.alvim@outlook.com',
+                telefone: '925 890 123',
+                cedula_profissional: '19750',
+                especialidade: 'Cardiologia, Ecografia',
+                tipo_vinculo: 'especialista_externo',
+                percentagem_comissao: 40.0,
+                aprovado_pela_clinica: false, // PENDENTE DE APROVAÇÃO
+                is_diretor: false,
+                status: 'pendente',
+                foto_url: 'https://images.unsplash.com/photo-1537368910025-700350fe46c7?w=160&auto=format&fit=crop&q=80'
+            },
+            {
+                id: 105,
+                user_id: 'vet-demo-5',
+                nome: 'Dra. Beatriz Nogueira',
+                email: 'beatriz.nogueira@zooni.pt',
+                telefone: '918 765 432',
+                cedula_profissional: '16330',
+                especialidade: 'Oftalmologia, Odontologia',
+                tipo_vinculo: 'residente',
+                percentagem_comissao: 32.5,
+                aprovado_pela_clinica: true,
+                is_diretor: false,
+                status: 'ativo',
+                foto_url: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=160&auto=format&fit=crop&q=80'
+            }
+        ];
+
+        // ── INICIALIZAÇÃO ──
+        async function initEquipa() {
+            try {
+                // Verificar sessão do diretor
+                const { data: { session } } = await sb.auth.getSession();
+                if (session) {
+                    const userId = session.user.id;
+                    const { data: clinicData } = await sb
+                        .from('clinicas')
+                        .select('*')
+                        .eq('diretor_id', userId)
+                        .maybeSingle();
+
+                    if (clinicData) {
+                        currentClinic = clinicData;
+                    }
+                }
+
+                // Atualizar cabeçalho da clínica
+                document.getElementById('clinicNameDisplay').textContent = currentClinic.nome;
+                document.getElementById('clinicSeriesDisplay').textContent = currentClinic.series_faturacao || 'FT 2026';
+
+                // Carregar membros da equipa
+                await carregarEquipa();
+
+            } catch (err) {
+                console.warn('Erro ao inicializar equipa, a usar fallback:', err);
+                teamVets = fallbackTeam;
+                atualizarInterface();
+            }
+        }
+
+        async function carregarEquipa() {
+            try {
+                const { data, error } = await sb
+                    .from('veterinarios')
+                    .select('*')
+                    .or(`clinica_id.eq.${currentClinic.id},clinica.ilike.%${currentClinic.nome}%`)
+                    .order('criado_em', { ascending: false });
+
+                if (!error && data && data.length > 0) {
+                    teamVets = data;
+                } else {
+                    teamVets = fallbackTeam;
+                }
+            } catch (err) {
+                teamVets = fallbackTeam;
+            }
+            atualizarInterface();
+        }
+
+        // ── ATUALIZAR INTERFACE E CONTADORES ──
+        function atualizarInterface() {
+            const total = teamVets.length;
+            const pendentes = teamVets.filter(v => v.aprovado_pela_clinica === false || v.status === 'pendente').length;
+            const ativos = teamVets.filter(v => v.aprovado_pela_clinica === true && v.status !== 'rejeitado').length;
+
+            // 3 Cartões de Resumo
+            document.getElementById('statTotalMedicos').textContent = total;
+            document.getElementById('statPendentesAprovacao').textContent = pendentes;
+            
+            // Comissões do mês simuladas
+            const comissaoMedia = (teamVets.reduce((acc, v) => acc + (parseFloat(v.percentagem_comissao) || 30), 0) / (total || 1)).toFixed(0);
+            const volumeEstimado = (ativos * 1150).toLocaleString('pt-PT');
+            document.getElementById('statComissoesMes').textContent = '€ ' + volumeEstimado;
+
+            // Filtros Contadores
+            document.getElementById('countTodos').textContent = total;
+            document.getElementById('countPendentes').textContent = pendentes;
+            document.getElementById('countAtivos').textContent = ativos;
+
+            // Sidebar Badge
+            const sbBadge = document.getElementById('sidebarPendingBadge');
+            if (pendentes > 0) {
+                sbBadge.textContent = pendentes;
+                sbBadge.style.display = 'inline-block';
+            } else {
+                sbBadge.style.display = 'none';
+            }
+
+            filtrarMedicos();
+        }
+
+        // ── FILTRAGEM E RENDERIZAÇÃO DOS CARTÕES ──
+        function setFiltro(filtro, elemento) {
+            filtroAtual = filtro;
+            document.querySelectorAll('.filter-pill').forEach(el => el.classList.remove('active'));
+            if (elemento) elemento.classList.add('active');
+            filtrarMedicos();
+        }
+
+        function filtrarMedicos() {
+            const query = (document.getElementById('vetSearchInput').value || '').trim().toLowerCase();
+
+            const filtrados = teamVets.filter(v => {
+                // Filtro por Tab
+                if (filtroAtual === 'pendentes' && (v.aprovado_pela_clinica !== false && v.status !== 'pendente')) return false;
+                if (filtroAtual === 'ativos' && (v.aprovado_pela_clinica === false || v.status === 'pendente')) return false;
+                if (filtroAtual === 'residentes' && (v.tipo_vinculo || 'residente') !== 'residente') return false;
+                if (filtroAtual === 'externos' && (v.tipo_vinculo) !== 'especialista_externo') return false;
+
+                // Filtro por Texto
+                if (query) {
+                    const nome = (v.nome || '').toLowerCase();
+                    const esp = (v.especialidade || '').toLowerCase();
+                    const cedula = (v.cedula_profissional || '').toLowerCase();
+                    const email = (v.email || '').toLowerCase();
+                    return nome.includes(query) || esp.includes(query) || cedula.includes(query) || email.includes(query);
+                }
+                return true;
+            });
+
+            renderCartoes(filtrados);
+        }
+
+        function renderCartoes(vets) {
+            const grid = document.getElementById('vetsGridContainer');
+            grid.innerHTML = '';
+
+            if (vets.length === 0) {
+                grid.innerHTML = `
+                    <div style="grid-column: 1 / -1; background:var(--card-bg); border:1px solid var(--border-color); border-radius:20px; padding:3rem; text-align:center;">
+                        <i class="fa-solid fa-user-doctor" style="font-size:2.5rem; color:#c8e6c8; margin-bottom:1rem;"></i>
+                        <h5 style="font-weight:700; color:var(--text-main);">Nenhum médico encontrado</h5>
+                        <p style="font-size:0.88rem; color:var(--text-sec); margin:0;">Tenta ajustar a tua pesquisa ou os filtros selecionados.</p>
+                    </div>`;
+                return;
+            }
+
+            vets.forEach(v => {
+                const card = document.createElement('div');
+                const isPendente = (v.aprovado_pela_clinica === false || v.status === 'pendente');
+                card.className = `vet-card ${isPendente ? 'pending-card' : ''}`;
+
+                // Especialidades formatadas
+                const specs = Array.isArray(v.especialidade) 
+                    ? v.especialidade 
+                    : (v.especialidade || 'Medicina Geral').split(',').map(s => s.trim()).filter(Boolean);
+
+                const specsHTML = specs.map(s => `
+                    <span class="spec-tag-green">
+                        <i class="fa-solid fa-stethoscope"></i> ${s}
+                    </span>
+                `).join('');
+
+                const vinculoLabel = v.is_diretor ? 'Diretor Clínico' : (v.tipo_vinculo === 'especialista_externo' ? 'Especialista Externo' : 'Residente');
+                const vinculoClass = v.is_diretor ? 'diretor' : (v.tipo_vinculo === 'especialista_externo' ? 'externo' : 'residente');
+                const fotoSrc = v.foto_url || 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=160&auto=format&fit=crop&q=80';
+                const comissao = v.percentagem_comissao !== undefined ? v.percentagem_comissao : 30.0;
+
+                card.innerHTML = `
+                    ${isPendente ? `
+                        <div class="pending-banner">
+                            <i class="fa-solid fa-clock"></i> Aguarda aprovação do Diretor Clínico
+                        </div>
+                    ` : ''}
+
+                    <!-- Topo: Foto Redonda e Identificação -->
+                    <div class="vet-card-header">
+                        <div class="vet-avatar-wrap">
+                            <img src="${fotoSrc}" class="vet-avatar-img" alt="${v.nome}" onerror="this.src='https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=160&auto=format&fit=crop&q=80'">
+                            <span class="status-dot ${isPendente ? 'pending' : 'active'}" title="${isPendente ? 'Pendente' : 'Ativo'}"></span>
+                        </div>
+                        <div class="vet-details">
+                            <div class="vet-name-row">
+                                <h4 class="vet-name" title="${v.nome}">${v.nome}</h4>
+                            </div>
+                            <span class="badge-vinculo ${vinculoClass}">${vinculoLabel}</span>
+                            <div class="vet-cedula">
+                                <i class="fa-solid fa-id-card" style="color:var(--primary);"></i>
+                                <span>OMV #${v.cedula_profissional || '00000'}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Especialidades em etiquetas verdes -->
+                    <div class="specialties-wrap">
+                        ${specsHTML}
+                    </div>
+
+                    <!-- Contactos do Médico -->
+                    <div class="vet-contacts">
+                        <div class="vet-contact-item">
+                            <i class="fa-regular fa-envelope"></i>
+                            <span>${v.email || 'email@indisponivel.pt'}</span>
+                        </div>
+                        <div class="vet-contact-item">
+                            <i class="fa-solid fa-phone"></i>
+                            <span>${v.telefone || 'Sem contacto direto'}</span>
+                        </div>
+                    </div>
+
+                    <!-- Rodapé: Campo Numérico de % de Comissão & Botões Redondos (✓) e (✕) -->
+                    <div class="vet-footer">
+                        <div class="comissao-box">
+                            <div class="comissao-label">Comissão do Médico</div>
+                            <div class="comissao-input-group">
+                                <input type="number" 
+                                    class="comissao-input" 
+                                    min="0" 
+                                    max="100" 
+                                    step="0.5" 
+                                    value="${comissao}" 
+                                    onchange="salvarComissao('${v.id || v.user_id}', this.value, '${v.nome}')"
+                                    title="Definir % de comissão">
+                                <span class="comissao-percent">%</span>
+                            </div>
+                            <div class="comissao-feedback" id="feedback-${v.id || v.user_id}">✓ Gravado</div>
+                        </div>
+
+                        <!-- Botões Redondos Verde (✓) e Vermelho (✕) -->
+                        <div class="vet-actions-btns">
+                            ${isPendente ? `
+                                <!-- Botão redondo Verde (✓) para Aprovar -->
+                                <button class="btn-circle green" 
+                                    onclick="aprovarMedico('${v.id || v.user_id}', '${v.nome}')" 
+                                    title="Aprovar Médico na Clínica">
+                                    <i class="fa-solid fa-check"></i>
+                                </button>
+                                <!-- Botão redondo Vermelho (✕) para Rejeitar Pedido -->
+                                <button class="btn-circle red" 
+                                    onclick="confirmarRemover('${v.id || v.user_id}', '${v.nome}', true)" 
+                                    title="Rejeitar Pedido de Associação">
+                                    <i class="fa-solid fa-xmark"></i>
+                                </button>
+                            ` : `
+                                <!-- Médico já Aprovado: Botão Verde Indicativo / Opção de Alternar Vínculo -->
+                                <button class="btn-circle green" 
+                                    onclick="alternarVinculo('${v.id || v.user_id}', '${v.tipo_vinculo}')" 
+                                    title="Vínculo: ${vinculoLabel} (Clica para alternar)">
+                                    <i class="fa-solid fa-check"></i>
+                                </button>
+                                <!-- Botão redondo Vermelho (✕) para Remover da Clínica -->
+                                <button class="btn-circle red" 
+                                    onclick="confirmarRemover('${v.id || v.user_id}', '${v.nome}', false)" 
+                                    title="Remover Médico da Clínica">
+                                    <i class="fa-solid fa-xmark"></i>
+                                </button>
+                            `}
+                        </div>
+                    </div>
+                `;
+
+                grid.appendChild(card);
+            });
+        }
+
+        // ── AÇÕES DE GESTÃO: APROVAR (✓), COMISSÕES & REMOVER (✕) ──
+
+        // 1. Aprovar médico (✓)
+        async function aprovarMedico(id, nome) {
+            const vet = teamVets.find(v => (v.id == id || v.user_id == id));
+            if (vet) {
+                vet.aprovado_pela_clinica = true;
+                vet.status = 'ativo';
+            }
+
+            try {
+                // Atualizar no Supabase
+                await sb.from('veterinarios').update({
+                    aprovado_pela_clinica: true,
+                    status: 'ativo',
+                    clinica_id: currentClinic.id,
+                    clinica: currentClinic.nome
+                }).match(vet.user_id ? { user_id: vet.user_id } : { id: vet.id });
+            } catch (err) {
+                console.warn('Erro ao atualizar no Supabase, mantido em memória:', err);
+            }
+
+            showToast(`✓ ${nome} aprovado(a) com sucesso na equipa da clínica!`);
+            atualizarInterface();
+        }
+
+        // 2. Salvar percentagem de comissão ao alterar o campo numérico
+        async function salvarComissao(id, novaComissao, nome) {
+            const perc = parseFloat(novaComissao);
+            if (isNaN(perc) || perc < 0 || perc > 100) return;
+
+            const vet = teamVets.find(v => (v.id == id || v.user_id == id));
+            if (vet) {
+                vet.percentagem_comissao = perc;
+            }
+
+            try {
+                await sb.from('veterinarios').update({
+                    percentagem_comissao: perc
+                }).match(vet.user_id ? { user_id: vet.user_id } : { id: vet.id });
+            } catch (err) {
+                console.warn('Erro ao gravar comissão:', err);
+            }
+
+            // Exibir feedback direto no cartão
+            const fb = document.getElementById(`feedback-${id}`);
+            if (fb) {
+                fb.classList.add('show');
+                setTimeout(() => fb.classList.remove('show'), 2000);
+            }
+
+            showToast(`% de Comissão de ${nome} atualizada para ${perc}%`);
+        }
+
+        // 3. Alternar vínculo (Residente vs Externo)
+        async function alternarVinculo(id, atual) {
+            const novo = (atual === 'especialista_externo') ? 'residente' : 'especialista_externo';
+            const vet = teamVets.find(v => (v.id == id || v.user_id == id));
+            if (vet) {
+                vet.tipo_vinculo = novo;
+            }
+
+            try {
+                await sb.from('veterinarios').update({ tipo_vinculo: novo })
+                    .match(vet.user_id ? { user_id: vet.user_id } : { id: vet.id });
+            } catch (err) {}
+
+            const label = novo === 'especialista_externo' ? 'Especialista Externo' : 'Residente';
+            showToast(`Vínculo de ${vet.nome} alterado para ${label}`);
+            atualizarInterface();
+        }
+
+        // 4. Modal de Confirmação e Remoção (✕)
+        function confirmarRemover(id, nome, isRejeicao) {
+            vetParaRemover = teamVets.find(v => (v.id == id || v.user_id == id));
+            const modalEl = document.getElementById('removeConfirmModal');
+            const textEl = document.getElementById('removeConfirmText');
+
+            if (isRejeicao) {
+                textEl.innerHTML = `Tem a certeza de que pretende rejeitar o pedido de adesão de <strong>${nome}</strong> à clínica?`;
+            } else {
+                textEl.innerHTML = `Tem a certeza de que pretende desassociar <strong>${nome}</strong> da clínica? O médico deixará de ter acesso aos registos e agenda desta clínica.`;
+            }
+
+            const modal = new bootstrap.Modal(modalEl);
+            modal.show();
+
+            document.getElementById('btnConfirmDelete').onclick = async () => {
+                modal.hide();
+                await removerMedicoDaClinica(vetParaRemover);
+            };
+        }
+
+        async function removerMedicoDaClinica(vet) {
+            if (!vet) return;
+
+            // Remove da lista local
+            teamVets = teamVets.filter(v => v !== vet);
+
+            try {
+                // Atualiza na base de dados desassociando da clínica
+                await sb.from('veterinarios').update({
+                    clinica_id: null,
+                    clinica: null,
+                    aprovado_pela_clinica: false
+                }).match(vet.user_id ? { user_id: vet.user_id } : { id: vet.id });
+            } catch (err) {
+                console.warn('Erro ao remover no Supabase:', err);
+            }
+
+            showToast(`✕ ${vet.nome} foi desassociado(a) da clínica.`);
+            atualizarInterface();
+        }
+
+        // 5. Convidar / Registar novo médico
+        function openInviteModal() {
+            const modal = new bootstrap.Modal(document.getElementById('inviteModal'));
+            modal.show();
+        }
+
+        async function handleSendInvite(e) {
+            e.preventDefault();
+            const nome = document.getElementById('invNome').value.trim();
+            const email = document.getElementById('invEmail').value.trim();
+            const vinculo = document.getElementById('invVinculo').value;
+            const comissao = parseFloat(document.getElementById('invComissao').value) || 30.0;
+            const esp = document.getElementById('invEspecialidades').value.trim() || 'Medicina Geral';
+
+            const novoVet = {
+                id: Date.now(),
+                nome: nome,
+                email: email,
+                telefone: '910 000 000',
+                cedula_profissional: String(Math.floor(10000 + Math.random() * 90000)),
+                especialidade: esp,
+                tipo_vinculo: vinculo,
+                percentagem_comissao: comissao,
+                aprovado_pela_clinica: true,
+                status: 'ativo',
+                foto_url: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=160&auto=format&fit=crop&q=80'
+            };
+
+            teamVets.unshift(novoVet);
+
+            try {
+                await sb.from('veterinarios').insert([{
+                    nome,
+                    email,
+                    especialidade: esp,
+                    clinica_id: currentClinic.id,
+                    clinica: currentClinic.nome,
+                    tipo_vinculo: vinculo,
+                    percentagem_comissao: comissao,
+                    aprovado_pela_clinica: true,
+                    status: 'ativo'
+                }]);
+            } catch (err) {}
+
+            bootstrap.Modal.getInstance(document.getElementById('inviteModal')).hide();
+            document.getElementById('inviteForm').reset();
+            showToast(`✓ Convite enviado e ${nome} associado(a) à clínica!`);
+            atualizarInterface();
+        }
+
+        // Toast de Notificação
+        function showToast(msg) {
+            const toast = document.getElementById('toastFeedback');
+            document.getElementById('toastMessage').textContent = msg;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3500);
+        }
+
+        // Alternar modo de simulação entre Veterinário Regular e Diretor
+        function alternarModoVisualizacao() {
+            const isDir = localStorage.getItem('zooni-diretor') !== 'false';
+            if (isDir) {
+                localStorage.setItem('zooni-diretor', 'false');
+                document.getElementById('toggleDirectorBtn').textContent = 'Modo Vet Regular';
+                document.getElementById('directorBadge').style.display = 'none';
+                showToast('Modo simulado: Veterinário Regular');
+            } else {
+                localStorage.setItem('zooni-diretor', 'true');
+                document.getElementById('toggleDirectorBtn').textContent = 'Modo Diretor';
+                document.getElementById('directorBadge').style.display = 'inline-flex';
+                showToast('Modo simulado: Diretor Clínico');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initEquipa();
+        });
+    </script>
+</body>
+
+</html>

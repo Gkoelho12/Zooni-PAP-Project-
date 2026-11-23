@@ -24,3 +24,7 @@ dist/
 build/
 .next/
 out/
+
+# Scripts SQL da base de dados (manter apenas localmente)
+sql/
+*.sql

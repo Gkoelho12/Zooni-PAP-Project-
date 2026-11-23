@@ -1,0 +1,1376 @@
+<!DOCTYPE html>
+<html lang="pt">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zooni — Farmácia & Encomendas</title>
+    <link rel="icon" href="assets/icon-512.png" type="image/png">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="assets/js/theme.js"></script>
+    <link rel="stylesheet" href="assets/css/theme.css">
+    <style>
+        :root {
+            --primary: #3D8B3D;
+            --primary-dark: #1E4D1E;
+            --primary-light: #5CB85C;
+            --bg-color: #F2F8F2;
+            --text-main: #1a2e1a;
+            --text-sec: #5a7a5a;
+            --card-bg: #ffffff;
+            --border-color: #e4efe4;
+            --input-bg: #ffffff;
+            --danger: #d63031;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #121212;
+            --text-main: #E4E4E7;
+            --text-sec: #A1A1AA;
+            --card-bg: #202024;
+            --border-color: rgba(255, 255, 255, 0.1);
+            --input-bg: #141417;
+            --primary: #34D399;
+            --primary-dark: #059669;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Outfit', sans-serif; background: var(--bg-color); color: var(--text-main); overflow-x: hidden; }
+
+        .app-container { display: grid; grid-template-columns: 260px 1fr; min-height: 100vh; }
+
+        /* ── SIDEBAR (verde como nas restantes páginas do dono) ── */
+        .sidebar {
+            width: 260px;
+            background-color: var(--primary);
+            color: white;
+            padding: 2rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            z-index: 1000;
+            transition: transform .3s ease;
+        }
+        .logo-container { display: flex; align-items: center; justify-content: space-between; margin-bottom: 2.5rem; }
+        .logo-img-sidebar { max-width: 180px; width: 100%; height: auto; object-fit: contain; filter: brightness(0) invert(1); }
+        .mobile-menu-close { display: none; background: transparent; border: none; font-size: 1.25rem; color: white; cursor: pointer; }
+        .nav-links { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; flex-grow: 1; }
+        .nav-link {
+            display: flex; align-items: center; gap: 12px;
+            padding: 12px 15px; border-radius: 12px;
+            color: rgba(255, 255, 255, 0.85); font-weight: 500; font-size: .95rem;
+            text-decoration: none; transition: all .2s;
+        }
+        .nav-link i { width: 24px; text-align: center; font-size: 1.1rem; }
+        .nav-link:hover, .nav-link.active { background-color: rgba(255, 255, 255, 0.2); color: #fff !important; }
+        .nav-link.active { border-left: 4px solid #fff; background: rgba(255, 255, 255, 0.25); font-weight: 700; }
+        .nav-link.text-danger { color: #ff8a8a !important; }
+        .nav-link.text-danger:hover { background-color: rgba(255, 107, 107, 0.18); color: #ffb3b3 !important; }
+        .nav-line-break { border-top: 1px solid rgba(255, 255, 255, 0.15); margin: 15px 0; }
+
+        /* ── MAIN ── */
+        .main-content { padding: 2rem 2.4rem; min-width: 0; width: 100%; }
+
+        .header-bar {
+            display: flex; align-items: center; justify-content: space-between;
+            flex-wrap: wrap; gap: 16px; margin-bottom: 1.6rem;
+        }
+        .page-title { font-size: 1.65rem; font-weight: 800; margin: 0; display: flex; align-items: center; gap: 10px; }
+        .page-title i { color: var(--primary); }
+
+        .btn-zooni {
+            background: var(--primary); color: #fff; border: none;
+            padding: 10px 18px; border-radius: 12px; font-weight: 700;
+            display: inline-flex; align-items: center; gap: 8px;
+            transition: all .2s; cursor: pointer;
+        }
+        .btn-zooni:hover { background: var(--primary-dark); color: #fff; transform: translateY(-1px); }
+
+        .btn-cart-pill {
+            background: var(--card-bg); color: var(--text-main);
+            border: 1.5px solid var(--border-color); padding: 9px 16px;
+            border-radius: 12px; font-weight: 700;
+            display: inline-flex; align-items: center; gap: 8px;
+            cursor: pointer; transition: all .2s;
+        }
+        .btn-cart-pill:hover { border-color: var(--primary); color: var(--primary); }
+        .cart-badge {
+            background: var(--primary); color: #fff; border-radius: 99px;
+            padding: 2px 8px; font-size: .78rem; font-weight: 800;
+        }
+
+        /* ── TABS ── */
+        .zooni-tabs {
+            display: inline-flex; gap: 6px; padding: 6px;
+            background: var(--card-bg); border: 1px solid var(--border-color);
+            border-radius: 16px; margin-bottom: 1.6rem; flex-wrap: wrap;
+        }
+        .zooni-tab {
+            border: none; background: transparent; color: var(--text-sec);
+            font-weight: 700; font-size: .92rem; padding: 10px 18px;
+            border-radius: 12px; cursor: pointer; display: inline-flex;
+            align-items: center; gap: 8px; transition: all .2s;
+        }
+        .zooni-tab.active { background: var(--primary); color: #fff; box-shadow: 0 4px 12px rgba(61, 139, 61, 0.22); }
+
+        /* ── CARDS ── */
+        .card-panel {
+            background: var(--card-bg); border: 1px solid var(--border-color);
+            border-radius: 20px; padding: 1.4rem;
+            box-shadow: 0 4px 16px rgba(30, 77, 30, 0.05);
+            margin-bottom: 1.4rem;
+        }
+
+        /* ── VET CARDS ── */
+        .vets-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: 14px; }
+        .vet-select-card {
+            border: 1.5px solid var(--border-color); border-radius: 16px;
+            padding: 14px; cursor: pointer; background: var(--card-bg);
+            transition: all .2s; display: flex; gap: 12px; align-items: flex-start;
+        }
+        .vet-select-card:hover { border-color: var(--primary); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(30, 77, 30, 0.1); }
+        .vet-select-card.selected {
+            border-color: var(--primary);
+            background: rgba(61, 139, 61, 0.08);
+            box-shadow: 0 0 0 3px rgba(61, 139, 61, 0.16);
+        }
+        .vet-avatar {
+            width: 48px; height: 48px; border-radius: 14px; object-fit: cover;
+            background: #e8f5e9; color: var(--primary); font-size: 1.25rem;
+            display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+        }
+
+        /* ── REBUY STRIP ── */
+        .rebuy-strip { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 6px; }
+        .rebuy-chip {
+            min-width: 240px; max-width: 270px; flex-shrink: 0;
+            border: 1px solid var(--border-color); border-radius: 14px;
+            padding: 12px 14px; background: var(--bg-color);
+            display: flex; flex-direction: column; justify-content: space-between; gap: 8px;
+        }
+
+        /* ── SHOP LAYOUT ── */
+        .shop-layout { display: grid; grid-template-columns: 1fr 360px; gap: 20px; align-items: start; }
+        .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(235px, 1fr)); gap: 16px; }
+        .product-card {
+            border: 1px solid var(--border-color); border-radius: 18px;
+            padding: 16px; background: var(--card-bg);
+            display: flex; flex-direction: column; justify-content: space-between;
+            gap: 10px; transition: all .2s;
+        }
+        .product-card:hover { transform: translateY(-3px); box-shadow: 0 10px 24px rgba(30, 77, 30, 0.1); border-color: var(--primary); }
+        .cat-pill {
+            display: inline-flex; align-items: center; gap: 5px;
+            font-size: .72rem; font-weight: 700; text-transform: uppercase;
+            padding: 4px 9px; border-radius: 99px;
+            background: rgba(61, 139, 61, 0.12); color: var(--primary);
+        }
+        .rx-pill {
+            font-size: .7rem; font-weight: 700; padding: 3px 8px;
+            border-radius: 99px; background: #fff3cd; color: #856404;
+        }
+        .price-tag { font-size: 1.25rem; font-weight: 800; color: var(--primary); }
+
+        .filter-pills { display: flex; gap: 8px; flex-wrap: wrap; }
+        .filter-pill {
+            border: 1.5px solid var(--border-color); background: var(--card-bg);
+            color: var(--text-sec); border-radius: 99px; padding: 6px 14px;
+            font-size: .83rem; font-weight: 700; cursor: pointer; transition: all .15s;
+        }
+        .filter-pill.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+        /* ── CART PANEL ── */
+        .cart-panel { position: sticky; top: 20px; }
+        .cart-item {
+            display: flex; justify-content: space-between; align-items: center;
+            gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border-color);
+        }
+        .qty-btn {
+            width: 26px; height: 26px; border-radius: 8px;
+            border: 1px solid var(--border-color); background: var(--bg-color);
+            color: var(--text-main); font-weight: 800; cursor: pointer;
+            display: inline-flex; align-items: center; justify-content: center;
+        }
+
+        /* ── HISTORY CARDS ── */
+        .order-card {
+            border: 1px solid var(--border-color); border-radius: 18px;
+            padding: 1.25rem; background: var(--card-bg);
+            margin-bottom: 14px; transition: box-shadow .2s;
+        }
+        .order-card:hover { box-shadow: 0 8px 22px rgba(30, 77, 30, 0.08); }
+        .where-bought-box {
+            background: rgba(61, 139, 61, 0.07);
+            border: 1px solid rgba(61, 139, 61, 0.18);
+            border-radius: 12px; padding: 10px 14px;
+            display: flex; flex-wrap: wrap; gap: 14px; align-items: center;
+            font-size: .86rem;
+        }
+
+        .status-badge {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 5px 12px; border-radius: 99px; font-size: .78rem; font-weight: 700;
+        }
+        .st-pendente { background: #fef3c7; color: #92400e; }
+        .st-confirmada { background: #dbeafe; color: #1e40af; }
+        .st-em_preparacao { background: #e0e7ff; color: #3730a3; }
+        .st-pronta_levantamento { background: #d1fae5; color: #065f46; }
+        .st-enviada { background: #cffafe; color: #155e75; }
+        .st-entregue { background: #dcfce7; color: #166534; }
+        .st-cancelada { background: #fee2e2; color: #991b1b; }
+
+        /* ── FILTER BUTTONS (estilo Tickets) ── */
+        .filter-bar {
+            display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 1rem;
+        }
+        .filter-btn {
+            padding: 7px 14px; border-radius: 20px;
+            border: 2px solid var(--border-color); background: var(--card-bg);
+            color: var(--text-sec); font-weight: 600; font-size: .83rem;
+            cursor: pointer; transition: all .2s;
+            display: inline-flex; align-items: center; gap: 6px;
+        }
+        .filter-btn:hover { border-color: var(--primary); color: var(--primary); }
+        .filter-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+        .filter-btn .cnt {
+            background: rgba(0, 0, 0, .08); border-radius: 99px;
+            padding: 1px 7px; font-size: .74rem; font-weight: 700;
+        }
+        .filter-btn.active .cnt { background: rgba(255, 255, 255, .25); color: #fff; }
+
+        .toast-zooni {
+            position: fixed; bottom: 24px; right: 24px; z-index: 9999;
+            background: var(--primary-dark); color: #fff; padding: 14px 20px;
+            border-radius: 14px; font-weight: 600; display: none;
+            align-items: center; gap: 10px; box-shadow: 0 12px 30px rgba(0, 0, 0, .25);
+        }
+
+        [data-theme="dark"] .form-control,
+        [data-theme="dark"] .form-select,
+        [data-theme="dark"] .modal-content {
+            background-color: var(--card-bg) !important;
+            color: var(--text-main) !important;
+            border-color: var(--border-color) !important;
+        }
+
+        @media (max-width: 1100px) {
+            .shop-layout { grid-template-columns: 1fr; }
+            .cart-panel { position: static; }
+        }
+        @media (max-width: 768px) {
+            .app-container { grid-template-columns: 1fr; }
+            .sidebar { position: fixed; inset: 0 auto 0 0; transform: translateX(-100%); }
+            .sidebar.active { transform: translateX(0); box-shadow: 10px 0 30px rgba(0, 0, 0, .2); }
+            .mobile-menu-close { display: block; }
+            .main-content { padding: 1.1rem; }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- SIDEBAR DONO -->
+        <aside class="sidebar">
+            <div class="logo-container">
+                <a href="dashboard_dono.html"><img src="assets/logo.png" alt="Zooni Logo" class="logo-img-sidebar"></a>
+                <button class="mobile-menu-close" onclick="document.querySelector('.sidebar').classList.remove('active')" title="Fechar Menu">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <ul class="nav-links">
+                <li class="nav-item"><a href="dashboard_dono.html" class="nav-link"><i class="fa-solid fa-house"></i> <span>Início</span></a></li>
+                <li class="nav-item"><a href="meus_animais.html" class="nav-link"><i class="fa-solid fa-dog"></i> <span>Os Meus Animais</span></a></li>
+                <li class="nav-item"><a href="agenda_dono.html" class="nav-link"><i class="fa-solid fa-calendar"></i> <span>Calendário</span></a></li>
+                <li class="nav-item"><a href="chat_dono.html" class="nav-link"><i class="fa-solid fa-comments"></i> <span>Chat da Clínica</span></a></li>
+                <li class="nav-item"><a href="loja_dono.html" class="nav-link active"><i class="fa-solid fa-bag-shopping"></i> <span>Farmácia & Loja</span></a></li>
+                <li class="nav-item"><a href="veterinarios.html" class="nav-link"><i class="fa-solid fa-user-doctor"></i> <span>Veterinários</span></a></li>
+            </ul>
+            <div class="nav-line-break"></div>
+            <a href="definicoes_dono.html" class="nav-link"><i class="fa-solid fa-gear"></i> <span>Configurações</span></a>
+            <a href="login.html?logout=1" class="nav-link text-danger" onclick="localStorage.removeItem('zooni-remember');"><i class="fa-solid fa-arrow-right-from-bracket"></i> <span>Sair</span></a>
+        </aside>
+
+        <!-- MAIN -->
+        <main class="main-content">
+            <div class="header-bar">
+                <div class="d-flex align-items-center gap-3">
+                    <button class="btn btn-outline-secondary d-md-none" onclick="document.querySelector('.sidebar').classList.add('active')">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+                    <div>
+                        <h1 class="page-title"><i class="fa-solid fa-bag-shopping"></i> Farmácia & Encomendas</h1>
+                        <p class="text-secondary small mb-0">Compre ou encomende medicamentos e produtos através dos veterinários das suas consultas, e recompre com um clique.</p>
+                    </div>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    <button class="btn-cart-pill" onclick="irParaCarrinho()">
+                        <i class="fa-solid fa-cart-shopping"></i> Carrinho
+                        <span class="cart-badge" id="topCartCount">0</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Aviso se as tabelas SQL ainda não existirem -->
+            <div id="sqlMissingBanner" class="alert alert-warning rounded-4 d-none mb-4">
+                <i class="fa-solid fa-triangle-exclamation me-2"></i>
+                <strong>Base de dados por configurar:</strong> As tabelas <code>farmacia_produtos</code> e <code>farmacia_encomendas</code> ainda não existem no Supabase. Execute o script <code>sql/farmacia_encomendas.sql</code> no SQL Editor do Supabase.
+            </div>
+
+            <!-- ABAS -->
+            <div class="zooni-tabs">
+                <button class="zooni-tab active" id="tabBtnComprar" onclick="mudarAba('comprar')">
+                    <i class="fa-solid fa-capsules"></i> Comprar / Encomendar
+                </button>
+                <button class="zooni-tab" id="tabBtnHistorico" onclick="mudarAba('historico')">
+                    <i class="fa-solid fa-clock-rotate-left"></i> Histórico de Compras & Recomprar
+                    <span class="badge bg-light text-dark rounded-pill" id="badgeTotalHistorico">0</span>
+                </button>
+            </div>
+
+            <!-- ══ ABA 1: COMPRAR / ENCOMENDAR ══ -->
+            <section id="secComprar">
+                <!-- Barra rápida de Recomprar -->
+                <div class="card-panel d-none" id="cardRecomprarRapido">
+                    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                        <div>
+                            <h6 class="fw-bold mb-0"><i class="fa-solid fa-rotate-right text-success me-2"></i>Comprar Novamente</h6>
+                            <small class="text-secondary">Os seus medicamentos e produtos comprados anteriormente</small>
+                        </div>
+                        <button class="btn btn-sm btn-outline-success rounded-pill fw-bold" onclick="mudarAba('historico')">Ver todo o histórico</button>
+                    </div>
+                    <div class="rebuy-strip" id="rebuyStrip"></div>
+                </div>
+
+                <!-- Passo 1: Escolher o Veterinário da Consulta -->
+                <div class="card-panel">
+                    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                        <div>
+                            <h5 class="fw-bold mb-0"><span class="badge bg-success me-2">1</span>Escolha o Veterinário da sua Consulta</h5>
+                            <small class="text-secondary">Apenas veterinários com quem já realizou ou tem consulta registada</small>
+                        </div>
+                    </div>
+                    <div id="listaVetsConsulta" class="vets-grid">
+                        <div class="text-secondary small">A carregar veterinários das suas consultas...</div>
+                    </div>
+                </div>
+
+                <!-- Passo 2: Catálogo + Encomenda Personalizada + Carrinho -->
+                <div class="shop-layout" id="areaLoja" style="display:none;">
+                    <div>
+                        <div class="card-panel">
+                            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+                                <div>
+                                    <h5 class="fw-bold mb-0"><span class="badge bg-success me-2">2</span>Produtos & Medicamentos</h5>
+                                    <small class="text-secondary" id="vetSelecionadoSubtitulo">—</small>
+                                </div>
+                                <button class="btn btn-sm btn-outline-success rounded-pill fw-bold" onclick="abrirModalPedidoPersonalizado()">
+                                    <i class="fa-solid fa-prescription me-1"></i> Encomendar Medicamento / Outro Item
+                                </button>
+                            </div>
+
+                            <!-- Filtro de Estado dos Produtos (estilo Tickets) -->
+                            <div class="filter-bar mb-3" id="filterBarProdutosDono">
+                                <button class="filter-btn active" onclick="setEstadoProdutoDono('todos', this)"><i class="fa-solid fa-list"></i> Todos <span class="cnt" data-cnt="todos">0</span></button>
+                                <button class="filter-btn" onclick="setEstadoProdutoDono('em_stock', this)"><i class="fa-solid fa-circle-check"></i> Em Stock <span class="cnt" data-cnt="em_stock">0</span></button>
+                                <button class="filter-btn" onclick="setEstadoProdutoDono('por_encomenda', this)"><i class="fa-regular fa-clock"></i> Por Encomenda <span class="cnt" data-cnt="por_encomenda">0</span></button>
+                                <button class="filter-btn" onclick="setEstadoProdutoDono('receita', this)"><i class="fa-solid fa-file-medical"></i> Com Receita <span class="cnt" data-cnt="receita">0</span></button>
+                            </div>
+
+                            <!-- Pesquisa e Categorias -->
+                            <div class="row g-2 mb-3">
+                                <div class="col-md-5">
+                                    <input type="text" id="inputBuscaProduto" class="form-control rounded-3" placeholder="Pesquisar medicamento, ração, desparasitante..." oninput="renderCatalogo()">
+                                </div>
+                                <div class="col-md-7 d-flex align-items-center">
+                                    <div class="filter-pills" id="catPills">
+                                        <button class="filter-pill active" onclick="setCategoria('todos', this)">Todos</button>
+                                        <button class="filter-pill" onclick="setCategoria('medicamento', this)">Medicamentos</button>
+                                        <button class="filter-pill" onclick="setCategoria('desparasitante', this)">Desparasitantes</button>
+                                        <button class="filter-pill" onclick="setCategoria('alimentacao', this)">Alimentação</button>
+                                        <button class="filter-pill" onclick="setCategoria('suplemento', this)">Suplementos</button>
+                                        <button class="filter-pill" onclick="setCategoria('higiene', this)">Higiene</button>
+                                        <button class="filter-pill" onclick="setCategoria('acessorio', this)">Acessórios</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="products-grid" id="gridProdutos"></div>
+                        </div>
+                    </div>
+
+                    <!-- CARRINHO E FINALIZAÇÃO -->
+                    <div class="card-panel cart-panel" id="painelCarrinho">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="fw-bold mb-0"><i class="fa-solid fa-cart-shopping text-success me-2"></i>A Minha Encomenda</h5>
+                            <button class="btn btn-sm btn-link text-danger text-decoration-none p-0 fw-semibold" onclick="limparCarrinho()">Limpar</button>
+                        </div>
+
+                        <div id="avisoRecompra" class="alert alert-info py-2 px-3 small rounded-3 d-none">
+                            <i class="fa-solid fa-rotate-right me-1"></i> A recomprar da encomenda <strong id="avisoRecompraNum"></strong>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="small fw-bold text-secondary mb-1">Animal destinatário</label>
+                            <select id="selectAnimalEncomenda" class="form-select form-select-sm rounded-3"></select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="small fw-bold text-secondary mb-1">Consulta de referência (opcional)</label>
+                            <select id="selectConsultaRef" class="form-select form-select-sm rounded-3"></select>
+                        </div>
+
+                        <div id="listaCarrinho" class="mb-3">
+                            <div class="text-center text-secondary small py-4">
+                                <i class="fa-solid fa-basket-shopping fa-2x opacity-25 mb-2 d-block"></i>
+                                Adicione produtos do catálogo ou faça um pedido personalizado.
+                            </div>
+                        </div>
+
+                        <div class="mb-2">
+                            <label class="small fw-bold text-secondary mb-1">Entrega / Levantamento</label>
+                            <select id="selectEntrega" class="form-select form-select-sm rounded-3" onchange="toggleMoradaEntrega()">
+                                <option value="levantamento">Levantamento na Clínica</option>
+                                <option value="entrega">Entrega ao Domicílio</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-2 d-none" id="wrapMoradaEntrega">
+                            <label class="small fw-bold text-secondary mb-1">Morada de Entrega</label>
+                            <input type="text" id="inputMoradaEntrega" class="form-control form-control-sm rounded-3" placeholder="Rua, nº, código postal, localidade">
+                        </div>
+
+                        <div class="mb-2">
+                            <label class="small fw-bold text-secondary mb-1">Método de Pagamento</label>
+                            <select id="selectPagamento" class="form-select form-select-sm rounded-3">
+                                <option value="clinica">Pagar no Levantamento (Clínica)</option>
+                                <option value="mbway">MB Way</option>
+                                <option value="multibanco">Referência Multibanco</option>
+                                <option value="cartao">Cartão de Débito / Crédito</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="small fw-bold text-secondary mb-1">Observações para o veterinário</label>
+                            <textarea id="inputNotasDono" rows="2" class="form-control form-control-sm rounded-3" placeholder="Ex: Posologia, sabor preferido, horário de levantamento..."></textarea>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center py-2 border-top border-bottom mb-3">
+                            <span class="fw-bold">Total Estimado</span>
+                            <span class="fs-4 fw-bold text-success" id="carrinhoTotal">0,00 €</span>
+                        </div>
+
+                        <button class="btn-zooni w-100 justify-content-center py-2" id="btnFinalizarEncomenda" onclick="finalizarEncomenda()">
+                            <i class="fa-solid fa-check-circle"></i> Confirmar Compra / Encomenda
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ══ ABA 2: HISTÓRICO DE COMPRAS ══ -->
+            <section id="secHistorico" style="display:none;">
+                <div class="filter-bar" id="filterBarHistDono">
+                    <button class="filter-btn active" onclick="setEstadoHistDono('todos', this)"><i class="fa-solid fa-list"></i> Todos <span class="cnt" data-cnt="todos">0</span></button>
+                    <button class="filter-btn" onclick="setEstadoHistDono('pendente', this)"><i class="fa-regular fa-clock"></i> Pendentes <span class="cnt" data-cnt="pendente">0</span></button>
+                    <button class="filter-btn" onclick="setEstadoHistDono('confirmada', this)"><i class="fa-solid fa-circle-check"></i> Confirmadas <span class="cnt" data-cnt="confirmada">0</span></button>
+                    <button class="filter-btn" onclick="setEstadoHistDono('em_preparacao', this)"><i class="fa-solid fa-box-open"></i> Em Preparação <span class="cnt" data-cnt="em_preparacao">0</span></button>
+                    <button class="filter-btn" onclick="setEstadoHistDono('pronta_levantamento', this)"><i class="fa-solid fa-store"></i> Prontas <span class="cnt" data-cnt="pronta_levantamento">0</span></button>
+                    <button class="filter-btn" onclick="setEstadoHistDono('enviada', this)"><i class="fa-solid fa-truck"></i> Enviadas <span class="cnt" data-cnt="enviada">0</span></button>
+                    <button class="filter-btn" onclick="setEstadoHistDono('entregue', this)"><i class="fa-solid fa-check-double"></i> Entregues <span class="cnt" data-cnt="entregue">0</span></button>
+                    <button class="filter-btn" onclick="setEstadoHistDono('cancelada', this)"><i class="fa-solid fa-circle-xmark"></i> Canceladas <span class="cnt" data-cnt="cancelada">0</span></button>
+                </div>
+                <div class="card-panel">
+                    <div class="row g-2 align-items-center">
+                        <div class="col-md-9">
+                            <input type="text" id="buscaHistorico" class="form-control rounded-3" placeholder="Pesquisar por produto, clínica, veterinário, animal ou nº encomenda..." oninput="renderHistorico()">
+                        </div>
+                        <div class="col-md-3 text-md-end small text-secondary" id="resumoHistoricoCount">0 compras registadas</div>
+                    </div>
+                </div>
+                <div id="listaHistorico"></div>
+            </section>
+        </main>
+    </div>
+
+    <!-- MODAL: ENCOMENDA PERSONALIZADA / MEDICAMENTO FORA DO CATÁLOGO -->
+    <div class="modal fade" id="modalPedidoPersonalizado" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content rounded-4 border-0 shadow-lg">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold"><i class="fa-solid fa-prescription text-success me-2"></i>Encomendar Medicamento ou Produto</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form onsubmit="adicionarPedidoPersonalizado(event)">
+                    <div class="modal-body">
+                        <p class="small text-secondary">Não encontra um medicamento receitado ou artigo no catálogo? Peça diretamente ao seu veterinário.</p>
+                        <div class="mb-3">
+                            <label class="small fw-bold mb-1">Nome do Medicamento ou Produto *</label>
+                            <input type="text" id="persNome" class="form-control rounded-3" required placeholder="Ex: Amoxicilina 250mg, Ração Renal 2kg...">
+                        </div>
+                        <div class="row g-2 mb-3">
+                            <div class="col-7">
+                                <label class="small fw-bold mb-1">Categoria</label>
+                                <select id="persCat" class="form-select rounded-3">
+                                    <option value="medicamento">Medicamento</option>
+                                    <option value="desparasitante">Desparasitante</option>
+                                    <option value="alimentacao">Alimentação</option>
+                                    <option value="suplemento">Suplemento</option>
+                                    <option value="higiene">Higiene</option>
+                                    <option value="acessorio">Acessório</option>
+                                </select>
+                            </div>
+                            <div class="col-5">
+                                <label class="small fw-bold mb-1">Quantidade *</label>
+                                <input type="number" id="persQtd" class="form-control rounded-3" min="1" value="1" required>
+                            </div>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="persReceita">
+                            <label class="form-check-label small" for="persReceita">Foi receitado na consulta pelo veterinário</label>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-0 pt-0">
+                        <button type="button" class="btn btn-outline-secondary rounded-3" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn-zooni"><i class="fa-solid fa-plus"></i> Adicionar à Encomenda</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast-zooni" id="toastZooni"><i class="fa-solid fa-circle-check"></i><span id="toastMsg"></span></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+
+    <script>
+        const SUPABASE_URL = 'https://xqtbtggmwejnkhckduti.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhxdGJ0Z2dtd2VqbmtoY2tkdXRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc2OTU5NjEsImV4cCI6MjA4MzI3MTk2MX0.G1wG0UC6sF7r6tMxGdqLGvsHa_dxlVD1-j6QNEw32IM';
+        const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        let clienteAtual = null;
+        let animaisDono = [];
+        let vetsDasConsultas = [];
+        let consultasDono = [];
+        let vetSelecionado = null;
+        let produtosCatalogo = [];
+        let historicoCompras = [];
+        let carrinho = [];
+        let encomendaOrigemRecompra = null;
+        let categoriaAtiva = 'todos';
+        let estadoProdutoDonoFiltro = 'todos';
+        let estadoHistDonoFiltro = 'todos';
+
+        const CAT_LABELS = {
+            medicamento: 'Medicamento',
+            desparasitante: 'Desparasitante',
+            alimentacao: 'Alimentação',
+            suplemento: 'Suplemento',
+            higiene: 'Higiene',
+            acessorio: 'Acessório'
+        };
+
+        const ESTADO_LABELS = {
+            pendente: 'Pendente',
+            confirmada: 'Confirmada',
+            em_preparacao: 'Em Preparação',
+            pronta_levantamento: 'Pronta p/ Levantamento',
+            enviada: 'Enviada',
+            entregue: 'Entregue',
+            cancelada: 'Cancelada'
+        };
+
+        const PAGAMENTO_LABELS = {
+            clinica: 'Pagamento na Clínica',
+            mbway: 'MB Way',
+            multibanco: 'Multibanco',
+            cartao: 'Cartão'
+        };
+
+        function esc(s) {
+            return (s ?? '').toString().replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+        }
+        function euro(v) {
+            return Number(v || 0).toFixed(2).replace('.', ',') + ' €';
+        }
+        function fmtData(d) {
+            if (!d) return '—';
+            const dt = new Date(d);
+            return dt.toLocaleDateString('pt-PT') + ' ' + dt.toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' });
+        }
+        function showToast(msg) {
+            const el = document.getElementById('toastZooni');
+            document.getElementById('toastMsg').textContent = msg;
+            el.style.display = 'flex';
+            clearTimeout(el._t);
+            el._t = setTimeout(() => { el.style.display = 'none'; }, 3500);
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const ok = await initAuthDono();
+            if (!ok) return;
+            await Promise.all([carregarVetsDasConsultas(), carregarHistorico()]);
+            renderVetsConsulta();
+            renderRecomprarRapido();
+            renderHistorico();
+            if (vetsDasConsultas.length > 0 && !vetSelecionado) {
+                selecionarVet(vetsDasConsultas[0].user_id);
+            }
+        });
+
+        async function initAuthDono() {
+            const { data: { session } } = await sb.auth.getSession();
+            if (!session) { window.location.href = 'login.html?role=dono'; return false; }
+
+            const { data: cli } = await sb.from('clientes').select('*').eq('user_id', session.user.id).maybeSingle();
+            if (!cli) {
+                showToast('Perfil de tutor não encontrado.');
+                return false;
+            }
+            clienteAtual = cli;
+            if (cli.morada) {
+                document.getElementById('inputMoradaEntrega').value = [cli.morada, cli.localidade].filter(Boolean).join(', ');
+            }
+
+            const { data: anims } = await sb.from('animais').select('id, nome, tipo_animal, raca').eq('id_dono', cli.id).order('nome');
+            animaisDono = anims || [];
+            const selAnim = document.getElementById('selectAnimalEncomenda');
+            selAnim.innerHTML = '<option value="">Geral / Sem animal específico</option>' +
+                animaisDono.map(a => `<option value="${a.id}">${esc(a.nome)} (${esc(a.raca || a.tipo_animal || 'Animal')})</option>`).join('');
+            return true;
+        }
+
+        async function carregarVetsDasConsultas() {
+            const [agRes, tkRes, clinRes] = await Promise.all([
+                sb.from('agendamentos').select('id, id_vet, id_animal, titulo, data_hora_inicio, tipo_servico, status').eq('id_dono', clienteAtual.id).order('data_hora_inicio', { ascending: false }),
+                sb.from('tickets').select('id, id_veterinario, id_animal, motivo, data_sugerida, criado_em, estado').eq('id_dono', clienteAtual.id).order('criado_em', { ascending: false }),
+                sb.from('clinicas').select('id, nome, morada, telefone')
+            ]);
+
+            const clinMap = {};
+            (clinRes.data || []).forEach(c => { clinMap[c.id] = c; });
+
+            const agValidos = (agRes.data || []).filter(a => a.id_vet && (a.status || '').toLowerCase() !== 'cancelado');
+            const tkValidos = (tkRes.data || []).filter(t => t.id_veterinario && !['cancelado', 'recusado'].includes((t.estado || '').toLowerCase()));
+
+            consultasDono = [
+                ...agValidos.map(a => ({
+                    tipo: 'agendamento', id: a.id, id_vet: a.id_vet, id_animal: a.id_animal,
+                    titulo: a.titulo || a.tipo_servico || 'Consulta', data: a.data_hora_inicio
+                })),
+                ...tkValidos.map(t => ({
+                    tipo: 'ticket', id: t.id, id_vet: t.id_veterinario, id_animal: t.id_animal,
+                    titulo: t.motivo || 'Pedido de Consulta', data: t.data_sugerida || t.criado_em
+                }))
+            ];
+
+            const vetIds = [...new Set(consultasDono.map(c => c.id_vet))];
+            if (vetIds.length === 0) {
+                vetsDasConsultas = [];
+                return;
+            }
+
+            const { data: vets } = await sb.from('veterinarios')
+                .select('user_id, nome, clinica, clinica_id, especialidade, foto_url')
+                .in('user_id', vetIds);
+
+            vetsDasConsultas = (vets || []).map(v => {
+                const cl = v.clinica_id ? clinMap[v.clinica_id] : null;
+                const local = cl ? `${cl.nome}${cl.morada ? ' — ' + cl.morada : ''}` : (v.clinica || `Consultório Dr(a). ${v.nome}`);
+                const numConsultas = consultasDono.filter(c => c.id_vet === v.user_id).length;
+                return { ...v, clinicaObj: cl, local_compra: local, numConsultas };
+            });
+        }
+
+        function renderVetsConsulta() {
+            const box = document.getElementById('listaVetsConsulta');
+            if (vetsDasConsultas.length === 0) {
+                box.innerHTML = `
+                    <div class="col-12 text-center p-4 bg-light rounded-4 w-100" style="grid-column:1/-1;">
+                        <i class="fa-solid fa-stethoscope fa-2x text-secondary opacity-50 mb-2"></i>
+                        <h6 class="fw-bold mb-1">Ainda não tem consultas registadas com nenhum veterinário</h6>
+                        <p class="small text-secondary mb-3">Para comprar ou encomendar medicamentos através de um veterinário, precisa primeiro de ter uma consulta marcada ou realizada.</p>
+                        <a href="agenda_dono.html" class="btn-zooni text-decoration-none"><i class="fa-solid fa-calendar-plus"></i> Marcar Consulta</a>
+                    </div>`;
+                document.getElementById('areaLoja').style.display = 'none';
+                return;
+            }
+
+            box.innerHTML = vetsDasConsultas.map(v => `
+                <div class="vet-select-card ${vetSelecionado && vetSelecionado.user_id === v.user_id ? 'selected' : ''}" onclick="selecionarVet('${v.user_id}')">
+                    ${v.foto_url
+                        ? `<img src="${esc(v.foto_url)}" class="vet-avatar" alt="">`
+                        : `<div class="vet-avatar"><i class="fa-solid fa-user-doctor"></i></div>`}
+                    <div class="min-w-0">
+                        <div class="fw-bold text-truncate">Dr(a). ${esc(v.nome)}</div>
+                        <div class="small text-secondary text-truncate"><i class="fa-solid fa-hospital me-1 text-success"></i>${esc(v.clinicaObj ? v.clinicaObj.nome : (v.clinica || 'Clínica Veterinária'))}</div>
+                        <div class="small text-secondary mt-1">
+                            <span class="badge bg-success-subtle text-success rounded-pill">${v.numConsultas} consulta${v.numConsultas > 1 ? 's' : ''}</span>
+                        </div>
+                    </div>
+                </div>`).join('');
+        }
+
+        async function selecionarVet(vetUserId, manterCarrinho = false) {
+            const v = vetsDasConsultas.find(x => x.user_id === vetUserId);
+            if (!v) return;
+            if (vetSelecionado && vetSelecionado.user_id !== vetUserId && carrinho.length > 0 && !manterCarrinho) {
+                if (!confirm('Ao mudar de veterinário/clínica, o carrinho atual será limpo. Continuar?')) return;
+                carrinho = [];
+                encomendaOrigemRecompra = null;
+                atualizarAvisoRecompra();
+            }
+            vetSelecionado = v;
+            document.getElementById('areaLoja').style.display = 'grid';
+            document.getElementById('vetSelecionadoSubtitulo').innerHTML =
+                `<i class="fa-solid fa-location-dot text-success me-1"></i>Local de compra: <strong>${esc(v.local_compra)}</strong> · Dr(a). ${esc(v.nome)}`;
+
+            renderVetsConsulta();
+            preencherConsultasRef();
+            await carregarCatalogoVet();
+            renderCatalogo();
+            renderCarrinho();
+        }
+
+        function preencherConsultasRef() {
+            const sel = document.getElementById('selectConsultaRef');
+            const doVet = consultasDono.filter(c => c.id_vet === vetSelecionado.user_id);
+            sel.innerHTML = '<option value="">Sem consulta específica associada</option>' +
+                doVet.map(c => {
+                    const anim = animaisDono.find(a => a.id === c.id_animal);
+                    const animTxt = anim ? ` (${anim.nome})` : '';
+                    return `<option value="${c.tipo}:${c.id}">${fmtData(c.data)} — ${esc(c.titulo)}${esc(animTxt)}</option>`;
+                }).join('');
+        }
+
+        async function carregarCatalogoVet() {
+            if (!vetSelecionado) return;
+            let q = sb.from('farmacia_produtos').select('*').eq('ativo', true).order('nome');
+            if (vetSelecionado.clinica_id) {
+                q = q.or(`clinica_id.eq.${vetSelecionado.clinica_id},id_veterinario.eq.${vetSelecionado.user_id}`);
+            } else {
+                q = q.eq('id_veterinario', vetSelecionado.user_id);
+            }
+            const { data, error } = await q;
+            if (error) {
+                if (error.code === 'PGRST205' || error.code === '42P01') {
+                    document.getElementById('sqlMissingBanner').classList.remove('d-none');
+                }
+                produtosCatalogo = [];
+                return;
+            }
+            produtosCatalogo = data || [];
+        }
+
+        function setCategoria(cat, btn) {
+            categoriaAtiva = cat;
+            document.querySelectorAll('#catPills .filter-pill').forEach(b => b.classList.remove('active'));
+            if (btn) btn.classList.add('active');
+            renderCatalogo();
+        }
+
+        function setEstadoProdutoDono(estado, btn) {
+            estadoProdutoDonoFiltro = estado;
+            document.querySelectorAll('#filterBarProdutosDono .filter-btn').forEach(b => b.classList.remove('active'));
+            if (btn) btn.classList.add('active');
+            renderCatalogo();
+        }
+
+        function setEstadoHistDono(estado, btn) {
+            estadoHistDonoFiltro = estado;
+            document.querySelectorAll('#filterBarHistDono .filter-btn').forEach(b => b.classList.remove('active'));
+            if (btn) btn.classList.add('active');
+            renderHistorico();
+        }
+
+        function atualizarContadoresProdutosDono() {
+            const cnt = {
+                todos: produtosCatalogo.length,
+                em_stock: produtosCatalogo.filter(p => (p.stock || 0) > 0).length,
+                por_encomenda: produtosCatalogo.filter(p => (p.stock || 0) <= 0).length,
+                receita: produtosCatalogo.filter(p => !!p.requer_receita).length
+            };
+            document.querySelectorAll('#filterBarProdutosDono [data-cnt]').forEach(el => {
+                el.textContent = cnt[el.dataset.cnt] || 0;
+            });
+        }
+
+        function renderCatalogo() {
+            atualizarContadoresProdutosDono();
+            const grid = document.getElementById('gridProdutos');
+            const termo = (document.getElementById('inputBuscaProduto')?.value || '').toLowerCase().trim();
+            const lista = produtosCatalogo.filter(p => {
+                if (estadoProdutoDonoFiltro === 'em_stock' && (p.stock || 0) <= 0) return false;
+                if (estadoProdutoDonoFiltro === 'por_encomenda' && (p.stock || 0) > 0) return false;
+                if (estadoProdutoDonoFiltro === 'receita' && !p.requer_receita) return false;
+                if (categoriaAtiva !== 'todos' && p.categoria !== categoriaAtiva) return false;
+                if (termo && !`${p.nome} ${p.descricao || ''} ${p.categoria}`.toLowerCase().includes(termo)) return false;
+                return true;
+            });
+
+            if (lista.length === 0) {
+                grid.innerHTML = `
+                    <div class="text-center p-4 bg-light rounded-4" style="grid-column:1/-1;">
+                        <i class="fa-solid fa-prescription-bottle-medical fa-2x text-secondary opacity-50 mb-2"></i>
+                        <h6 class="fw-bold mb-1">${produtosCatalogo.length === 0 ? 'Este veterinário ainda não listou produtos no catálogo' : 'Nenhum produto encontrado com estes filtros'}</h6>
+                        <p class="small text-secondary mb-3">Pode fazer uma encomenda personalizada de qualquer medicamento ou produto recomendado na consulta.</p>
+                        <button class="btn-zooni btn-sm" onclick="abrirModalPedidoPersonalizado()"><i class="fa-solid fa-plus"></i> Encomendar Medicamento / Produto</button>
+                    </div>`;
+                return;
+            }
+
+            grid.innerHTML = lista.map(p => {
+                const semStock = (p.stock || 0) <= 0;
+                return `
+                    <div class="product-card">
+                        <div>
+                            <div class="d-flex justify-content-between align-items-center gap-1 mb-2 flex-wrap">
+                                <span class="cat-pill">${esc(CAT_LABELS[p.categoria] || p.categoria)}</span>
+                                ${p.requer_receita ? '<span class="rx-pill"><i class="fa-solid fa-file-medical me-1"></i>Receita</span>' : ''}
+                            </div>
+                            <h6 class="fw-bold mb-1">${esc(p.nome)}</h6>
+                            <p class="small text-secondary mb-2">${esc(p.descricao || 'Produto disponibilizado pela clínica veterinária.')}</p>
+                        </div>
+                        <div>
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="price-tag">${euro(p.preco)}</span>
+                                <span class="small ${semStock ? 'text-danger fw-bold' : 'text-secondary'}">
+                                    ${semStock ? 'Por encomenda' : `Stock: ${p.stock}`}
+                                </span>
+                            </div>
+                            <button class="btn-zooni w-100 justify-content-center btn-sm py-2" onclick="adicionarDoCatalogo(${p.id})">
+                                <i class="fa-solid fa-cart-plus"></i> ${semStock ? 'Encomendar' : 'Adicionar'}
+                            </button>
+                        </div>
+                    </div>`;
+            }).join('');
+        }
+
+        function adicionarDoCatalogo(prodId) {
+            const p = produtosCatalogo.find(x => x.id === prodId);
+            if (!p) return;
+            adicionarAoCarrinho({
+                produto_id: p.id,
+                nome: p.nome,
+                categoria: p.categoria,
+                quantidade: 1,
+                preco_unitario: Number(p.preco),
+                requer_receita: !!p.requer_receita,
+                personalizado: false
+            });
+            showToast(`"${p.nome}" adicionado à encomenda!`);
+        }
+
+        function adicionarAoCarrinho(item) {
+            const idx = carrinho.findIndex(c =>
+                (item.produto_id && c.produto_id === item.produto_id) ||
+                (!item.produto_id && c.nome.toLowerCase() === item.nome.toLowerCase())
+            );
+            if (idx >= 0) {
+                carrinho[idx].quantidade += item.quantidade;
+            } else {
+                carrinho.push({ ...item });
+            }
+            renderCarrinho();
+        }
+
+        function alterarQtdCarrinho(idx, delta) {
+            if (!carrinho[idx]) return;
+            carrinho[idx].quantidade += delta;
+            if (carrinho[idx].quantidade <= 0) carrinho.splice(idx, 1);
+            renderCarrinho();
+        }
+
+        function limparCarrinho() {
+            carrinho = [];
+            encomendaOrigemRecompra = null;
+            atualizarAvisoRecompra();
+            renderCarrinho();
+        }
+
+        function atualizarAvisoRecompra() {
+            const box = document.getElementById('avisoRecompra');
+            if (encomendaOrigemRecompra) {
+                document.getElementById('avisoRecompraNum').textContent = encomendaOrigemRecompra.numero_encomenda;
+                box.classList.remove('d-none');
+            } else {
+                box.classList.add('d-none');
+            }
+        }
+
+        function renderCarrinho() {
+            const totalItens = carrinho.reduce((s, i) => s + i.quantidade, 0);
+            document.getElementById('topCartCount').textContent = totalItens;
+            const list = document.getElementById('listaCarrinho');
+
+            if (carrinho.length === 0) {
+                list.innerHTML = `<div class="text-center text-secondary small py-4"><i class="fa-solid fa-basket-shopping fa-2x opacity-25 mb-2 d-block"></i>O carrinho está vazio.</div>`;
+                document.getElementById('carrinhoTotal').textContent = '0,00 €';
+                return;
+            }
+
+            let total = 0;
+            list.innerHTML = carrinho.map((item, idx) => {
+                const sub = item.quantidade * Number(item.preco_unitario || 0);
+                total += sub;
+                return `
+                    <div class="cart-item">
+                        <div class="min-w-0">
+                            <div class="fw-bold small text-truncate">${esc(item.nome)}</div>
+                            <div class="text-secondary" style="font-size:.76rem;">
+                                ${item.personalizado ? 'Pedido personalizado · preço a confirmar' : `${euro(item.preco_unitario)} un.`}
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center gap-2 flex-shrink-0">
+                            <button class="qty-btn" onclick="alterarQtdCarrinho(${idx}, -1)">-</button>
+                            <span class="fw-bold small">${item.quantidade}</span>
+                            <button class="qty-btn" onclick="alterarQtdCarrinho(${idx}, 1)">+</button>
+                        </div>
+                    </div>`;
+            }).join('');
+
+            document.getElementById('carrinhoTotal').textContent = euro(total);
+        }
+
+        function abrirModalPedidoPersonalizado() {
+            document.getElementById('persNome').value = '';
+            document.getElementById('persQtd').value = 1;
+            document.getElementById('persReceita').checked = false;
+            new bootstrap.Modal(document.getElementById('modalPedidoPersonalizado')).show();
+        }
+
+        function adicionarPedidoPersonalizado(e) {
+            e.preventDefault();
+            const nome = document.getElementById('persNome').value.trim();
+            if (!nome) return;
+            adicionarAoCarrinho({
+                produto_id: null,
+                nome,
+                categoria: document.getElementById('persCat').value,
+                quantidade: parseInt(document.getElementById('persQtd').value) || 1,
+                preco_unitario: 0,
+                requer_receita: document.getElementById('persReceita').checked,
+                personalizado: true
+            });
+            bootstrap.Modal.getInstance(document.getElementById('modalPedidoPersonalizado')).hide();
+            showToast(`Pedido "${nome}" adicionado à encomenda!`);
+        }
+
+        function toggleMoradaEntrega() {
+            const entrega = document.getElementById('selectEntrega').value === 'entrega';
+            document.getElementById('wrapMoradaEntrega').classList.toggle('d-none', !entrega);
+        }
+
+        async function finalizarEncomenda() {
+            if (!vetSelecionado) { showToast('Selecione o veterinário primeiro.'); return; }
+            if (carrinho.length === 0) { showToast('Adicione pelo menos um medicamento ou produto.'); return; }
+
+            const tipoEntrega = document.getElementById('selectEntrega').value;
+            const moradaEntrega = document.getElementById('inputMoradaEntrega').value.trim();
+            if (tipoEntrega === 'entrega' && !moradaEntrega) {
+                showToast('Indique a morada de entrega.');
+                return;
+            }
+
+            const btn = document.getElementById('btnFinalizarEncomenda');
+            btn.disabled = true;
+
+            const animalVal = document.getElementById('selectAnimalEncomenda').value;
+            const consultaVal = document.getElementById('selectConsultaRef').value;
+            let idAgendamento = null, idTicket = null;
+            if (consultaVal.startsWith('agendamento:')) idAgendamento = consultaVal.split(':')[1];
+            if (consultaVal.startsWith('ticket:')) idTicket = parseInt(consultaVal.split(':')[1]);
+
+            const itensPayload = carrinho.map(i => ({
+                produto_id: i.produto_id || null,
+                nome: i.nome,
+                categoria: i.categoria || 'medicamento',
+                quantidade: i.quantidade,
+                preco_unitario: Number(i.preco_unitario || 0),
+                subtotal: Number((i.quantidade * Number(i.preco_unitario || 0)).toFixed(2)),
+                requer_receita: !!i.requer_receita,
+                personalizado: !!i.personalizado
+            }));
+            const total = itensPayload.reduce((s, i) => s + i.subtotal, 0);
+            const numEnc = `ENC-${new Date().getFullYear()}-${String(Date.now()).slice(-6)}`;
+
+            const { error } = await sb.from('farmacia_encomendas').insert([{
+                numero_encomenda: numEnc,
+                id_dono: clienteAtual.id,
+                id_animal: animalVal ? parseInt(animalVal) : null,
+                id_veterinario: vetSelecionado.user_id,
+                clinica_id: vetSelecionado.clinica_id || null,
+                local_compra: vetSelecionado.local_compra,
+                nome_veterinario: vetSelecionado.nome,
+                id_agendamento: idAgendamento,
+                id_ticket: idTicket,
+                tipo_entrega: tipoEntrega,
+                morada_entrega: tipoEntrega === 'entrega' ? moradaEntrega : null,
+                metodo_pagamento: document.getElementById('selectPagamento').value,
+                estado: 'pendente',
+                itens: itensPayload,
+                total: Number(total.toFixed(2)),
+                notas_dono: document.getElementById('inputNotasDono').value.trim() || null,
+                encomenda_origem_id: encomendaOrigemRecompra ? encomendaOrigemRecompra.id : null
+            }]);
+
+            btn.disabled = false;
+            if (error) {
+                showToast('Erro ao criar encomenda: ' + error.message);
+                return;
+            }
+
+            document.getElementById('inputNotasDono').value = '';
+            limparCarrinho();
+            await carregarHistorico();
+            renderRecomprarRapido();
+            renderHistorico();
+            showToast(`Encomenda ${numEnc} enviada para Dr(a). ${vetSelecionado.nome}!`);
+            mudarAba('historico');
+        }
+
+        /* ── HISTÓRICO E RECOMPRA ── */
+        async function carregarHistorico() {
+            const { data, error } = await sb.from('farmacia_encomendas')
+                .select('*')
+                .eq('id_dono', clienteAtual.id)
+                .order('criado_em', { ascending: false });
+
+            if (error) {
+                if (error.code === 'PGRST205' || error.code === '42P01') {
+                    document.getElementById('sqlMissingBanner').classList.remove('d-none');
+                }
+                historicoCompras = [];
+                return;
+            }
+            historicoCompras = data || [];
+            document.getElementById('badgeTotalHistorico').textContent = historicoCompras.length;
+        }
+
+        function renderRecomprarRapido() {
+            const card = document.getElementById('cardRecomprarRapido');
+            const strip = document.getElementById('rebuyStrip');
+            const itensVistos = new Map();
+
+            historicoCompras.filter(e => e.estado !== 'cancelada').forEach(enc => {
+                (enc.itens || []).forEach(it => {
+                    const key = `${enc.id_veterinario}::${it.nome.toLowerCase()}`;
+                    if (!itensVistos.has(key)) {
+                        itensVistos.set(key, { enc, item: it });
+                    }
+                });
+            });
+
+            if (itensVistos.size === 0) { card.classList.add('d-none'); return; }
+            card.classList.remove('d-none');
+
+            strip.innerHTML = Array.from(itensVistos.values()).slice(0, 10).map(({ enc, item }) => `
+                <div class="rebuy-chip">
+                    <div>
+                        <div class="fw-bold small text-truncate">${esc(item.nome)}</div>
+                        <div class="text-secondary text-truncate" style="font-size:.74rem;">
+                            <i class="fa-solid fa-location-dot text-success me-1"></i>${esc(enc.local_compra)}
+                        </div>
+                        <div class="text-secondary" style="font-size:.72rem;">Última compra: ${new Date(enc.criado_em).toLocaleDateString('pt-PT')}</div>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mt-1">
+                        <span class="fw-bold text-success small">${item.preco_unitario > 0 ? euro(item.preco_unitario) : 'Sob orçamento'}</span>
+                        <button class="btn btn-sm btn-success rounded-pill px-3 py-1 fw-bold" style="font-size:.75rem;"
+                            onclick="recomprarItemUnico(${enc.id}, '${esc(item.nome).replace(/'/g, "\\'")}')">
+                            <i class="fa-solid fa-rotate-right me-1"></i>Recomprar
+                        </button>
+                    </div>
+                </div>`).join('');
+        }
+
+        async function recomprarEncomenda(encId) {
+            const enc = historicoCompras.find(e => e.id === encId);
+            if (!enc) return;
+
+            await prepararVetParaRecompra(enc);
+            carrinho = (enc.itens || []).map(i => ({ ...i }));
+            encomendaOrigemRecompra = enc;
+            if (enc.id_animal) document.getElementById('selectAnimalEncomenda').value = enc.id_animal;
+            if (enc.tipo_entrega) {
+                document.getElementById('selectEntrega').value = enc.tipo_entrega;
+                toggleMoradaEntrega();
+            }
+            if (enc.morada_entrega) document.getElementById('inputMoradaEntrega').value = enc.morada_entrega;
+            if (enc.metodo_pagamento) document.getElementById('selectPagamento').value = enc.metodo_pagamento;
+
+            atualizarAvisoRecompra();
+            renderCarrinho();
+            mudarAba('comprar');
+            irParaCarrinho();
+            showToast(`Itens da encomenda ${enc.numero_encomenda} prontos para recomprar!`);
+        }
+
+        async function recomprarItemUnico(encId, nomeItem) {
+            const enc = historicoCompras.find(e => e.id === encId);
+            if (!enc) return;
+            const item = (enc.itens || []).find(i => i.nome === nomeItem);
+            if (!item) return;
+
+            await prepararVetParaRecompra(enc);
+            encomendaOrigemRecompra = enc;
+            adicionarAoCarrinho({ ...item, quantidade: 1 });
+            if (enc.id_animal) document.getElementById('selectAnimalEncomenda').value = enc.id_animal;
+            atualizarAvisoRecompra();
+            mudarAba('comprar');
+            irParaCarrinho();
+            showToast(`"${item.nome}" adicionado para recompra!`);
+        }
+
+        async function prepararVetParaRecompra(enc) {
+            // Se o vet da compra anterior já está na lista das consultas, seleciona-o; senão adiciona-o temporariamente a partir do histórico
+            let v = vetsDasConsultas.find(x => x.user_id === enc.id_veterinario);
+            if (!v) {
+                v = {
+                    user_id: enc.id_veterinario,
+                    nome: enc.nome_veterinario || 'Veterinário',
+                    clinica_id: enc.clinica_id || null,
+                    local_compra: enc.local_compra,
+                    numConsultas: 1
+                };
+                vetsDasConsultas.push(v);
+            }
+            await selecionarVet(v.user_id, true);
+        }
+
+        async function cancelarEncomenda(encId) {
+            if (!confirm('Tem a certeza que pretende cancelar esta encomenda?')) return;
+            const { error } = await sb.from('farmacia_encomendas').update({ estado: 'cancelada' }).eq('id', encId);
+            if (error) { showToast('Erro ao cancelar: ' + error.message); return; }
+            await carregarHistorico();
+            renderRecomprarRapido();
+            renderHistorico();
+            showToast('Encomenda cancelada.');
+        }
+
+        function renderHistorico() {
+            const cntHist = { todos: historicoCompras.length };
+            historicoCompras.forEach(e => { cntHist[e.estado] = (cntHist[e.estado] || 0) + 1; });
+            document.querySelectorAll('#filterBarHistDono [data-cnt]').forEach(el => {
+                el.textContent = cntHist[el.dataset.cnt] || 0;
+            });
+
+            const container = document.getElementById('listaHistorico');
+            const termo = (document.getElementById('buscaHistorico')?.value || '').toLowerCase().trim();
+            const est = estadoHistDonoFiltro;
+
+            const filtradas = historicoCompras.filter(e => {
+                if (est !== 'todos' && e.estado !== est) return false;
+                if (termo) {
+                    const anim = animaisDono.find(a => a.id === e.id_animal);
+                    const itensStr = (e.itens || []).map(i => i.nome).join(' ');
+                    const hay = `${e.numero_encomenda} ${e.local_compra} ${e.nome_veterinario || ''} ${anim?.nome || ''} ${itensStr}`.toLowerCase();
+                    if (!hay.includes(termo)) return false;
+                }
+                return true;
+            });
+
+            document.getElementById('resumoHistoricoCount').textContent = `${filtradas.length} compra${filtradas.length === 1 ? '' : 's'}`;
+
+            if (filtradas.length === 0) {
+                container.innerHTML = `
+                    <div class="card-panel text-center py-5">
+                        <i class="fa-solid fa-receipt fa-3x text-secondary opacity-25 mb-3"></i>
+                        <h5 class="fw-bold text-secondary">Nenhuma compra encontrada</h5>
+                        <p class="small text-secondary mb-0">As compras e encomendas feitas pelos seus veterinários aparecerão aqui com o local onde foram compradas.</p>
+                    </div>`;
+                return;
+            }
+
+            container.innerHTML = filtradas.map(enc => {
+                const anim = animaisDono.find(a => a.id === enc.id_animal);
+                const itens = enc.itens || [];
+                return `
+                    <div class="order-card">
+                        <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">
+                            <div>
+                                <div class="d-flex align-items-center gap-2 flex-wrap">
+                                    <span class="fw-bold fs-6">${esc(enc.numero_encomenda)}</span>
+                                    <span class="status-badge st-${esc(enc.estado)}">${esc(ESTADO_LABELS[enc.estado] || enc.estado)}</span>
+                                    ${enc.encomenda_origem_id ? '<span class="badge bg-info-subtle text-info border border-info-subtle"><i class="fa-solid fa-rotate-right me-1"></i>Recompra</span>' : ''}
+                                </div>
+                                <div class="small text-secondary mt-1">
+                                    <i class="fa-regular fa-clock me-1"></i>${fmtData(enc.criado_em)}
+                                    ${anim ? ` · <i class="fa-solid fa-paw text-success ms-2 me-1"></i>${esc(anim.nome)}` : ''}
+                                </div>
+                            </div>
+                            <div class="text-md-end">
+                                <div class="fs-5 fw-bold text-success">${euro(enc.total)}</div>
+                                <div class="small text-secondary">${esc(PAGAMENTO_LABELS[enc.metodo_pagamento] || enc.metodo_pagamento)} · ${enc.tipo_entrega === 'entrega' ? 'Entrega ao domicílio' : 'Levantamento na clínica'}</div>
+                            </div>
+                        </div>
+
+                        <!-- ONDE FOI COMPRADO -->
+                        <div class="where-bought-box mb-3">
+                            <div><i class="fa-solid fa-location-dot text-success me-1"></i><strong>Onde foi comprado:</strong> ${esc(enc.local_compra)}</div>
+                            <div><i class="fa-solid fa-user-doctor text-success me-1"></i><strong>Veterinário:</strong> Dr(a). ${esc(enc.nome_veterinario || '—')}</div>
+                        </div>
+
+                        <!-- ITENS -->
+                        <div class="table-responsive mb-3">
+                            <table class="table table-sm align-middle mb-0">
+                                <thead>
+                                    <tr class="small text-secondary">
+                                        <th>Produto / Medicamento</th>
+                                        <th>Categoria</th>
+                                        <th class="text-center">Qtd.</th>
+                                        <th class="text-end">Preço Un.</th>
+                                        <th class="text-end">Subtotal</th>
+                                        <th class="text-end"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${itens.map(it => `
+                                        <tr>
+                                            <td class="fw-semibold">
+                                                ${esc(it.nome)}
+                                                ${it.requer_receita ? '<span class="rx-pill ms-1">Receita</span>' : ''}
+                                                ${it.personalizado ? '<span class="badge bg-light text-secondary border ms-1">Encomenda</span>' : ''}
+                                            </td>
+                                            <td class="small text-secondary">${esc(CAT_LABELS[it.categoria] || it.categoria || '—')}</td>
+                                            <td class="text-center fw-bold">${it.quantidade}</td>
+                                            <td class="text-end small">${it.preco_unitario > 0 ? euro(it.preco_unitario) : 'A confirmar'}</td>
+                                            <td class="text-end fw-bold">${it.subtotal > 0 ? euro(it.subtotal) : '—'}</td>
+                                            <td class="text-end">
+                                                <button class="btn btn-sm btn-outline-success rounded-pill py-0 px-2" style="font-size:.75rem;"
+                                                    onclick="recomprarItemUnico(${enc.id}, '${esc(it.nome).replace(/'/g, "\\'")}')">
+                                                    <i class="fa-solid fa-rotate-right"></i> Recomprar
+                                                </button>
+                                            </td>
+                                        </tr>`).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        ${enc.notas_veterinario ? `<div class="alert alert-success py-2 px-3 small rounded-3 mb-3"><i class="fa-solid fa-notes-medical me-1"></i><strong>Nota do Veterinário:</strong> ${esc(enc.notas_veterinario)}</div>` : ''}
+
+                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                            <div class="d-flex gap-2 flex-wrap">
+                                <button class="btn-zooni btn-sm py-2" onclick="recomprarEncomenda(${enc.id})">
+                                    <i class="fa-solid fa-rotate-right"></i> Recomprar Tudo
+                                </button>
+                                <button class="btn btn-sm btn-outline-secondary rounded-3 fw-semibold" onclick="gerarPdfEncomenda(${enc.id})">
+                                    <i class="fa-solid fa-file-pdf me-1"></i> Comprovativo PDF
+                                </button>
+                            </div>
+                            ${enc.estado === 'pendente' ? `
+                                <button class="btn btn-sm btn-outline-danger rounded-3 fw-semibold" onclick="cancelarEncomenda(${enc.id})">
+                                    <i class="fa-solid fa-xmark me-1"></i> Cancelar Encomenda
+                                </button>` : ''}
+                        </div>
+                    </div>`;
+            }).join('');
+        }
+
+        function mudarAba(aba) {
+            document.getElementById('secComprar').style.display = aba === 'comprar' ? 'block' : 'none';
+            document.getElementById('secHistorico').style.display = aba === 'historico' ? 'block' : 'none';
+            document.getElementById('tabBtnComprar').classList.toggle('active', aba === 'comprar');
+            document.getElementById('tabBtnHistorico').classList.toggle('active', aba === 'historico');
+        }
+
+        function irParaCarrinho() {
+            mudarAba('comprar');
+            document.getElementById('painelCarrinho')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        /* ── COMPROVATIVO PDF COM LOGÓTIPO ZOONI ── */
+        function carregarLogoZooni() {
+            return new Promise(resolve => {
+                const img = new Image();
+                img.onload = () => {
+                    try {
+                        const c = document.createElement('canvas');
+                        c.width = img.naturalWidth; c.height = img.naturalHeight;
+                        c.getContext('2d').drawImage(img, 0, 0);
+                        resolve({ data: c.toDataURL('image/png'), w: img.naturalWidth, h: img.naturalHeight });
+                    } catch (e) { resolve(null); }
+                };
+                img.onerror = () => resolve(null);
+                img.src = 'assets/logo.png';
+            });
+        }
+
+        async function gerarPdfEncomenda(encId) {
+            const enc = historicoCompras.find(e => e.id === encId);
+            if (!enc || !window.jspdf) return;
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+            const W = 210, H = 297, M = 15;
+            const VERDE = [30, 77, 30], VERDE2 = [61, 139, 61], CINZA = [100, 116, 100], TEXTO = [30, 41, 30];
+            const logo = await carregarLogoZooni();
+            const anim = animaisDono.find(a => a.id === enc.id_animal);
+
+            doc.setFillColor(...VERDE); doc.rect(0, 0, W, 40, 'F');
+            doc.setFillColor(...VERDE2); doc.rect(0, 40, W, 2, 'F');
+            doc.setFillColor(255, 255, 255); doc.roundedRect(M, 7, 44, 26, 4, 4, 'F');
+            if (logo) {
+                const r = Math.min(38 / logo.w, 20 / logo.h);
+                const lw = logo.w * r, lh = logo.h * r;
+                doc.addImage(logo.data, 'PNG', M + (44 - lw) / 2, 7 + (26 - lh) / 2, lw, lh);
+            } else {
+                doc.setTextColor(...VERDE); doc.setFont('helvetica', 'bold'); doc.setFontSize(17);
+                doc.text('ZOONI', M + 22, 23, { align: 'center' });
+            }
+
+            doc.setTextColor(255, 255, 255); doc.setFont('helvetica', 'bold'); doc.setFontSize(18);
+            doc.text('Comprovativo de Compra', W - M, 18, { align: 'right' });
+            doc.setFont('helvetica', 'normal'); doc.setFontSize(9.5);
+            doc.text(`${enc.numero_encomenda}  ·  ${fmtData(enc.criado_em)}`, W - M, 26, { align: 'right' });
+            doc.text(`Estado: ${ESTADO_LABELS[enc.estado] || enc.estado}`, W - M, 32, { align: 'right' });
+
+            let y = 52;
+            doc.setFillColor(238, 247, 238); doc.roundedRect(M, y, W - 2 * M, 30, 4, 4, 'F');
+            doc.setTextColor(...VERDE); doc.setFont('helvetica', 'bold'); doc.setFontSize(8);
+            doc.text('ONDE FOI COMPRADO', M + 6, y + 7);
+            doc.setTextColor(...TEXTO); doc.setFont('helvetica', 'bold'); doc.setFontSize(10.5);
+            doc.text(doc.splitTextToSize(enc.local_compra, W - 2 * M - 12)[0], M + 6, y + 13);
+            doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(...CINZA);
+            doc.text(`Veterinário: Dr(a). ${enc.nome_veterinario || '—'}   ·   Tutor: ${clienteAtual.nome}   ·   Animal: ${anim ? anim.nome : 'Geral'}`, M + 6, y + 21);
+            doc.text(`Entrega: ${enc.tipo_entrega === 'entrega' ? 'Domicílio (' + (enc.morada_entrega || '') + ')' : 'Levantamento na Clínica'}   ·   Pagamento: ${PAGAMENTO_LABELS[enc.metodo_pagamento] || enc.metodo_pagamento}`, M + 6, y + 26.5);
+
+            y += 38;
+            doc.setFillColor(...VERDE); doc.roundedRect(M, y, W - 2 * M, 9, 2, 2, 'F');
+            doc.setTextColor(255, 255, 255); doc.setFont('helvetica', 'bold'); doc.setFontSize(8.5);
+            doc.text('PRODUTO / MEDICAMENTO', M + 4, y + 6);
+            doc.text('QTD.', M + 115, y + 6, { align: 'center' });
+            doc.text('PREÇO UN.', M + 148, y + 6, { align: 'right' });
+            doc.text('SUBTOTAL', W - M - 4, y + 6, { align: 'right' });
+            y += 12;
+
+            (enc.itens || []).forEach((it, idx) => {
+                if (idx % 2 === 0) { doc.setFillColor(246, 250, 246); doc.rect(M, y - 4.5, W - 2 * M, 8, 'F'); }
+                doc.setTextColor(...TEXTO); doc.setFont('helvetica', 'bold'); doc.setFontSize(9);
+                doc.text(doc.splitTextToSize(it.nome, 100)[0], M + 4, y);
+                doc.setFont('helvetica', 'normal');
+                doc.text(String(it.quantidade), M + 115, y, { align: 'center' });
+                doc.text(it.preco_unitario > 0 ? euro(it.preco_unitario) : 'A confirmar', M + 148, y, { align: 'right' });
+                doc.setFont('helvetica', 'bold');
+                doc.text(it.subtotal > 0 ? euro(it.subtotal) : '—', W - M - 4, y, { align: 'right' });
+                y += 8;
+            });
+
+            y += 6;
+            doc.setFillColor(...VERDE); doc.roundedRect(W - M - 72, y, 72, 20, 4, 4, 'F');
+            doc.setTextColor(200, 230, 200); doc.setFont('helvetica', 'bold'); doc.setFontSize(8);
+            doc.text('TOTAL DA ENCOMENDA', W - M - 36, y + 7, { align: 'center' });
+            doc.setTextColor(255, 255, 255); doc.setFontSize(16);
+            doc.text(euro(enc.total), W - M - 36, y + 15.5, { align: 'center' });
+
+            doc.setTextColor(...CINZA); doc.setFont('helvetica', 'normal'); doc.setFontSize(7.5);
+            doc.text('Zooni — Plataforma Veterinária Digital', M, H - 10);
+            doc.save(`${enc.numero_encomenda}.pdf`);
+            showToast('Comprovativo PDF gerado!');
+        }
+    </script>
+</body>
+
+</html>
