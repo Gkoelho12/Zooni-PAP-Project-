@@ -17,8 +17,11 @@ async function initAuth() {
     VET_USER_ID = session.user.id;
     document.getElementById('inputEmail').value = session.user.email;
 
-    // Load vet data
-    const { data: vet } = await supabaseClient.from('veterinarios').select('*').eq('user_id', VET_USER_ID).single();
+    // Load vet data & verify active veterinarian role
+    const { data: vet } = await supabaseClient.from('veterinarios').select('*').eq('user_id', VET_USER_ID).maybeSingle();
+    if (!vet) { window.location.href = 'login.html?role=veterinario'; return; }
+    if (vet.status === 'pendente') { window.location.href = 'pendente_veterinario.html'; return; }
+    if (vet.status !== 'ativo') { await supabaseClient.auth.signOut(); window.location.href = 'login.html?role=veterinario'; return; }
     if (vet) {
         document.getElementById('inputNome').value = vet.nome || '';
         document.getElementById('inputOMV').value = vet.numero_omv || '';

@@ -807,7 +807,15 @@
             { titulo: 'Rastreio Renal em Gatos Séniores (+7 Anos)', canais: ['whatsapp', 'email'], destinatarios: 26, leitura: '91%', agendamentos: 9, data: '05/10/2026', estado: 'Concluído' }
         ];
 
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Guarda de autenticação: apenas veterinários ativos podem aceder a Campanhas CRM
+            const { data: { session } } = await sb.auth.getSession();
+            if (!session) { window.location.href = 'login.html?role=veterinario'; return; }
+            const { data: vet } = await sb.from('veterinarios').select('status').eq('user_id', session.user.id).maybeSingle();
+            if (!vet) { window.location.href = 'login.html?role=veterinario'; return; }
+            if (vet.status === 'pendente') { window.location.href = 'pendente_veterinario.html'; return; }
+            if (vet.status !== 'ativo') { await sb.auth.signOut(); window.location.href = 'login.html?role=veterinario'; return; }
+
             // Mensagem padrão
             document.getElementById('textareaMensagem').value = 
                 'Olá {nome_tutor}! 🌸 A equipa do {nome_clinica} lembra que o(a) seu(sua) amigo(a) {nome_animal} tem a {vacina_pendente} pendente. Proteja a saúde dele(a) e agende connosco pelo link: {link_marcacao}';
@@ -944,6 +952,7 @@
                     total_agendamentos: 0,
                     estado: 'concluido'
                 }]).then(() => {});
+            } catch (e) { console.warn('Erro ao guardar campanha:', e); }
             // Gravar em localStorage para sincronização imediata com a app do tutor
             localStorage.setItem('zooni_ultima_campanha_crm', JSON.stringify({
                 titulo: titulo,

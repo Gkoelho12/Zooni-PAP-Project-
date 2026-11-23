@@ -8,24 +8,29 @@
         const navLinks = document.querySelector('.nav-links');
         if (!logoSubtext && !navLinks) return;
 
-        let isDiretor = localStorage.getItem('zooni-diretor') === 'true';
+        // Nunca confiar apenas no localStorage — validar sempre no Supabase
+        let isDiretor = false;
+        const client = (typeof sb !== 'undefined') ? sb : (typeof supabaseClient !== 'undefined' ? supabaseClient : null);
 
-        // Verificar no Supabase caso exista sessão ativa
-        if (typeof sb !== 'undefined') {
+        if (client) {
             try {
-                const { data: { session } } = await sb.auth.getSession();
+                const { data: { session } } = await client.auth.getSession();
                 if (session) {
-                    const { data: vet } = await sb
+                    const { data: vet } = await client
                         .from('veterinarios')
-                        .select('is_diretor, clinica_id, clinica')
+                        .select('is_diretor, status, clinica_id, clinica')
                         .eq('user_id', session.user.id)
                         .maybeSingle();
 
-                    if (vet && vet.is_diretor) {
+                    if (vet && vet.is_diretor === true && vet.status === 'ativo') {
                         isDiretor = true;
                         localStorage.setItem('zooni-diretor', 'true');
                         if (vet.clinica_id) localStorage.setItem('zooni-clinica-id', vet.clinica_id);
+                    } else {
+                        localStorage.removeItem('zooni-diretor');
                     }
+                } else {
+                    localStorage.removeItem('zooni-diretor');
                 }
             } catch (e) {
                 console.warn('Verificação de diretor no Supabase:', e);

@@ -1113,23 +1113,15 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <p class="text-muted small">Nova password para <strong id="resetPasswordVetName">---</strong>:</p>
+                    <p class="text-muted small mb-2">Enviar email seguro de redefinição de palavra-passe para <strong id="resetPasswordVetName">---</strong>?</p>
+                    <p class="text-muted small mb-0"><i class="fa-solid fa-shield-halved text-success me-1"></i>O veterinário receberá um link temporário para definir a sua própria palavra-passe em segurança.</p>
                     <input type="hidden" id="resetPasswordUserId">
-                    <div class="d-flex gap-2">
-                        <input type="text" class="form-control-zooni" id="resetPasswordInput"
-                            placeholder="Nova password (min 6 caracteres)">
-                        <button type="button" class="btn-primary-zooni"
-                            onclick="document.getElementById('resetPasswordInput').value = Math.random().toString(36).slice(-8) + 'Z1@'"
-                            style="white-space:nowrap;">
-                            <i class="fa-solid fa-dice"></i> Gerar
-                        </button>
-                    </div>
                 </div>
                 <div class="modal-footer border-0 pt-0">
                     <button type="button" class="btn btn-light rounded-pill px-4 fw-bold"
                         data-bs-dismiss="modal">Cancelar</button>
                     <button type="button" class="btn btn-warning rounded-pill px-4 fw-bold text-dark"
-                        id="btnConfirmReset" onclick="confirmResetPassword()">Redefinir</button>
+                        id="btnConfirmReset" onclick="confirmResetPassword()">Enviar Link de Redefinição</button>
                 </div>
             </div>
         </div>
@@ -1282,13 +1274,13 @@
     <script>
         const SUPABASE_URL = 'https://xqtbtggmwejnkhckduti.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhxdGJ0Z2dtd2VqbmtoY2tkdXRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc2OTU5NjEsImV4cCI6MjA4MzI3MTk2MX0.G1wG0UC6sF7r6tMxGdqLGvsHa_dxlVD1-j6QNEw32IM';
-        const SERVICE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhxdGJ0Z2dtd2VqbmtoY2tkdXRpIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2NzY5NTk2MSwiZXhwIjoyMDgzMjcxOTYxfQ._cZwHqalRfh9ZDavB_z7M6q8ZhgRmtYRceeW_6SRjGM';
 
-        // Regular client (admin session)
+        // Cliente autenticado com a sessão do administrador (as permissões vêm do RLS de public.admins — nunca expor service_role no browser!)
         const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-        // Admin client (service role — bypasses RLS, can manage auth users)
-        const sbAdmin = supabase.createClient(SUPABASE_URL, SERVICE_KEY, {
-            auth: { autoRefreshToken: false, persistSession: false }
+        const sbAdmin = sb;
+        // Cliente isolado (anon, sem persistir sessão) usado apenas para criar novas contas sem terminar a sessão do admin
+        const sbSignup = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+            auth: { autoRefreshToken: false, persistSession: false, storageKey: 'zooni-admin-signup-tmp' }
         });
 
         let allTickets = [];
@@ -1635,32 +1627,34 @@
         function openResetPasswordModal(userId, vetName) {
             document.getElementById('resetPasswordUserId').value = userId;
             document.getElementById('resetPasswordVetName').textContent = vetName;
-            document.getElementById('resetPasswordInput').value = '';
             new bootstrap.Modal(document.getElementById('resetPasswordModal')).show();
         }
 
         async function confirmResetPassword() {
             const userId = document.getElementById('resetPasswordUserId').value;
-            const password = document.getElementById('resetPasswordInput').value.trim();
             const btn = document.getElementById('btnConfirmReset');
+            const vet = currentVets.find(v => v.user_id === userId);
 
-            if (!password || password.length < 6) {
-                alert('A password deve ter pelo menos 6 caracteres.');
+            if (!vet || !vet.email) {
+                alert('Email do veterinário não encontrado.');
                 return;
             }
 
             btn.disabled = true;
-            btn.innerHTML = 'A processar...';
+            btn.innerHTML = 'A enviar...';
 
-            const { error } = await sbAdmin.auth.admin.updateUserById(userId, { password });
+            // Fluxo seguro: envia link oficial de redefinição de palavra-passe por email (sem chave service_role no browser)
+            const { error } = await sb.auth.resetPasswordForEmail(vet.email, {
+                redirectTo: window.location.origin + '/reset_password.html'
+            });
 
             btn.disabled = false;
-            btn.innerHTML = 'Redefinir';
+            btn.innerHTML = 'Enviar Link de Redefinição';
 
             if (error) {
-                alert('Erro ao redefinir password: ' + error.message);
+                alert('Erro ao enviar link de redefinição: ' + error.message);
             } else {
-                alert('✅ Password redefinida com sucesso!\n\nEntrega a nova password ao veterinário.');
+                alert(`✅ Link seguro de redefinição enviado para ${vet.email}!`);
                 bootstrap.Modal.getInstance(document.getElementById('resetPasswordModal')).hide();
             }
         }
@@ -1697,13 +1691,13 @@
             if (telefone && !/^[0-9]{9}$/.test(telefone)) { alert('O número de telemóvel deve ter exatamente 9 dígitos.'); btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Guardar'; return; }
 
             if (!id) {
-                // CREATE: register auth user + profile using admin API
+                // CREATE: registo seguro via Auth público sem terminar a sessão do admin
                 if (!password || password.length < 6) { alert('A password deve ter pelo menos 6 caracteres.'); btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Guardar'; return; }
 
-                const { data: authData, error: authErr } = await sbAdmin.auth.admin.createUser({
+                const { data: authData, error: authErr } = await sbSignup.auth.signUp({
                     email,
                     password,
-                    email_confirm: true  // auto-confirm email, no verification needed
+                    options: { data: { nome, role: 'veterinario' } }
                 });
 
                 if (authErr) {
@@ -1754,8 +1748,6 @@
             if (!confirm(`Tens a certeza que queres APAGAR a conta de "${nome}"?\n\nEsta ação é irreversível e eliminará o perfil do veterinário.`)) return;
             const { error } = await sbAdmin.from('veterinarios').delete().eq('user_id', userId);
             if (error) { alert('Erro ao apagar: ' + error.message); return; }
-            // Optionally also delete auth user:
-            await sbAdmin.auth.admin.deleteUser(userId).catch(() => {});
             loadVets();
             loadStats();
         }
@@ -1782,7 +1774,6 @@
             if (!confirm(`Apagar ${ids.length} veterinário(s) selecionado(s)?\n\nEsta ação é irreversível.`)) return;
             for (const id of ids) {
                 await sbAdmin.from('veterinarios').delete().eq('user_id', id);
-                await sbAdmin.auth.admin.deleteUser(id).catch(() => {});
             }
             loadVets();
             loadStats();
@@ -1790,8 +1781,10 @@
 
         function generatePassword() {
             const chars = 'ABCDEFGHJKMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789@#!';
+            const rand = new Uint32Array(12);
+            crypto.getRandomValues(rand);
             let pwd = '';
-            for (let i = 0; i < 10; i++) pwd += chars[Math.floor(Math.random() * chars.length)];
+            for (let i = 0; i < rand.length; i++) pwd += chars[rand[i] % chars.length];
             document.getElementById('vetPassword').value = pwd;
         }
 
@@ -1919,9 +1912,7 @@
                 await sbAdmin.from('animais').delete().eq('id_dono', ownerId);
             }
             await sbAdmin.from('tickets').delete().eq('id_dono', ownerId);
-            const { data: cliente } = await sbAdmin.from('clientes').select('user_id').eq('id', ownerId).single();
             await sbAdmin.from('clientes').delete().eq('id', ownerId);
-            if (cliente?.user_id) await sbAdmin.auth.admin.deleteUser(cliente.user_id).catch(() => {});
         }
 
         async function deleteSelectedOwners() {

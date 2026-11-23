@@ -563,6 +563,8 @@
 
             const { data: vet } = await sb.from('veterinarios').select('*').eq('user_id', session.user.id).maybeSingle();
             if (!vet) { window.location.href = 'login.html?role=veterinario'; return false; }
+            if (vet.status === 'pendente') { window.location.href = 'pendente_veterinario.html'; return false; }
+            if (vet.status !== 'ativo') { await sb.auth.signOut(); window.location.href = 'login.html?role=veterinario'; return false; }
             vetAtual = vet;
 
             if (vet.clinica_id) {

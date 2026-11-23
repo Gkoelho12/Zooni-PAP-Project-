@@ -1157,22 +1157,41 @@
             }
         ];
 
-        // ── INICIALIZAÇÃO ──
+        // ── INICIALIZAÇÃO (apenas Diretor Clínico ativo) ──
         async function initEquipa() {
             try {
-                // Verificar sessão do diretor
+                // Verificar sessão obrigatória e permissão de Diretor Clínico
                 const { data: { session } } = await sb.auth.getSession();
-                if (session) {
-                    const userId = session.user.id;
-                    const { data: clinicData } = await sb
-                        .from('clinicas')
-                        .select('*')
-                        .eq('diretor_id', userId)
-                        .maybeSingle();
+                if (!session) {
+                    window.location.href = 'login.html?role=veterinario';
+                    return;
+                }
 
-                    if (clinicData) {
-                        currentClinic = clinicData;
-                    }
+                const userId = session.user.id;
+                const { data: vetPerfil } = await sb
+                    .from('veterinarios')
+                    .select('is_diretor, status, clinica_id')
+                    .eq('user_id', userId)
+                    .maybeSingle();
+
+                if (!vetPerfil || vetPerfil.status !== 'ativo') {
+                    window.location.href = vetPerfil?.status === 'pendente' ? 'pendente_veterinario.html' : 'login.html?role=veterinario';
+                    return;
+                }
+                if (!vetPerfil.is_diretor) {
+                    window.location.href = 'dashboard_veterinario.html';
+                    return;
+                }
+
+                const { data: clinicData } = await sb
+                    .from('clinicas')
+                    .select('*')
+                    .or(`diretor_id.eq.${userId}${vetPerfil.clinica_id ? `,id.eq.${vetPerfil.clinica_id}` : ''}`)
+                    .limit(1)
+                    .maybeSingle();
+
+                if (clinicData) {
+                    currentClinic = clinicData;
                 }
 
                 // Atualizar cabeçalho da clínica
